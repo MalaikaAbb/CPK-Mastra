@@ -19,9 +19,9 @@ export default function Page() {
       <Panel title="What it demonstrates">
         <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
           Every chat component is assembled from named sub-components — slots —
-          each overridable at one of three levels: a Tailwind class string merged
-          into the default, an object of props set on the default, or your own
-          component replacing it. Slots nest, so{" "}
+          each overridable at one of three levels: a Tailwind class string
+          merged into the default, an object of props set on the default, or
+          your own component replacing it. Slots nest, so{" "}
           <code>messageView.assistantMessage.copyButton</code> is a valid path.
         </p>
 
@@ -51,13 +51,12 @@ export default function Page() {
         <div className="mt-4">
           <TryIt
             prompts={["Hello there"]}
-            expect="Level 1 tints the message area and outlines the input. Level 2 focuses the input on mount. Level 3 shows a custom layout"
+            expect="Level 1 tints the message area and outlines the input. Level 2 focuses the input on mount. Level 3 shows a custom layout. Level 4 reshapes the message."
             fail="The chat looks identical across all three tabs — the slot props are not reaching the component."
           />
         </div>
       </Panel>
 
-     
       <Panel title="Source">
         <SourceCode file="frontend/src/app/custom-look-and-feel/slots/demo-chat/page.tsx" />
       </Panel>
