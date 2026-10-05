@@ -1,6 +1,6 @@
 "use client";
 
-import { CopilotKitProvider } from "@copilotkit/react-core/v2";
+import { CopilotKit } from "@copilotkit/react-core/v2";
 import type { ReactNode } from "react";
 
 import { backgroundTaskActivityRenderer } from "./background-task-activity";
@@ -20,20 +20,22 @@ const RUNTIME_URL = "/api/copilotkit";
 
 const LICENSE_KEY = process.env.NEXT_PUBLIC_COPILOTKIT_LICENSE_KEY;
 
-export function Providers({ children }: { children: ReactNode }) {
+const ACTIVITY_RENDERERS = [backgroundTaskActivityRenderer];
+
+export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <CopilotKitProvider
+    <CopilotKit
       runtimeUrl={RUNTIME_URL}
       {...(LICENSE_KEY ? { publicLicenseKey: LICENSE_KEY } : {})}
       showDevConsole="auto"
       // Activity renderers are provider-level, not page-level — this is what
       // makes the Background Tasks route show progress cards.
-      renderActivityMessages={[backgroundTaskActivityRenderer]}
+      renderActivityMessages={ACTIVITY_RENDERERS}
       onError={(event) => {
         console.error(`[CopilotKit ${event.code}]`, event.error);
       }}
     >
       {children}
-    </CopilotKitProvider>
+    </CopilotKit>
   );
 }
