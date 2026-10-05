@@ -38,7 +38,7 @@ Mastra injects a built-in `updateWorkingMemory` tool whenever working memory is 
 
   ```ts
   const runtime = new CopilotRuntime({
-    agents: MastraAgent.getLocalAgents({ mastra }),
+    agents: MastraAgent.getLocalAgents({ mastra, resourceId: "user-1" }),
   });
   ```
 </Callout>
@@ -73,6 +73,7 @@ as this guide uses it as a starting point.
 
     // 2. Create the agent with working memory enabled
     export const streamingAgent = new Agent({
+      id: "streaming-agent",
       name: "Streaming Agent",
       model: openai("gpt-4o"),
       // The prompt drives the model to write the full document straight into
@@ -96,7 +97,7 @@ as this guide uses it as a starting point.
     Subscribe to the agent state with `useAgent`. `agent.state.document` updates on every delta as the agent writes, so the panel fills in live.
 
     ```tsx title="ui/app/page.tsx"
-    import { useAgent, UseAgentUpdate } from "@copilotkit/react-core"; // [!code highlight]
+    import { useAgent, UseAgentUpdate } from "@copilotkit/react-core/v2"; // [!code highlight]
 
     const YourMainContent = () => {
       // [!code highlight:4]
