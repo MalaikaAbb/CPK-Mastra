@@ -72,6 +72,7 @@ as this guide uses it as a starting point.
     });
 
     export const searchAgent = new Agent({
+      id: "search-agent",
       name: "Search Agent",
       model: openai("gpt-5.4"),
       instructions: `

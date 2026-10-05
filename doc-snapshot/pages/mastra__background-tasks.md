@@ -158,7 +158,7 @@ as this guide uses it as a starting point.
     return (
       <CopilotKit
         runtimeUrl="/api/copilotkit"
-        agent="background-agents"
+        agent="backgroundAgentsAgent"
         renderActivityMessages={[backgroundTaskActivityRenderer]} // [!code highlight]
       >
         <CopilotChat />
@@ -232,6 +232,7 @@ Two switches, both required:
    ```typescript title="app/api/copilotkit/route.ts"
    const localAgents = getLocalAgents({
      mastra,
+     resourceId: "user-1",
      observationalMemory: true, // [!code highlight]
    });
    ```
