@@ -162,9 +162,19 @@ export const colleaguesContactAgent = new Agent({
       (contextItem) =>
         contextItem.description === "The current user's colleagues",
     );
+
+    const colleagues =
+      typeof colleaguesContextItem?.value === "string"
+        ? JSON.parse(colleaguesContextItem.value)
+        : (colleaguesContextItem?.value ?? []);
+
+    const colleagueList = colleagues
+      .map((c) => `${c.name} (${c.role})`)
+      .join(", ");
+
     return `
         You are a helpful assistant that can help emailing colleagues.
-        The user's colleagues are: ${JSON.stringify(colleaguesContextItem?.value, null, 2)}
+        The user's colleagues are: ${colleagueList}
     `;
   },
 });

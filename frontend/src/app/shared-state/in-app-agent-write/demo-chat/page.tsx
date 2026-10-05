@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { CopilotChat, useAgent } from "@copilotkit/react-core/v2";
 
 import { DemoFrame } from "@/components/demo-frame";
@@ -20,8 +21,18 @@ export default function Page() {
   const { agent } = useAgent({ agentId: "languageAgent" });
   const state = agent.state as AgentState | undefined;
 
+  useEffect(() => {
+    if (state?.language !== undefined) return;
+
+    agent.setState({
+      ...(agent.state ?? {}),
+      language: "english",
+    });
+  }, [agent, state]);
+
   const toggleLanguage = () => {
     agent.setState({
+      ...(agent.state ?? {}),
       language: state?.language === "english" ? "spanish" : "english",
     });
   };

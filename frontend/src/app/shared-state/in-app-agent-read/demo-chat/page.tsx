@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { CopilotChat, useAgent } from "@copilotkit/react-core/v2";
 
 import { DemoFrame } from "@/components/demo-frame";
@@ -21,10 +23,15 @@ type AgentState = {
 };
 
 export default function Page() {
-  const { agent } = useAgent({ agentId: "languageAgent" });
-  const state = agent.state as AgentState | undefined;
+  const { agent, isReady } = useAgent({ agentId: "languageAgent" });
+  const [state, setState] = useState<AgentState | undefined>(undefined);
 
-  return (
+  useEffect(() => {
+    if (!isReady || agent.state === undefined) return;
+    setState(agent.state as AgentState);
+  }, [agent.state, isReady]);
+
+  return (  
     <DemoFrame
       parentPath="/shared-state/in-app-agent-read"
       subtitle="working memory read from languageAgent"

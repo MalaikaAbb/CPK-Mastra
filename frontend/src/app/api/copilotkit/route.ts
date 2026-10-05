@@ -40,3 +40,33 @@ export const POST = async (req: NextRequest) => {
 
   return handleRequest(req);
 };
+
+export const GET = async (req: NextRequest) => {
+  const { handleRequest } = copilotRuntimeNextJSAppRouterEndpoint({
+    runtime,
+    serviceAdapter,
+    endpoint: "/api/copilotkit",
+  });
+
+  return handleRequest(req);
+};
+
+export const Patch = async (req: NextRequest) => {
+  const { handleRequest } = copilotRuntimeNextJSAppRouterEndpoint({
+    runtime,
+    serviceAdapter,
+    endpoint: "/api/copilotkit",
+  });
+
+  return handleRequest(req);
+};
+
+export const DELETE = async (req: NextRequest) => {
+  const { handleRequest } = copilotRuntimeNextJSAppRouterEndpoint({
+    runtime,
+    serviceAdapter,
+    endpoint: "/api/copilotkit",
+  });
+
+  return handleRequest(req);
+};
