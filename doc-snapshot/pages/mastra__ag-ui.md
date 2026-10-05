@@ -121,3 +121,6 @@ and a custom implementation all use the same request path:
 
 The backend framework can change without forcing a corresponding change to
 the frontend AG-UI contract.
+
+To write the custom implementation yourself, and keep its own fields through
+the clone in step 2, see [Write your own AG-UI agent](/mastra/backend/custom-ag-ui-agent).
