@@ -2,12 +2,17 @@ import { Mastra } from "@mastra/core";
 import { LibSQLStore } from "@mastra/libsql";
 
 import {
+  a2uiFixedSchemaAgent,
   backgroundAgentsAgent,
   colleaguesContactAgent,
+  declarativeGenUiAgent,
   languageAgent,
   myAgent,
+  openGenUiAdvancedAgent,
+  openGenUiAgent,
   searchAgent,
   streamingAgent,
+  subagentsSupervisorAgent,
   weatherAgent,
 } from "./agents";
 
@@ -31,6 +36,17 @@ export const mastra = new Mastra({
     searchAgent,
     colleaguesContactAgent,
     backgroundAgentsAgent,
+    // Registered under the agent id the Sub-Agents page uses
+    // (`useAgent({ agentId: "subagents" })`), so the published page resolves
+    // it on the main runtime route without renaming anything.
+    subagents: subagentsSupervisorAgent,
+    // Served by dedicated runtime routes (api/copilotkit-ogui,
+    // api/copilotkit-declarative-gen-ui, api/copilotkit-a2ui-fixed-schema),
+    // which look these up by key with `getLocalAgent`.
+    openGenUiAgent,
+    openGenUiAdvancedAgent,
+    declarativeGenUiAgent,
+    a2uiFixedSchemaAgent,
   },
   storage: new LibSQLStore({ id: "mastra-storage", url: ":memory:" }),
   backgroundTasks: { enabled: true },

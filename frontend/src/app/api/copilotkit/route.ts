@@ -22,12 +22,16 @@ const serviceAdapter = new ExperimentalEmptyAdapter();
 // id so shared state is per-user. This harness is single-user, so it is constant.
 //
 // `untilIdle` pipes Mastra's background-task lifecycle into the run's stream,
-// which is what makes the Background Tasks route report progress.
+// which is what makes the Background Tasks route report progress — but only for
+// agents that configure their own `memory`. Mastra's idle loop bails out to a
+// plain single-turn stream when `agent.getMemory()` is empty, with no warning,
+// so `backgroundAgentsAgent` carries a `Memory` the doc's version does not.
 const runtime = new CopilotRuntime({
   agents: MastraAgent.getLocalAgents({
     mastra,
     resourceId: "copilotkit-harness",
-    untilIdle: true,
+    observationalMemory: true,
+    //untilIdle: true,
   }),
 });
 
