@@ -1,0 +1,2 @@
+outcome.type === "interrupt"
+outcome.interrupts  // Interrupt[]

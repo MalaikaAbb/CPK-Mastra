@@ -8,6 +8,54 @@ Holds the 3 most recent dated entries. When a change lands on a fourth
 date, the oldest entry is dropped. Entries are counted, not aged, so a gap of
 weeks between changes does not expire anything.
 
+## 2026-10-07
+
+### 04:32 UTC — 7 pages, highest severity none
+
+**Info — A2UI · Dynamic Schema**
+
+`/mastra/generative-ui/a2ui/dynamic-schema` · route `/generative-ui/a2ui/dynamic-schema`
+
+Now tracked for the first time.
+
+**Info — A2UI · Fixed Schema**
+
+`/mastra/generative-ui/a2ui/fixed-schema` · route `/generative-ui/a2ui/fixed-schema`
+
+Now tracked for the first time.
+
+**Info — Open Generative UI**
+
+`/mastra/generative-ui/open-generative-ui` · route `/generative-ui/open-generative-ui`
+
+Now tracked for the first time.
+
+**Info — HITL · Governed Actions**
+
+`/mastra/human-in-the-loop/governed-actions` · route `/human-in-the-loop/governed-actions`
+
+Now tracked for the first time.
+
+**Info — HITL · Headless Interrupts**
+
+`/mastra/human-in-the-loop/headless` · route `/human-in-the-loop/headless`
+
+Now tracked for the first time.
+
+**Info — HITL · useInterrupt**
+
+`/mastra/human-in-the-loop/useInterrupt` · route `/human-in-the-loop/useInterrupt`
+
+Now tracked for the first time.
+
+**Info — Sub-Agents**
+
+`/mastra/multi-agent/subagents` · route `/multi-agent/subagents`
+
+Now tracked for the first time.
+
+---
+
 ## 2026-10-05
 
 ### 06:14 UTC — 9 pages, highest severity high
@@ -140,6 +188,8 @@ weeks between changes does not expire anything.
 
 ---
 
+---
+
 ## 2026-08-26
 
 ### 10:39 UTC — 4 pages, highest severity high
@@ -209,34 +259,3 @@ weeks between changes does not expire anything.
 ---
 
 ---
-
-## 2026-08-17
-
-### 13:44 UTC — 2 pages, highest severity high
-
-**High — Copilot Runtime** · _local snapshot edit, not an upstream change_
-
-`/mastra/copilot-runtime` · route `/copilot-runtime` · under “Setting Up the Runtime” · in a `ts` block
-
-6 code lines changed.
-
-````diff
-- 
-+ const { handleRequest } = copilotRuntimeNextJSAppRouterEndpoint({
-+ runtime,
-+ serviceAdapter,
-+ endpoint: "/api/copilotkit",
-+ });
-````
-
-**Low — Inspector** · _local snapshot edit, not an upstream change_
-
-`/mastra/inspector` · route `/inspector` · under “Navigation and Threads”
-
-3 prose lines changed.
-
-````diff
-+ When Threads has no real rows, or when Threads is locked, the Inspector keeps
-+ the overview video, three local example threads, their detail tabs, and the
-+ guided tour. The examples do not send real Thread requests. With reduced motion
-````

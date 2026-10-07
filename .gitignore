@@ -27,3 +27,6 @@ __pycache__/
 # The snapshot itself (doc-snapshot/pages/, manifest.json, CHANGELOG.md)
 # IS committed; it is the baseline every diff is taken against.
 doc-snapshot/reports/
+
+# Working-memory DB created by the doc agents (WORKING_MEMORY_DB_URL default).
+mastra-memory.db*
