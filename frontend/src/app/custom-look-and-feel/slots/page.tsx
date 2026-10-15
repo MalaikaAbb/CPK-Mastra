@@ -51,8 +51,8 @@ export default function Page() {
         <div className="mt-4">
           <TryIt
             prompts={["Hello there"]}
-            expect="Level 1 tints the message area and outlines the input. Level 2 focuses the input on mount. Level 3 shows a custom layout. Level 4 reshapes the message."
-            fail="The chat looks identical across all three tabs — the slot props are not reaching the component."
+            expect="Level 1 tints the message area and outlines the input. Level 2 focuses the input on mount. Level 3 shows a custom layout. Level 4 reshapes the message. Level 5 groups messages into one row."
+            fail="The chat looks identical across all tabs — the slot props are not reaching the component."
           />
         </div>
       </Panel>
