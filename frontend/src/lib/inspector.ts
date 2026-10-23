@@ -35,6 +35,8 @@ export const NESTED_PROVIDER_ROUTES = [
   "/generative-ui/open-generative-ui/demo-chat",
   "/generative-ui/open-generative-ui/advanced/demo-chat",
   "/multi-agent/subagents/demo-chat",
+  "/prebuilt-components/copilot-threads-drawer/demo-chat",
+  "/prebuilt-components/copilot-threads-drawer/sidebar/demo-chat",
 ] as const;
 
 /**

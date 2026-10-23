@@ -19,7 +19,7 @@ A navigable, working test harness for the CopilotKit Mastra integration — each
 
 [Mastra](https://mastra.ai) is a TypeScript agent framework with native AG-UI support, which is what lets a React app drive it with streaming, tool calls, shared state, and generative UI.
 
-This repo covers a **scoped set of 26 doc pages** (§8). Each route implements what its page teaches and shows the exact source that makes it work.
+This repo covers a **scoped set of 27 doc pages** (§8). Each route implements what its page teaches and shows the exact source that makes it work.
 
 **Everything comes from the documentation** — the doc pages and, where a page has one, its demo **Code** tab. Where a page imports code it never publishes, the route says so in a warning panel and §9 records it. A handful of pieces are harness-written and labelled as such in the file and on the route (the two `a2ui-context` helpers, two A2UI runtime routes, the two minimal A2UI agents); everything else that is missing is left missing, and those routes are marked Partial or Broken rather than filled in.
 
@@ -45,15 +45,16 @@ Mastra  —  in the same process
 OpenAI  (gpt-4o by default)
 ```
 
-Three pages need a runtime configured differently from the main one, and their published demos call dedicated endpoints, so those exist alongside `/api/copilotkit` (all `@copilotkit/runtime/v2` + `createCopilotRuntimeHandler`, single-route):
+Four pages need a runtime configured differently from the main one, so those exist alongside `/api/copilotkit` (all `@copilotkit/runtime/v2` + `createCopilotRuntimeHandler`; single-route unless noted):
 
 | Endpoint | Config | Used by |
 |---|---|---|
 | `/api/copilotkit-ogui` | `openGenerativeUI: { agents: [...] }` | Open Generative UI (published) |
 | `/api/copilotkit-a2ui-fixed-schema` | `a2ui: { injectA2UITool: false }` | A2UI Fixed Schema (harness glue — the page's runtime snippet) |
 | `/api/copilotkit-declarative-gen-ui` | no `a2ui` block (auto-inject) | A2UI Dynamic Schema (harness glue) |
+| `/api/copilotkit-threads/[[...slug]]` | **multi-route**; `intelligence` + `identifyUser` when `CPK_INTELLIGENCE_API_KEY` is set, plain SSE otherwise; `myAgent` as `default` | Threads Drawer (harness glue — the Intelligence quickstart's TypeScript runtime) |
 
-The demo pages for those routes, and for Sub-Agents, mount their own `<CopilotKit>` as published. Exactly one Inspector may exist per page (two lit instances loop and can take the machine down), so `src/lib/inspector.ts` makes the root provider stand down on those routes.
+The demo pages for those routes, and for Sub-Agents, mount their own provider as published. Exactly one Inspector may exist per page (two lit instances loop and can take the machine down), so `src/lib/inspector.ts` makes the root provider stand down on those routes.
 
 **There is no separate agent server.** Mastra is TypeScript, and the Quickstart's bring-your-own path imports the Mastra instance directly into the runtime route via `getLocalAgents` — so agents run inside the Next app. One command, one port, and no `backend/` directory.
 
@@ -86,6 +87,7 @@ Several rather than one because working memory takes a **single Zod schema per a
 | Node.js | 20+ | Next.js 16 requires 20+. |
 | npm | 10+ | Or pnpm/yarn/bun. |
 | OpenAI API key | — | Required. Needs access to `gpt-5-mini` for the Open Gen UI, A2UI, and Sub-Agents routes. |
+| CopilotKit Intelligence project key | — | Optional; only the Threads Drawer route uses it. `npx copilotkit@latest login` then `npx copilotkit@latest project select` writes `CPK_INTELLIGENCE_API_KEY` to `.env` in the current directory — copy it into `frontend/.env.local`. Premium: without it that route shows only its locked view. |
 
 No Python, no second runtime, no separate agent process.
 
@@ -106,6 +108,7 @@ Then edit `frontend/.env.local`:
 | `OPENAI_API_KEY` | **Required.** Read server-side by the Mastra agents; never exposed to the browser. |
 | `OPENAI_MODEL` | Model for the original seven agents. Defaults to `gpt-4o`. The Open Gen UI, A2UI, and Sub-Agents agents use the published `gpt-5-mini` literal regardless. |
 | `MASTRA_WORKING_MEMORY_URL` | Optional. Storage for the newer doc agents' memory; defaults to `file:./mastra-memory.db` (in `frontend/`, gitignored). |
+| `CPK_INTELLIGENCE_API_KEY` | Optional, server-only. Turns on CopilotKit Intelligence for `/api/copilotkit-threads`, which the Threads Drawer needs to list and store threads. Unset, that runtime runs in SSE mode and the drawer shows its locked view. |
 | `NEXT_PUBLIC_COPILOTKIT_LICENSE_KEY` | Optional; no route here needs it. |
 
 **Default port:** **3000** — the only one.
@@ -153,6 +156,8 @@ Code on a page is never a re-typed approximation: each page reads real files via
 ### Basics
 
 **`/prebuilt-components`** — `CopilotChat`, `CopilotSidebar`, `CopilotPopup` in tabs. **Pass:** all three drive the same agent and the conversation survives tab switches.
+
+**`/prebuilt-components/copilot-threads-drawer`** ⚠️ *premium* — `CopilotThreadsDrawer` beside the chat, sharing one `CopilotChatConfigurationProvider`; two demos (CopilotChat with an **As published** / **Header slot** tab, and CopilotSidebar via the second link on the page). **Try (with `CPK_INTELLIGENCE_API_KEY`):** send `Hello`, click **New Conversation**, send `Tell me a fun fact about octopuses`, then click the first row. **Pass:** each conversation gets a row, clicking a row replays that conversation in the chat, the row menu offers Archive and Delete, and the sidebar demo switches the same way. **Try (no key):** open either demo. **Pass:** a locked view with an Upgrade link where the list would be, and chat still works; `curl localhost:3000/api/copilotkit-threads/info` reports `"mode":"sse"` (with a key it should report `"mode":"intelligence"`). **Expected, not a failure:** no drawer launcher on desktop widths, and the **Header slot** tab looking identical to **As published** (discrepancy 20). **Fail:** the locked view with the key set, an empty list after replies, or rows that do not change the chat.
 
 ### Custom Look and Feel
 
@@ -225,6 +230,7 @@ Code on a page is never a re-typed approximation: each page reads real files via
 | `/mastra` | `/` | 📖 Reference | Orientation + agent roster. |
 | `/mastra/quickstart?agent=bring-your-own` | `/quickstart` | ✅ Working | |
 | `/mastra/prebuilt-components` | `/prebuilt-components` | ✅ Working | Doc page is a 145-byte component stub. |
+| `/mastra/prebuilt-components/copilot-threads-drawer` | `/prebuilt-components/copilot-threads-drawer` | ⚠️ Partial | Premium — needs `CPK_INTELLIGENCE_API_KEY`. Harness-supplied Intelligence runtime; header-slot snippet cannot work in 1.79.1 (20). Pages and keyless runtime (`mode: "sse"`) smoke-tested 2026-10-23; not yet run against a live Intelligence project. |
 | `/mastra/custom-look-and-feel/slots` | `/custom-look-and-feel/slots` | ✅ Working | **Not in the doc sidebar**; resolves. |
 | `/mastra/custom-look-and-feel/headless-ui` | `/custom-look-and-feel/headless-ui` | ✅ Working | **Not in the doc sidebar**; resolves. |
 | `/mastra/programmatic-control` | `/programmatic-control` | ✅ Working | |
@@ -340,6 +346,15 @@ Also on these pages: the dynamic-schema demo file's header says its route sets `
 - *Model ids.* These pages hard-code `openai("gpt-5-mini")`; kept as published, so they ignore `OPENAI_MODEL`.
 - *Storage.* The published agents use `WORKING_MEMORY_DB_URL` (`file:./mastra-memory.db` unless `MASTRA_WORKING_MEMORY_URL` is set) rather than the in-memory store the older pages use.
 
+*Item 20 was found 2026-10-23 against `@copilotkit/*` 1.79.1, `@ag-ui/mastra` 2.0.1, `@mastra/core` 1.78.*
+
+**20. Threads Drawer: the slot example cannot render, and the samples assume an Intelligence runtime they never show** — [page](https://docs.copilotkit.ai/mastra/prebuilt-components/copilot-threads-drawer)
+*Slots.* The Customization section projects `<span slot="header">My conversations</span>` as a child of `<CopilotThreadsDrawer>`. In 1.79.1 `CopilotThreadsDrawerProps` has no `children` (a type error, kept under `@ts-expect-error`), and the component renders only its `renderRow` output into the `copilotkit-threads-drawer` element, so any other child is dropped silently. The same applies to the other listed slots (`empty`, `footer`, `memories`, `launcher-icon`). Kept as published on the **Header slot** tab; it should look identical to the default drawer.
+*Runtime.* Both samples set `runtimeUrl="/api/copilotkit"` and the page shows no runtime code; it only says threads need Intelligence. The runtime half (`CopilotKitIntelligence`, `identifyUser`, the multi-route catch-all handler, `useSingleEndpoint={false}`) comes from the [Intelligence quickstart](https://docs.copilotkit.ai/mastra/intelligence/quickstart). Here it lives on `/api/copilotkit-threads` rather than `/api/copilotkit`, because Intelligence mode on the main runtime would change every other route. `identifyUser` returns a fixed user, which the quickstart allows for a local single-user demo only.
+*Agent.* The samples render `<CopilotChat />` and `<CopilotThreadsDrawer />` without `agentId`, so they resolve the `default` agent; `myAgent` is registered under that key on the threads runtime.
+*Missing code.* The sidebar sample renders `<YourMainContent />`, which is never defined. It is a stand-in for the host app's own content, so a labelled placeholder fills it.
+*Types.* The threads route has the same `AbstractAgent` type clash as the other v2 runtime routes: `@copilotkit/shared` ships its own `@ag-ui/client`. It runs fine.
+
 ---
 
 ## 10. Troubleshooting
@@ -356,6 +371,9 @@ Also on these pages: the dynamic-schema demo file's header says its route sets `
 | Model-not-found on Open Gen UI / A2UI / Sub-Agents | Those agents hard-code `gpt-5-mini` as published | Use a key with `gpt-5-mini` access; `OPENAI_MODEL` does not apply to them. |
 | A2UI card throws React #31 `object with keys {path}`, or Book flight does nothing | Root `zod` resolved to 4.x | `npm ls zod` must show 3.25.76 at the root (discrepancy 16). Re-pin with `npm install zod@3.25.76 --save-exact`. |
 | Fixed Schema: `UnsupportedModelVersionError` | `ai` resolved to v6 | `ai@^7` must be a direct dependency (discrepancy 17). |
+| Threads Drawer shows a locked view with an Upgrade link | No `CPK_INTELLIGENCE_API_KEY`, or the project's subscription is inactive | Set the key in `frontend/.env.local` and restart. `curl localhost:3000/api/copilotkit-threads/info` must report `"mode":"intelligence"`; `"sse"` means the key was not read. |
+| Threads Drawer: auth error on the first request | Key is empty or belongs to another project | Re-run `npx copilotkit@latest project select` and copy the new key. |
+| Threads Drawer has no open button on desktop | By design — the launcher only appears on narrow viewports | Resize the window below tablet width to see it. |
 | Page freezes / dev server spins after opening a demo | Two Inspectors on one page | Any new route that mounts its own `<CopilotKit>` must be added to `NESTED_PROVIDER_ROUTES` in `src/lib/inspector.ts`. |
 
 ---
@@ -415,6 +433,7 @@ mastra/
         │   ├── api/copilotkit-ogui/       # ★ openGenerativeUI runtime (published)
         │   ├── api/copilotkit-a2ui-fixed-schema/   # a2ui injectA2UITool:false (glue)
         │   ├── api/copilotkit-declarative-gen-ui/  # a2ui auto-inject (glue)
+        │   ├── api/copilotkit-threads/[[...slug]]/ # Intelligence runtime for the Threads Drawer (glue)
         │   └── <doc route>/
         │       ├── page.tsx           # notes + exact source (server component)
         │       └── demo-chat/page.tsx # ★ the running feature, chrome-free
@@ -441,7 +460,7 @@ mastra/
 
 **Getting Started** — [Quickstart (bring your own agent)](https://docs.copilotkit.ai/mastra/quickstart?agent=bring-your-own)
 
-**Basics** — [Prebuilt Components](https://docs.copilotkit.ai/mastra/prebuilt-components)
+**Basics** — [Prebuilt Components](https://docs.copilotkit.ai/mastra/prebuilt-components) · [Threads Drawer](https://docs.copilotkit.ai/mastra/prebuilt-components/copilot-threads-drawer) (runtime side: [Intelligence quickstart](https://docs.copilotkit.ai/mastra/intelligence/quickstart))
 
 **Custom Look and Feel** — [Slots](https://docs.copilotkit.ai/mastra/custom-look-and-feel/slots) † · [Headless UI](https://docs.copilotkit.ai/mastra/custom-look-and-feel/headless-ui) † · [Programmatic Control](https://docs.copilotkit.ai/mastra/programmatic-control) · [Inspector](https://docs.copilotkit.ai/mastra/inspector)
 

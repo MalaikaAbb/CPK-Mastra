@@ -75,6 +75,17 @@ export const NAV: NavGroup[] = [
           "CopilotChat, CopilotPopup, and CopilotSidebar side by side, each driving the same agent.",
         status: "working",
       },
+      {
+        path: "/prebuilt-components/copilot-threads-drawer",
+        hasDemo: true,
+        title: "Threads Drawer",
+        docPath: "/mastra/prebuilt-components/copilot-threads-drawer",
+        summary:
+          "A prebuilt thread list beside the chat that switches, starts, archives, and deletes conversations through a shared chat configuration.",
+        status: "partial",
+        statusNote:
+          "Requires CopilotKit Intelligence (CPK_INTELLIGENCE_API_KEY); without it only the locked view is testable. The header-slot snippet cannot work in 1.79.1. Built from the published code; not yet exercised against a live Intelligence project in this harness.",
+      },
     ],
   },
   {
