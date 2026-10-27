@@ -86,6 +86,17 @@ export const NAV: NavGroup[] = [
         statusNote:
           "Requires CopilotKit Intelligence (CPK_INTELLIGENCE_API_KEY); without it only the locked view is testable. The header-slot snippet cannot work in 1.79.1. Built from the published code; not yet exercised against a live Intelligence project in this harness.",
       },
+      {
+        path: "/headless-threads",
+        hasDemo: true,
+        title: "Headless Threads",
+        docPath: "/mastra/headless-threads",
+        summary:
+          "A hand-built thread list over useThreads, with the selected thread handed to CopilotChat through its threadId prop.",
+        status: "broken",
+        statusNote:
+          "Requires CopilotKit Intelligence (CPK_INTELLIGENCE_API_KEY). As published the list is always empty — useThreads asks for agent \"my-agent\" while the chat runs on \"default\" — and the sidebar has no way to select a thread. The demo corrects both so the feature can be exercised. Checked against a live Intelligence project on 2026-10-27.",
+      },
     ],
   },
   {
