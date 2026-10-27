@@ -19,7 +19,7 @@ A navigable, working test harness for the CopilotKit Mastra integration — each
 
 [Mastra](https://mastra.ai) is a TypeScript agent framework with native AG-UI support, which is what lets a React app drive it with streaming, tool calls, shared state, and generative UI.
 
-This repo covers a **scoped set of 27 doc pages** (§8). Each route implements what its page teaches and shows the exact source that makes it work.
+This repo covers a **scoped set of 29 doc pages** (§8). Each route implements what its page teaches and shows the exact source that makes it work.
 
 **Everything comes from the documentation** — the doc pages and, where a page has one, its demo **Code** tab. Where a page imports code it never publishes, the route says so in a warning panel and §9 records it. A handful of pieces are harness-written and labelled as such in the file and on the route (the two `a2ui-context` helpers, two A2UI runtime routes, the two minimal A2UI agents); everything else that is missing is left missing, and those routes are marked Partial or Broken rather than filled in.
 
@@ -197,6 +197,8 @@ Code on a page is never a re-typed approximation: each page reads real files via
 
 **`/human-in-the-loop/governed-actions`** ⚠️ — The page's `useHumanInTheLoop` variant, live on `myAgent`; the `useInterrupt` variant is reference-only (discrepancy 15). **Try:** `Email the Q3 report to finance@example.com, but get my approval first.` **Pass:** if the model sends verdict `require_approval`, a card with summary, tool, reference, JSON arguments and Approve / Reject appears and the run waits; with `allow`/`deny` the card resolves itself. **Fail:** the agent answers in text without calling `approve_governed_action` — nothing in `myAgent`'s prompt steers it there, so this is model-dependent.
 
+**`/webmcp`** ⚠️ — The `searchOrders` frontend tool registered with `webmcp: { annotations: { readOnlyHint: true } }`, so it is published on `document.modelContext` as well as offered to `myAgent`. Two demos: the React frontend tool beside a chat (`/webmcp/demo-chat`), and the no-agent `CopilotKitCore` sample with no chat (`/webmcp/core/demo-chat`); each has a side panel showing whether `document.modelContext` exists and every `searchOrders` call. **Try (any browser):** `Which of my orders are still open?` **Pass:** the agent calls `searchOrders`, the panel logs `status: open → 2 orders`, and the reply lists them; the panel says `document.modelContext` is not available. **Try (Chrome 149+ with `chrome://flags/#enable-webmcp-testing`):** open the Model Context Tool Inspector extension on either demo and call `searchOrders` with `{ "status": "shipped" }`. **Pass:** the tool is listed with the `status` enum and `readOnlyHint`, the call returns the shipped order, and the panel logs it. **Fail:** the agent answers without calling the tool, or the tool is missing from the inspector while the panel says `document.modelContext` is available.
+
 **`/background-tasks`** — A background tool surfaced as AG-UI activity events. **Try:** `Research the history of the Dutch East India Company`. **Pass:** a short reply plus an activity card that shows "Working…" with a stage line that advances (`Gathering sources (1/4)` → … → `Writing the summary (4/4)`) over roughly six seconds, then flips to `Completed` on its own, with no further input from you. **Fail:** the card stays on "Working…" — open the Inspector and look for an `ACTIVITY_DELTA` after the `ACTIVITY_SNAPSHOT`; if there is none, the agent lost its `memory` and `untilIdle` is inert (discrepancy 7).
 
 ### Shared State
@@ -248,6 +250,7 @@ Code on a page is never a re-typed approximation: each page reads real files via
 | `/mastra/human-in-the-loop/useInterrupt` | `/human-in-the-loop/useInterrupt` | ❌ Broken | Reference-only: the `suspend()` tool is unpublished (13). |
 | `/mastra/human-in-the-loop/headless` | `/human-in-the-loop/headless` | ❌ Broken | Reference-only: same backend gap, plus undefined symbols in snippets (14). |
 | `/mastra/human-in-the-loop/governed-actions` | `/human-in-the-loop/governed-actions` | ⚠️ Partial | HITL variant live; interrupt variant reference-only (15). Not yet run against a live model. |
+| `/mastra/webmcp` | `/webmcp` | ⚠️ Partial | CopilotKit-agent half verified 2026-10-27; browser half needs Chrome 149+ with WebMCP enabled, only checked against a stand-in `document.modelContext`. `searchOrders` not on the page (22). |
 | `/mastra/generative-ui/a2ui/dynamic-schema` | `/generative-ui/a2ui/dynamic-schema` | ⚠️ Partial | Harness-supplied runtime route; needs root zod pinned to 3.25.76 (16). Not yet run against a live model. |
 | `/mastra/generative-ui/a2ui/fixed-schema` | `/generative-ui/a2ui/fixed-schema` | ⚠️ Partial | Harness-written `a2ui-context` helpers + runtime route; root zod pinned to 3.25.76 (16); needs `ai` 7 (17). Not yet run against a live model. |
 | `/mastra/generative-ui/open-generative-ui` | `/generative-ui/open-generative-ui` | ⚠️ Partial | Published code minus the aimock header wrapper. Not yet run against a live model. |
@@ -354,6 +357,26 @@ Also on these pages: the dynamic-schema demo file's header says its route sets `
 *Agent.* The samples render `<CopilotChat />` and `<CopilotThreadsDrawer />` without `agentId`, so they resolve the `default` agent; `myAgent` is registered under that key on the threads runtime.
 *Missing code.* The sidebar sample renders `<YourMainContent />`, which is never defined. It is a stand-in for the host app's own content, so a labelled placeholder fills it.
 *Types.* The threads route has the same `AbstractAgent` type clash as the other v2 runtime routes: `@copilotkit/shared` ships its own `@ag-ui/client`. It runs fine.
+
+*Item 21 was found 2026-10-27 against `@copilotkit/*` 1.80.0, `@ag-ui/mastra` 2.0.1, `@mastra/core` 1.78, with a live Intelligence project.*
+
+**21. Headless Threads: the list queries an agent that does not exist, and nothing can select a thread** — [page](https://docs.copilotkit.ai/mastra/headless-threads)
+*Agent id.* `ThreadSidebar` calls `useThreads({ agentId: "my-agent" })` (so does the pagination snippet), but the page's runtime snippet registers its only agent as `agents: { default: agent }`, and `<CopilotChat threadId={…} />` has no `agentId`, so it runs on `default`. Intelligence files each thread under the agent that ran it, and the runtime does not check that the requested `agentId` is registered: it simply returns that agent's (empty) list. Measured: after a run through `agent/default/run`, `GET /api/copilotkit-threads/threads?agentId=my-agent` returned `{"threads":[]}`, while `agentId=default` returned the new thread (auto-named) alongside the drawer's. As published, the list is always empty; the demo uses `agentId: "default"`.
+*Selection.* `App` renders `<ThreadSidebar onSelectThread={setActiveThreadId} />`, but `ThreadSidebar` declares no props (`TS2322: Property 'onSelectThread' does not exist`) and its rows only have Rename and Archive buttons. Nothing calls `setActiveThreadId`, so `CopilotChat`'s `threadId` stays `undefined` and the "Switch between threads" step cannot be exercised even if rows did appear. The demo adds the prop and a row click.
+*Unused.* `deleteThread` is destructured and never used; ESLint flags it (`no-unused-vars`, warning). Kept as published.
+*Pagination.* The snippet is a hook call plus a JSX fragment ("In your JSX:"). The demo merges both into `ThreadSidebar`.
+*Styling.* The published sidebar is unstyled `<div>`s, so an empty list renders as a blank area. The demo adds layout/styling and an empty-state hint; behaviour is unchanged.
+*Runtime.* The runtime snippet's `identifyUser` calls `verifyAppSession`, which the page never defines. The page also tells apps that already use Intelligence to keep their runtime, so this route reuses `/api/copilotkit-threads` (fixed identity, see 20). `App` also assumes a provider the page never shows; the demo supplies one pointed at that runtime.
+*Not exercised.* The closing "Driving one agent per thread" section (`useAgent({ agentId, runtimeAgentId, threadId })`) is outside the page's steps and has no demo. Its claim that partial combinations do not compile matches `UseAgentProps` in 1.80.0.
+
+*Item 22 was found 2026-10-27 against `@copilotkit/*` 1.80.0.*
+
+**22. WebMCP: `searchOrders` is never defined, `@copilotkit/core` has no install step, and the browser half is unverified here** — [page](https://docs.copilotkit.ai/mastra/webmcp)
+*Missing code.* Both samples (`OrderSearch.tsx` and `webmcp.ts`) call `await searchOrders(status)`, which the page never shows. `src/app/webmcp/search-orders.ts` supplies sample orders and records each call for the demo's side panel. The samples are otherwise unchanged.
+*Install.* The no-agent sample imports `CopilotKitCore` from `@copilotkit/core`, but the page has no install line. It resolves here because `@copilotkit/react-core` 1.80.0 depends on `@copilotkit/core` 1.80.0; it is not listed in `frontend/package.json`.
+*Two demos.* Both samples register a tool named `searchOrders`, and a second registration of the same name fails (CopilotKit logs `WebMCP registration failed for tool 'searchOrders': …`). So the React sample is on `/webmcp/demo-chat` and the no-agent sample on `/webmcp/core/demo-chat`.
+*Verified.* The CopilotKit-agent half works: a run of `myAgent` with `searchOrders` attached produced `TOOL_CALL_START searchOrders` with args `{"status":"open"}`. The browser half was checked in Node against a stand-in `document.modelContext`: CopilotKit registered `searchOrders` with the page's description, a JSON schema with the `status` enum, and `{"readOnlyHint":true}`; calling the registered tool ran the handler with no `agent` in its context (as the page says); a tool without a description was skipped with `Skipping WebMCP registration for tool '…': WebMCP requires a description.`
+*Not verified.* Nothing has been run yet in Chrome 149+ with `chrome://flags/#enable-webmcp-testing`, including the page's "origin-isolated document" requirement, which Chrome's WebMCP page does not explain.
 
 ---
 
@@ -466,7 +489,7 @@ mastra/
 
 **Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps) (not implemented)
 
-**App Control** — [Frontend Tools](https://docs.copilotkit.ai/mastra/frontend-tools) · [Human in the Loop](https://docs.copilotkit.ai/mastra/human-in-the-loop/tool-based) · [useInterrupt](https://docs.copilotkit.ai/mastra/human-in-the-loop/useInterrupt) · [Headless Interrupts](https://docs.copilotkit.ai/mastra/human-in-the-loop/headless) · [Governed Actions](https://docs.copilotkit.ai/mastra/human-in-the-loop/governed-actions) · [Background Tasks](https://docs.copilotkit.ai/mastra/background-tasks)
+**App Control** — [Frontend Tools](https://docs.copilotkit.ai/mastra/frontend-tools) · [Human in the Loop](https://docs.copilotkit.ai/mastra/human-in-the-loop/tool-based) · [useInterrupt](https://docs.copilotkit.ai/mastra/human-in-the-loop/useInterrupt) · [Headless Interrupts](https://docs.copilotkit.ai/mastra/human-in-the-loop/headless) · [Governed Actions](https://docs.copilotkit.ai/mastra/human-in-the-loop/governed-actions) · [WebMCP](https://docs.copilotkit.ai/mastra/webmcp) · [Background Tasks](https://docs.copilotkit.ai/mastra/background-tasks)
 
 **Multi-Agent** — [Sub-Agents](https://docs.copilotkit.ai/mastra/multi-agent/subagents)
 

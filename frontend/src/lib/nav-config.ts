@@ -255,6 +255,17 @@ export const NAV: NavGroup[] = [
           "useHumanInTheLoop variant is live; the useInterrupt variant is reference-only (no published backend). Built from the published code; not yet exercised against a live model in this harness.",
       },
       {
+        path: "/webmcp",
+        hasDemo: true,
+        title: "WebMCP",
+        docPath: "/mastra/webmcp",
+        summary:
+          "A frontend tool also published to document.modelContext, so the CopilotKit agent and a WebMCP browser agent call the same handler.",
+        status: "partial",
+        statusNote:
+          "The CopilotKit-agent half is verified (myAgent calls searchOrders). The browser half needs Chrome 149+ with WebMCP enabled and has only been checked against a stand-in document.modelContext. searchOrders is not defined on the page; sample data fills it.",
+      },
+      {
         path: "/background-tasks",
         hasDemo: true,
         title: "Background Tasks",
