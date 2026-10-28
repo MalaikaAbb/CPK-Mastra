@@ -45,7 +45,7 @@ Mastra  —  in the same process
 OpenAI  (gpt-4o by default)
 ```
 
-Four pages need a runtime configured differently from the main one, so those exist alongside `/api/copilotkit` (all `@copilotkit/runtime/v2` + `createCopilotRuntimeHandler`; single-route unless noted):
+Five pages need a runtime configured differently from the main one, so those exist alongside `/api/copilotkit` (all `@copilotkit/runtime/v2` + `createCopilotRuntimeHandler`; single-route unless noted):
 
 | Endpoint | Config | Used by |
 |---|---|---|
@@ -53,6 +53,7 @@ Four pages need a runtime configured differently from the main one, so those exi
 | `/api/copilotkit-a2ui-fixed-schema` | `a2ui: { injectA2UITool: false }` | A2UI Fixed Schema (harness glue — the page's runtime snippet) |
 | `/api/copilotkit-declarative-gen-ui` | no `a2ui` block (auto-inject) | A2UI Dynamic Schema (harness glue) |
 | `/api/copilotkit-threads/[[...slug]]` | **multi-route**; `intelligence` + `identifyUser` when `CPK_INTELLIGENCE_API_KEY` is set, plain SSE otherwise; `myAgent` as `default` | Threads Drawer (harness glue — the Intelligence quickstart's TypeScript runtime) |
+| `/api/copilotkit-mcp-apps/[[...slug]]` | **multi-route**, two runtimes: `/local` → `mcpApps` `http://localhost:3108/mcp` (the page's), `/live` → `https://mcp.excalidraw.com/mcp`; each `BuiltInAgent` (`openai/gpt-5.4`) as `default`, `InMemoryAgentRunner` | MCP Apps (published; the demo picks the server) |
 
 The demo pages for those routes, and for Sub-Agents, mount their own provider as published. Exactly one Inspector may exist per page (two lit instances loop and can take the machine down), so `src/lib/inspector.ts` makes the root provider stand down on those routes.
 
@@ -183,6 +184,8 @@ Code on a page is never a re-typed approximation: each page reads real files via
 
 **`/generative-ui/a2ui/fixed-schema`** ⚠️ — A fixed flight-card catalog; the agent's own `generate_a2ui` returns the operations container, runtime injection off. **Try:** `Find me a flight from SFO to JFK on United for $289.` **Pass:** a card with SFO → JFK, a United badge, $289 and a Book button that flips to "Booked". **Fail:** no card; React error #31 (`object with keys {path}`) means a binding reached a renderer unresolved (discrepancy 16); `UnsupportedModelVersionError` means `ai` resolved to v6 (discrepancy 17).
 
+**`/generative-ui/mcp-apps`** ✅ — UI served by an MCP server, rendered in the chat when the agent calls that server's tool. The page's own runtime (`BuiltInAgent` + `mcpApps`) with the page's provider and `CopilotSidebar`. The demo has a server switch: **Live server**, the public Excalidraw MCP App (`https://mcp.excalidraw.com/mcp`, needs internet), or **Local server**, the page's `http://localhost:3108/mcp`, which you start in a second terminal with `PORT=3108 npx -y @modelcontextprotocol/server-budget-allocator@2.0.4` (PowerShell: `$env:PORT=3108; npx -y @modelcontextprotocol/server-budget-allocator@2.0.4`; source: [ext-apps](https://github.com/modelcontextprotocol/ext-apps), linked from the page's Example MCP Servers section). **Try (Live):** `Draw a simple diagram: a box labelled Browser with an arrow to a box labelled Server.` **Pass:** the status line says reachable, and a hand-drawn Excalidraw diagram appears inside the chat. **Try (Local):** `Help me allocate a $100K budget`. **Pass:** an interactive budget allocator (sliders, donut chart) appears inside the chat. **Fail:** the status line says reachable but the agent replies in plain text with no embedded app, or the app frame stays blank. "Not reachable" on Local means the local server is not running (discrepancy 23).
+
 **`/generative-ui/open-generative-ui`** ⚠️ — The agent writes HTML/CSS/JS into a sandboxed iframe. **Try (minimal):** `Quicksort visualization`. **Pass:** placeholder lines, then an animated, labelled visualisation builds up in an iframe. **Try (advanced, second demo link on the page):** `Calculator (calls evaluateExpression)`. **Pass:** pressing = shows the host-computed result and the browser console logs `[open-gen-ui/advanced] evaluateExpression`. **Fail:** text only, a blank iframe, or buttons that do nothing.
 
 ### App Control
@@ -251,7 +254,7 @@ Code on a page is never a re-typed approximation: each page reads real files via
 | `/mastra/generative-ui/a2ui/dynamic-schema` | `/generative-ui/a2ui/dynamic-schema` | ⚠️ Partial | Harness-supplied runtime route; needs root zod pinned to 3.25.76 (16). Not yet run against a live model. |
 | `/mastra/generative-ui/a2ui/fixed-schema` | `/generative-ui/a2ui/fixed-schema` | ⚠️ Partial | Harness-written `a2ui-context` helpers + runtime route; root zod pinned to 3.25.76 (16); needs `ai` 7 (17). Not yet run against a live model. |
 | `/mastra/generative-ui/open-generative-ui` | `/generative-ui/open-generative-ui` | ⚠️ Partial | Published code minus the aimock header wrapper. Not yet run against a live model. |
-| `/mastra/generative-ui/mcp-apps` | — | 🚧 Not started | Skipped by decision (2026-10-06). The page shows only a BuiltInAgent + local ext-apps server, no Mastra code. |
+| `/mastra/generative-ui/mcp-apps` | `/generative-ui/mcp-apps` | ✅ Working | Implemented 2026-10-28 (previously skipped). Page's agent is `BuiltInAgent`, no Mastra code. Demo switches between the public Excalidraw MCP App (live, verified: diagram renders in the chat) and the page's `localhost:3108` (local, not yet run with an ext-apps server) (23). |
 | `/mastra/multi-agent/subagents` | `/multi-agent/subagents` | ⚠️ Partial | Delegation runs, but no UI shows it: tool-name mismatch hides cards/banner, and the log's writer is unpublished (18). Not yet run against a live model. |
 | `/mastra/background-tasks` | `/background-tasks` | ✅ Working | |
 | `/mastra/copilot-runtime` | `/copilot-runtime` | ✅ Working | |
@@ -355,6 +358,19 @@ Also on these pages: the dynamic-schema demo file's header says its route sets `
 *Missing code.* The sidebar sample renders `<YourMainContent />`, which is never defined. It is a stand-in for the host app's own content, so a labelled placeholder fills it.
 *Types.* The threads route has the same `AbstractAgent` type clash as the other v2 runtime routes: `@copilotkit/shared` ships its own `@ag-ui/client`. It runs fine.
 
+*Item 23 was found 2026-10-28 against `@copilotkit/*` 1.80.0 and `@modelcontextprotocol/server-budget-allocator` 2.0.4. Items 21 and 22 arrive with the Headless Threads and WebMCP routes.*
+
+**23. MCP Apps: no Mastra code, an unnamed server on an unexplained port, and a silent failure when it is down** — [page](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps)
+*Agent.* Every sample uses CopilotKit's `BuiltInAgent` (`model: "openai/gpt-5.4"`); a callout says the same process works with any agent. Kept as published, so Mastra is not exercised by this route.
+*Server.* The runtime points at `http://localhost:3108/mcp` and the page links the `modelcontextprotocol/ext-apps` repo, but does not say which example to run or how to get it on 3108. The examples are published as `@modelcontextprotocol/server-<name>`; without `--stdio` they serve Streamable HTTP at `/mcp` on `PORT`, default `3001`, bound to `0.0.0.0`. So `PORT=3108 npx -y @modelcontextprotocol/server-budget-allocator@2.0.4` matches the page. To test without running anything locally, the demo can also use the public Excalidraw MCP App server, `https://mcp.excalidraw.com/mcp` (`serverId: "excalidraw"`), the one CopilotKit's showcase uses; its `create_view` tool carries the UI resource `ui://excalidraw/mcp-app.html`. The route builds the page's runtime once per server (`/api/copilotkit-mcp-apps/local` and `/live`), and the demo's switch picks one.
+*File path.* Step 3 runs `touch app/api/copilotkit/route.ts`, but the code is titled `app/api/copilotkit/[[...slug]]/route.ts`. The catch-all is required because `createCopilotRuntimeHandler` here is multi-route (the provider sets `useSingleEndpoint={false}`). This repo serves it at `/api/copilotkit-mcp-apps` so the main `/api/copilotkit` runtime is untouched.
+*Model.* Step 4's callout says the example uses GPT-4o; the code says `openai/gpt-5.4`. Kept as published; it answered with this repo's key on 2026-10-28.
+*Dependencies.* Step 2 installs `@ag-ui/mcp-apps-middleware`, but the main path never imports it; only the alternative `.use(new MCPAppsMiddleware(…))` snippet does. It already comes with `@copilotkit/runtime` 1.80.0, so nothing was installed. The alternative snippet is not exercised.
+*Silent failure.* With nothing listening on the configured URL, a run still finishes normally (`RUN_STARTED` → text → `RUN_FINISHED`) and the agent just has no MCP tools. The demo adds a status line that reports whether the server is reachable.
+*Verified (2026-10-28, Excalidraw server).* `Draw a simple diagram: a box labelled Browser with an arrow to a box labelled Server.` → the agent called `read_me` then `create_view`, both returned results, and the run emitted an `ACTIVITY_SNAPSHOT` with `activityType: "mcp-apps"`, `resourceUri: "ui://excalidraw/mcp-app.html"`, `serverId: "excalidraw"`, which is the event the chat renders as the app.
+The Excalidraw diagram was then confirmed rendering inside the chat in the browser.
+*Not verified.* The page's own local setup (`localhost:3108` with an ext-apps example) has not been run; the local runtime itself answers (plain text, no MCP tools) when nothing is listening.
+
 ---
 
 ## 10. Troubleshooting
@@ -434,6 +450,7 @@ mastra/
         │   ├── api/copilotkit-a2ui-fixed-schema/   # a2ui injectA2UITool:false (glue)
         │   ├── api/copilotkit-declarative-gen-ui/  # a2ui auto-inject (glue)
         │   ├── api/copilotkit-threads/[[...slug]]/ # Intelligence runtime for the Threads Drawer (glue)
+        │   ├── api/copilotkit-mcp-apps/[[...slug]]/ # BuiltInAgent + mcpApps runtime (published)
         │   └── <doc route>/
         │       ├── page.tsx           # notes + exact source (server component)
         │       └── demo-chat/page.tsx # ★ the running feature, chrome-free
@@ -464,7 +481,7 @@ mastra/
 
 **Custom Look and Feel** — [Slots](https://docs.copilotkit.ai/mastra/custom-look-and-feel/slots) † · [Headless UI](https://docs.copilotkit.ai/mastra/custom-look-and-feel/headless-ui) † · [Programmatic Control](https://docs.copilotkit.ai/mastra/programmatic-control) · [Inspector](https://docs.copilotkit.ai/mastra/inspector)
 
-**Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps) (not implemented)
+**Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps)
 
 **App Control** — [Frontend Tools](https://docs.copilotkit.ai/mastra/frontend-tools) · [Human in the Loop](https://docs.copilotkit.ai/mastra/human-in-the-loop/tool-based) · [useInterrupt](https://docs.copilotkit.ai/mastra/human-in-the-loop/useInterrupt) · [Headless Interrupts](https://docs.copilotkit.ai/mastra/human-in-the-loop/headless) · [Governed Actions](https://docs.copilotkit.ai/mastra/human-in-the-loop/governed-actions) · [Background Tasks](https://docs.copilotkit.ai/mastra/background-tasks)
 
