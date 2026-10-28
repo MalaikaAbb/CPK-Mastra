@@ -191,6 +191,17 @@ export const NAV: NavGroup[] = [
         statusNote: "Built from the published code; not yet exercised against a live model in this harness. Runs on two harness-written helpers the page imports but never publishes.",
       },
       {
+        path: "/generative-ui/mcp-apps",
+        hasDemo: true,
+        title: "MCP Apps",
+        docPath: "/mastra/generative-ui/mcp-apps",
+        summary:
+          "Interactive UI served by an MCP server and rendered in the chat when the agent calls that server's tool.",
+        status: "working",
+        statusNote:
+          "The demo switches between the public Excalidraw MCP App (live) and the page's localhost:3108 (local, run it yourself). Live verified 2026-10-28: the Excalidraw diagram renders in the chat. Local option not yet run with an ext-apps server. The page's agent is BuiltInAgent — no Mastra code.",
+      },
+      {
         path: "/generative-ui/open-generative-ui",
         hasDemo: true,
         title: "Open Generative UI",
