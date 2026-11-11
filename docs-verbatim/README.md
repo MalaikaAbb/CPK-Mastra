@@ -100,3 +100,12 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 | --- | --- | --- |
 | `Cart` type, `cart.addItem` | — | 02, 04 |
 | `ProductCard` / `CheckoutForm` wiring into one `shopUI` | — | 01, 03, 05, 08, 09 (fragments) |
+
+## generative-ui/components/theming — `/mastra/generative-ui/components/theming`
+
+React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.tsx` Provider theme, `02.ts` GenerativeUITheme, `03.html` Dark class, `04.tsx` Color-scheme script, `05.tsx` Theme per mode, `06.tsx` Theme map, `07.css` CSS variables.
+All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+
+| Symbol | From | Used by |
+| --- | --- | --- |
+| — | — | fragments only |
