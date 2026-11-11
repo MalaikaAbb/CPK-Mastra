@@ -191,6 +191,16 @@ export const NAV: NavGroup[] = [
         statusNote: "Built from the published code; not yet exercised against a live model in this harness. Runs on two harness-written helpers the page imports but never publishes.",
       },
       {
+        path: "/generative-ui/components",
+        title: "Components and surfaces",
+        docPath: "/mastra/generative-ui/components",
+        summary:
+          "The agent renders catalog components (the 69-component standard catalog) in the chat via a render_ui tool the runtime adds when the provider sends a catalog.",
+        status: "broken",
+        statusNote:
+          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+      },
+      {
         path: "/generative-ui/open-generative-ui",
         hasDemo: true,
         title: "Open Generative UI",

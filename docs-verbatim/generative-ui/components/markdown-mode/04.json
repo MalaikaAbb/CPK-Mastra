@@ -1,0 +1,23 @@
+{
+  "1.0": {
+    "supportedCatalogIds": ["copilotkit/standard@1"],
+    "inlineCatalogs": [
+      {
+        "catalogId": "copilotkit/standard@1",
+        "protocolVersion": "1.0",
+        "components": { "Card": { "props": { "type": "object" } } },
+        "functions": {},
+        "instructions": "You can show interactive UI in your reply ..."
+      }
+    ]
+  },
+  "metadata": {
+    "extensions": {
+      "copilotkit_format": 3,
+      "copilotkit_transport": "markdown",
+      "copilotkit_targets": [{ "id": "chat", "kind": "chat" }],
+      "copilotkit_surfaces": {},
+      "copilotkit_contextSent": false
+    }
+  }
+}
