@@ -201,6 +201,16 @@ export const NAV: NavGroup[] = [
           "Reference-only: the agent/prompt, runtime route, provider page, types and the registry's components are never printed, and the json-render packages aren't installed here.",
       },
       {
+        path: "/generative-ui/hashbrown",
+        title: "Hashbrown",
+        docPath: "/mastra/generative-ui/hashbrown",
+        summary:
+          "A streamed { ui: [...] } envelope parsed progressively by Hashbrown and rendered through a UI kit of charts and cards.",
+        status: "broken",
+        statusNote:
+          "Reference-only: the agent/prompt, runtime route, charts, metric card, types and suggestions are never printed, and the Hashbrown packages aren't installed here.",
+      },
+      {
         path: "/generative-ui/open-generative-ui",
         hasDemo: true,
         title: "Open Generative UI",

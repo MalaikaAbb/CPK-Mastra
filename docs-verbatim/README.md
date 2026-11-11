@@ -68,3 +68,21 @@ agent output. Referenced, never published:
 Packages the code needs and this repo does not install: `@json-render/react`,
 `@json-render/core` (0.18.0 per the page) and a `zod4` alias for zod 4 (the
 root pin is zod 3.25.76 for A2UI).
+
+## generative-ui/hashbrown — `/mastra/generative-ui/hashbrown`
+
+Page snippets only (no demo Code tab): `01` page.tsx, `02` chat.tsx, `03`
+hashbrown-renderer.tsx, `04` example assistant message. Referenced, never
+published:
+
+| Symbol | Imported from | Used by |
+| --- | --- | --- |
+| the agent + prompt streaming `{ "ui": [...] }` (agent id `declarative-hashbrown-demo`; 03's comment names `src/agents/byoc_hashbrown_agent.py`) | — | the whole flow |
+| `/api/copilotkit-declarative-hashbrown` | — | 01 (`runtimeUrl`) |
+| `PieChart`, `BarChart` | `./charts/pie-chart`, `./charts/bar-chart` | 03 |
+| `MetricCard` | `./metric-card` | 03 |
+| `SalesStage` | `./types` | 03 |
+| `useByocHashbrownSuggestions` | `./suggestions` | 02 |
+
+Packages needed and not installed: `@hashbrownai/core`, `@hashbrownai/react`
+(page: `0.5.0-beta.4`; 03 imports `prompt` from core, which 0.8 removed).
