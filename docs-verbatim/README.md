@@ -49,3 +49,22 @@ The `useHumanInTheLoop` variant **does** run, at
   `metadata.mastra.suspendPayload` rather than `metadata.action`.
 - `handle-approval.ts` is the resume-side check. It calls `executeSideEffect`,
   which is never defined.
+
+## generative-ui/json-render — `/mastra/generative-ui/json-render`
+
+Page snippets only (the page has no demo Code tab): `01` chat.tsx, `02`
+json-render-renderer.tsx, `03` catalog.ts, `04` registry.tsx, `05` example
+agent output. Referenced, never published:
+
+| Symbol | Imported from | Used by |
+| --- | --- | --- |
+| the Mastra agent + its "answer in plain JSON" prompt (agent id `byoc_json_render`) | — | the whole flow; nothing emits a spec without it |
+| runtime route, `page.tsx` (`<CopilotKit>`) | — | the demo |
+| `JsonRenderSpec` | `./types` | 02 |
+| `MetricCard`, `MetricCardComponentProps` | `./metric-card` | 04 |
+| `BarChart` / `PieChart` (+ `…ComponentProps`) | `./charts/bar-chart`, `./charts/pie-chart` | 04 |
+| `useByocJsonRenderSuggestions` | `./suggestions` | 01 |
+
+Packages the code needs and this repo does not install: `@json-render/react`,
+`@json-render/core` (0.18.0 per the page) and a `zod4` alias for zod 4 (the
+root pin is zod 3.25.76 for A2UI).
