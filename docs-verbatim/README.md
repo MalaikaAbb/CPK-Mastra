@@ -90,3 +90,13 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 | Symbol | From | Used by |
 | --- | --- | --- |
 | `ProductCard`, `productSchema` | — | 02 |
+
+## generative-ui/components/state-and-actions — `/mastra/generative-ui/components/state-and-actions`
+
+React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.tsx` State + bind, `02.tsx` useGenerativeUIState, `03.tsx` Functions + events, `04.tsx` useGenerativeUIFunction, `05.tsx` Event result in a component, `06.ts` Who may call a function, `07.ts` Events to the agent, `08.tsx` Writable prop, `09.tsx` Keep what the user types.
+All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+
+| Symbol | From | Used by |
+| --- | --- | --- |
+| `Cart` type, `cart.addItem` | — | 02, 04 |
+| `ProductCard` / `CheckoutForm` wiring into one `shopUI` | — | 01, 03, 05, 08, 09 (fragments) |

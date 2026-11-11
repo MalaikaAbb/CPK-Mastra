@@ -231,6 +231,16 @@ export const NAV: NavGroup[] = [
           "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
       },
       {
+        path: "/generative-ui/components/state-and-actions",
+        title: "State and actions",
+        docPath: "/mastra/generative-ui/components/state-and-actions",
+        summary:
+          "Binding live app state into generated components, running app functions on clicks, sending events to the agent and keeping user input.",
+        status: "broken",
+        statusNote:
+          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+      },
+      {
         path: "/generative-ui/open-generative-ui",
         hasDemo: true,
         title: "Open Generative UI",
