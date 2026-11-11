@@ -189,6 +189,8 @@ Code on a page is never a re-typed approximation: each page reads real files via
 
 **`/frontend-tools`** — `sayHello` executing in the browser. **Try:** `Say hello to Malaika`. **Pass:** a browser alert appears, then the agent confirms.
 
+**`/webmcp`** ❌ — The page's `OrderSearch` frontend tool with `webmcp: { annotations: { readOnlyHint: true } }`, mounted inside the root provider next to a `myAgent` chat. **Try:** in Chrome 149+ with `chrome://flags/#enable-webmcp-testing`, open the demo and check `document.modelContext` / the Model Context Tool Inspector; also ask the chat `Find my shipped orders.` **Pass (as published):** `searchOrders` is listed with its `status` enum and read-only hint, and every call fails with `searchOrders is not defined` (discrepancy 28). In other browsers: nothing is registered, no error. **Fail:** the tool is missing from the inspector with WebMCP enabled, or the page errors on load.
+
 **`/human-in-the-loop/tool-based`** — `offerOptions`. **Try:** `Can you show me two good options for a restaurant name?` **Pass:** two buttons render and **nothing further streams** until you click one.
 
 **`/human-in-the-loop/useInterrupt`** ❌ *reference-only* — No live demo: the backend `suspend()` tool is never published (discrepancy 13). **Pass:** the page shows the published agent, demo page, time-picker card and snippets, with the gap panel above them.
@@ -240,6 +242,7 @@ Code on a page is never a re-typed approximation: each page reads real files via
 | `/mastra/generative-ui/tool-rendering` | `/generative-ui/tool-rendering` | ✅ Working | |
 | `/mastra/generative-ui/state-rendering` | `/generative-ui/state-rendering` | ✅ Working | |
 | `/mastra/frontend-tools` | `/frontend-tools` | ✅ Working | |
+| `/mastra/webmcp` | `/webmcp` | ❌ Broken | Registration as published; the handler's `searchOrders` is never defined, so every call throws (28). Needs Chrome 149+ WebMCP. Not yet run. |
 | `/mastra/shared-state/in-app-agent-read` | `/shared-state/in-app-agent-read` | ✅ Working | |
 | `/mastra/shared-state/in-app-agent-write` | `/shared-state/in-app-agent-write` | ✅ Working | |
 | `/mastra/shared-state/predictive-state-updates` | `/shared-state/predictive-state-updates` | ✅ Working | Re-checked 2026-10-06: page unchanged since snapshot. |
@@ -355,6 +358,9 @@ Also on these pages: the dynamic-schema demo file's header says its route sets `
 *Missing code.* The sidebar sample renders `<YourMainContent />`, which is never defined. It is a stand-in for the host app's own content, so a labelled placeholder fills it.
 *Types.* The threads route has the same `AbstractAgent` type clash as the other v2 runtime routes: `@copilotkit/shared` ships its own `@ag-ui/client`. It runs fine.
 
+**28. WebMCP: the handler calls a function the page never defines** — [page](https://docs.copilotkit.ai/mastra/webmcp)
+Both snippets' handlers do `await searchOrders(status)`; `searchOrders` is neither defined nor imported. Kept as published behind `@ts-expect-error` in `frontend/src/app/webmcp/OrderSearch.tsx`, with no stub, so the tool registers (and can be discovered over WebMCP) but every call throws a `ReferenceError`. The core-only variant (`new CopilotKitCore({ tools })` from `@copilotkit/core`) is kept in `docs-verbatim/webmcp/page-snippets/02.ts`, not compiled, to avoid a second module-level core beside the app provider.
+
 ---
 
 ## 10. Troubleshooting
@@ -466,7 +472,7 @@ mastra/
 
 **Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps) (not implemented)
 
-**App Control** — [Frontend Tools](https://docs.copilotkit.ai/mastra/frontend-tools) · [Human in the Loop](https://docs.copilotkit.ai/mastra/human-in-the-loop/tool-based) · [useInterrupt](https://docs.copilotkit.ai/mastra/human-in-the-loop/useInterrupt) · [Headless Interrupts](https://docs.copilotkit.ai/mastra/human-in-the-loop/headless) · [Governed Actions](https://docs.copilotkit.ai/mastra/human-in-the-loop/governed-actions) · [Background Tasks](https://docs.copilotkit.ai/mastra/background-tasks)
+**App Control** — [Frontend Tools](https://docs.copilotkit.ai/mastra/frontend-tools) · [WebMCP](https://docs.copilotkit.ai/mastra/webmcp) · [Human in the Loop](https://docs.copilotkit.ai/mastra/human-in-the-loop/tool-based) · [useInterrupt](https://docs.copilotkit.ai/mastra/human-in-the-loop/useInterrupt) · [Headless Interrupts](https://docs.copilotkit.ai/mastra/human-in-the-loop/headless) · [Governed Actions](https://docs.copilotkit.ai/mastra/human-in-the-loop/governed-actions) · [Background Tasks](https://docs.copilotkit.ai/mastra/background-tasks)
 
 **Multi-Agent** — [Sub-Agents](https://docs.copilotkit.ai/mastra/multi-agent/subagents)
 

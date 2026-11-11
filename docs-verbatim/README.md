@@ -49,3 +49,10 @@ The `useHumanInTheLoop` variant **does** run, at
   `metadata.mastra.suspendPayload` rather than `metadata.action`.
 - `handle-approval.ts` is the resume-side check. It calls `executeSideEffect`,
   which is never defined.
+
+## webmcp — `/mastra/webmcp`
+
+`page-snippets/02.ts` is the "WebMCP only, with no agent" variant: a module-level
+`new CopilotKitCore({ tools: [...] })`. Not compiled (it would mount a second core
+beside the app provider). Referenced, never defined: `searchOrders` (also in the
+React snippet, which is live with a `@ts-expect-error`).

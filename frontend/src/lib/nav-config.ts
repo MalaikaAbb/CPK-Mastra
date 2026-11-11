@@ -215,6 +215,17 @@ export const NAV: NavGroup[] = [
         status: "working",
       },
       {
+        path: "/webmcp",
+        hasDemo: true,
+        title: "WebMCP",
+        docPath: "/mastra/webmcp",
+        summary:
+          "A frontend tool also published to document.modelContext so WebMCP browser agents can discover and call it in the page.",
+        status: "broken",
+        statusNote:
+          "The published handler calls searchOrders, which the page never defines; registration works, every call throws. Needs Chrome 149+ with WebMCP enabled to see the browser side. Not yet run.",
+      },
+      {
         path: "/human-in-the-loop/tool-based",
         hasDemo: true,
         title: "Human in the Loop",
