@@ -51,6 +51,7 @@ Four pages need a runtime configured differently from the main one, so those exi
 |---|---|---|
 | `/api/copilotkit-ogui` | `openGenerativeUI: { agents: [...] }` | Open Generative UI (published) |
 | `/api/copilotkit-a2ui-fixed-schema` | `a2ui: { injectA2UITool: false }` | A2UI Fixed Schema (harness glue — the page's runtime snippet) |
+| `/api/copilotkit-a2ui` | `a2ui: {}`, single-route, `default` = `myAgent` | A2UI overview (the page's runtime snippet) |
 | `/api/copilotkit-declarative-gen-ui` | no `a2ui` block (auto-inject) | A2UI Dynamic Schema (harness glue) |
 | `/api/copilotkit-threads/[[...slug]]` | **multi-route**; `intelligence` + `identifyUser` when `CPK_INTELLIGENCE_API_KEY` is set, plain SSE otherwise; `myAgent` as `default` | Threads Drawer (harness glue — the Intelligence quickstart's TypeScript runtime) |
 
@@ -179,6 +180,8 @@ Code on a page is never a re-typed approximation: each page reads real files via
 
 **`/generative-ui/state-rendering`** — `searches` working memory. **Try:** `Add a search for the tallest mountains`, then another. **Pass:** items accumulate in the left pane.
 
+**`/generative-ui/a2ui`** ⚠️ — The overview's two switches: `a2ui: {}` on a dedicated runtime (`/api/copilotkit-a2ui`) and an empty custom theme on the provider, around the Quickstart agent. **Try:** `Show me a contact card for Ada Lovelace with an email button.` **Pass:** the chat replies; a rendered surface means `a2ui: {}` supplied a tool by itself, plain text means it did not (the page's agent emits no A2UI) — note which (discrepancy 25). **Fail:** the request errors, or raw A2UI JSON appears as text.
+
 **`/generative-ui/a2ui/dynamic-schema`** ⚠️ — A component catalog on the provider; the runtime injects `generate_a2ui` and a second model call designs the whole surface. **Try:** `Show me my sales dashboard for this quarter.` **Pass:** a progress indicator, then a surface built from Metric / DataTable / Pie or Bar chart inside Cards. **Fail:** plain text, an empty surface, or raw operations JSON.
 
 **`/generative-ui/a2ui/fixed-schema`** ⚠️ — A fixed flight-card catalog; the agent's own `generate_a2ui` returns the operations container, runtime injection off. **Try:** `Find me a flight from SFO to JFK on United for $289.` **Pass:** a card with SFO → JFK, a United badge, $289 and a Book button that flips to "Booked". **Fail:** no card; React error #31 (`object with keys {path}`) means a binding reached a renderer unresolved (discrepancy 16); `UnsupportedModelVersionError` means `ai` resolved to v6 (discrepancy 17).
@@ -248,6 +251,7 @@ Code on a page is never a re-typed approximation: each page reads real files via
 | `/mastra/human-in-the-loop/useInterrupt` | `/human-in-the-loop/useInterrupt` | ❌ Broken | Reference-only: the `suspend()` tool is unpublished (13). |
 | `/mastra/human-in-the-loop/headless` | `/human-in-the-loop/headless` | ❌ Broken | Reference-only: same backend gap, plus undefined symbols in snippets (14). |
 | `/mastra/human-in-the-loop/governed-actions` | `/human-in-the-loop/governed-actions` | ⚠️ Partial | HITL variant live; interrupt variant reference-only (15). Not yet run against a live model. |
+| `/mastra/generative-ui/a2ui` | `/generative-ui/a2ui` | ⚠️ Partial | Page's undefined `myAgent` swapped for the Quickstart agent on a dedicated route; whether anything renders is unverified (25). |
 | `/mastra/generative-ui/a2ui/dynamic-schema` | `/generative-ui/a2ui/dynamic-schema` | ⚠️ Partial | Harness-supplied runtime route; needs root zod pinned to 3.25.76 (16). Not yet run against a live model. |
 | `/mastra/generative-ui/a2ui/fixed-schema` | `/generative-ui/a2ui/fixed-schema` | ⚠️ Partial | Harness-written `a2ui-context` helpers + runtime route; root zod pinned to 3.25.76 (16); needs `ai` 7 (17). Not yet run against a live model. |
 | `/mastra/generative-ui/open-generative-ui` | `/generative-ui/open-generative-ui` | ⚠️ Partial | Published code minus the aimock header wrapper. Not yet run against a live model. |
@@ -354,6 +358,9 @@ Also on these pages: the dynamic-schema demo file's header says its route sets `
 *Agent.* The samples render `<CopilotChat />` and `<CopilotThreadsDrawer />` without `agentId`, so they resolve the `default` agent; `myAgent` is registered under that key on the threads runtime.
 *Missing code.* The sidebar sample renders `<YourMainContent />`, which is never defined. It is a stand-in for the host app's own content, so a labelled placeholder fills it.
 *Types.* The threads route has the same `AbstractAgent` type clash as the other v2 runtime routes: `@copilotkit/shared` ships its own `@ag-ui/client`. It runs fine.
+
+**25. A2UI overview: the runtime snippet's agent is undefined and emits no A2UI** — [page](https://docs.copilotkit.ai/mastra/generative-ui/a2ui)
+The Backend snippet registers `agents: { default: myAgent }` without defining `myAgent`, then says any A2UI output from the agent renders automatically. This repo uses its Quickstart Mastra agent for `myAgent` (no tools) on `/api/copilotkit-a2ui` (the snippet's `/api/copilotkit` is this repo's shared runtime). Nothing on the page makes that agent produce A2UI, so a surface appears only if `a2ui: {}` gives it a tool by itself — unverified here. The theme snippet's `myCustomTheme: A2UITheme = {}` is kept as published.
 
 ---
 
@@ -464,7 +471,7 @@ mastra/
 
 **Custom Look and Feel** — [Slots](https://docs.copilotkit.ai/mastra/custom-look-and-feel/slots) † · [Headless UI](https://docs.copilotkit.ai/mastra/custom-look-and-feel/headless-ui) † · [Programmatic Control](https://docs.copilotkit.ai/mastra/programmatic-control) · [Inspector](https://docs.copilotkit.ai/mastra/inspector)
 
-**Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps) (not implemented)
+**Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI](https://docs.copilotkit.ai/mastra/generative-ui/a2ui) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps) (not implemented)
 
 **App Control** — [Frontend Tools](https://docs.copilotkit.ai/mastra/frontend-tools) · [Human in the Loop](https://docs.copilotkit.ai/mastra/human-in-the-loop/tool-based) · [useInterrupt](https://docs.copilotkit.ai/mastra/human-in-the-loop/useInterrupt) · [Headless Interrupts](https://docs.copilotkit.ai/mastra/human-in-the-loop/headless) · [Governed Actions](https://docs.copilotkit.ai/mastra/human-in-the-loop/governed-actions) · [Background Tasks](https://docs.copilotkit.ai/mastra/background-tasks)
 
