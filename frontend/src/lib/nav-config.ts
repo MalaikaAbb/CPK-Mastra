@@ -211,6 +211,16 @@ export const NAV: NavGroup[] = [
           "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
       },
       {
+        path: "/generative-ui/components/catalogs",
+        title: "Catalogs",
+        docPath: "/mastra/generative-ui/components/catalogs",
+        summary:
+          "Declaring the agent's component vocabulary with createGenerativeUI: typed props, schema libraries, combining catalogs and exporting an A2UI catalog.",
+        status: "broken",
+        statusNote:
+          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+      },
+      {
         path: "/generative-ui/open-generative-ui",
         hasDemo: true,
         title: "Open Generative UI",

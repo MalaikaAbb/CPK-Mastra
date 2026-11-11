@@ -69,3 +69,15 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 | --- | --- | --- |
 | `Product`, `ProductRow`, `product` | — | 01, 05 |
 | `shopUI` | `./catalog` (Catalogs page) | 01, 02, 06 |
+
+## generative-ui/components/catalogs — `/mastra/generative-ui/components/catalogs`
+
+React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.tsx` app/catalog.tsx, `02.tsx` Provider, `03.tsx` Typed props, `04.ts` zod, `05.ts` Valibot, `06.ts` Combine catalogs, `07.ts` Export for A2UI tools, `08.tsx` Positional parameter order.
+All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+
+| Symbol | From | Used by |
+| --- | --- | --- |
+| `cartUI`, `Hero` | — | 06 |
+| `Panel` | — | 08 |
+| `fs` (Node) | — | 07 |
+| `valibot`, `@valibot/to-json-schema` | packages | 05 |
