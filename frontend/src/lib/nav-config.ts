@@ -201,6 +201,16 @@ export const NAV: NavGroup[] = [
           "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
       },
       {
+        path: "/generative-ui/components/surfaces",
+        title: "Surfaces",
+        docPath: "/mastra/generative-ui/components/surfaces",
+        summary:
+          "Named GenerativeUISurface areas on the page that the agent can fill from the chat, with component limits, scrolling, per-item targets and error boundaries.",
+        status: "broken",
+        statusNote:
+          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+      },
+      {
         path: "/generative-ui/open-generative-ui",
         hasDemo: true,
         title: "Open Generative UI",

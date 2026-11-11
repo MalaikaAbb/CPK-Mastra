@@ -59,3 +59,13 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 | --- | --- | --- |
 | TanStack `BuiltInAgent` + `convertInputToTanStackAI` (03) | `@copilotkit/runtime/v2`, `@tanstack/ai*` | would be swapped for a Mastra agent with the snippet's prompt (framework-own rule) |
 | `@tanstack/ai`, `@tanstack/ai-openai` | install line (01) | not installed; not needed once swapped |
+
+## generative-ui/components/surfaces — `/mastra/generative-ui/components/surfaces`
+
+React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.tsx` Page target, `02.tsx` Limit the components, `03.tsx` Scroll, `04.css` Scroll margin, `05.tsx` One target per item, `06.tsx` Error boundary.
+All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+
+| Symbol | From | Used by |
+| --- | --- | --- |
+| `Product`, `ProductRow`, `product` | — | 01, 05 |
+| `shopUI` | `./catalog` (Catalogs page) | 01, 02, 06 |
