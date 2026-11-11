@@ -188,7 +188,7 @@ export const NAV: NavGroup[] = [
         summary:
           "A fixed flight-card catalog rendered from an agent-owned generate_a2ui tool, with runtime injection turned off.",
         status: "partial",
-        statusNote: "Built from the published code; not yet exercised against a live model in this harness. Runs on two harness-written helpers the page imports but never publishes.",
+        statusNote: "Built from the published code; not yet exercised against a live model in this harness. The runtime route is harness glue; the a2ui-context helpers are now published.",
       },
       {
         path: "/generative-ui/open-generative-ui",

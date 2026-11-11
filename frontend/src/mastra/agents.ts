@@ -271,7 +271,7 @@ export const a2uiFixedSchemaAgent = new Agent({
   id: "a2ui-fixed-schema-agent",
   name: "A2UI Fixed Schema Agent",
   tools: { searchFlightsA2uiTool },
-  model: openai("gpt-5-mini"),
+  model: openai("gpt-6-luna"),
   instructions: "You are a helpful assistant.",
 });
 // #endregion
