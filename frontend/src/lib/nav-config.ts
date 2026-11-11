@@ -200,6 +200,17 @@ export const NAV: NavGroup[] = [
         status: "partial",
         statusNote: "Built from the published code; not yet exercised against a live model in this harness.",
       },
+      {
+        path: "/generative-ui/mcp-apps",
+        hasDemo: true,
+        title: "MCP Apps",
+        docPath: "/mastra/generative-ui/mcp-apps",
+        summary:
+          "Interactive iframes served by an MCP server, rendered in chat through the runtime's mcpApps option.",
+        status: "partial",
+        statusNote:
+          "Runtime as published with a Mastra agent in place of the page's BuiltInAgent; needs an external ext-apps MCP server on :3108. Not yet run.",
+      },
     ],
   },
   {

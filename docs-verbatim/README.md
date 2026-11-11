@@ -49,3 +49,10 @@ The `useHumanInTheLoop` variant **does** run, at
   `metadata.mastra.suspendPayload` rather than `metadata.action`.
 - `handle-approval.ts` is the resume-side check. It calls `executeSideEffect`,
   which is never defined.
+
+## generative-ui/mcp-apps — `/mastra/generative-ui/mcp-apps`
+
+Only the per-agent alternative (`page-snippets/06.ts`, `.use(new MCPAppsMiddleware(...))`
+on a `BuiltInAgent`) is kept here: it needs `@ag-ui/mcp-apps-middleware`, which
+this repo does not install, and builds a `BuiltInAgent`. The page's main runtime,
+provider and page are live in `frontend/` (Mastra agent swapped in).
