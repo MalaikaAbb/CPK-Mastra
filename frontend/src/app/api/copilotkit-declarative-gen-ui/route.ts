@@ -5,11 +5,11 @@
 // the page or in its demo Code tab. This file supplies it with the handler
 // shape of the published `api/copilotkit-ogui/route.ts`.
 //
-// The `a2ui` block follows the page's "Mastra in the same process" prose: the
-// agent owns `generate_a2ui`, so injection is off, and `defaultCatalogId` is
-// pinned to the catalog the demo page registers. The page describes this route
-// but prints no code for it; the option names match its printed separate-
-// process `registerCopilotKit` snippet.
+// PROSE-ONLY CONFIG: the page describes (but prints no code for) a same-process
+// route that sets `injectA2UITool: false` and pins `defaultCatalogId`, because
+// "its agent already supplies its own generate_a2ui". That agent is not
+// printed either, and is not filled in here, so this route has no A2UI tool
+// at all and renders nothing. Broken by design until the page prints the agent.
 
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
