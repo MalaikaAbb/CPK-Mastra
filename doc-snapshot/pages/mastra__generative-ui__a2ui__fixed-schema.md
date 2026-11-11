@@ -5,6 +5,52 @@
 
 <!-- interactive demo: a2ui-fixed-schema -->
 
+```typescript
+// src/mastra/tools/a2ui-context.ts
+/**
+ * Server-side read of the A2UI schema context the `@ag-ui/mastra` bridge
+ * forwards onto Mastra's request context.
+ *
+ * The bridge does `requestContext.set("ag-ui", { context })` with
+ * `RunAgentInput.context`, which carries the catalog schema + A2UI generation
+ * guidelines the middleware injected. The dynamic `generate_a2ui` tool must
+ * ground its inner `render_a2ui` subagent on this — the outer model leaves the
+ * tool's `contextEntries` arg empty, so without reading it here the render runs
+ * with no catalog and produces invalid/misnamed components (no surface renders;
+ * varies run to run; masked under aimock). Mirrors `readAgUiContext` in
+ * `@ag-ui/mastra`'s `getA2UITools`. Degrades to `[]` for any unexpected shape.
+ */
+export function readForwardedA2uiContext(
+  executionContext: unknown,
+): Array<Record<string, unknown>> {
+  const requestContext = (
+    executionContext as { requestContext?: { get?: (key: string) => unknown } }
+  )?.requestContext;
+  const entry =
+    typeof requestContext?.get === "function"
+      ? requestContext.get("ag-ui")
+      : undefined;
+  const context = (entry as { context?: unknown } | undefined)?.context;
+  return Array.isArray(context)
+    ? (context as Array<Record<string, unknown>>)
+    : [];
+}
+
+/**
+ * Flatten forwarded context entries into the system prompt for the inner
+ * `render_a2ui` call. Entries without a non-empty string `value` are dropped,
+ * so an empty (ungrounded) prompt is `""` rather than a string of blanks.
+ */
+export function systemPromptFrom(
+  contextEntries: Array<Record<string, unknown>> | undefined,
+): string {
+  return (contextEntries ?? [])
+    .map((entry) => entry?.value)
+    .filter((value): value is string => typeof value === "string" && !!value)
+    .join("\n\n");
+}
+```
+
 
 In the fixed-schema approach, you design the UI schema once (by hand,
 or using the [A2UI Composer](https://a2ui-composer.ag-ui.com/)) and
@@ -379,7 +425,8 @@ import { openai } from "@/mastra/_header_forwarding";
 // Reads the catalog schema + generation guidelines the AG-UI bridge forwards
 // onto Mastra's request context, and flattens them into the inner call's system
 // prompt. In your own app, hand the inner call whatever description of your
-// catalog you want it to render against.
+// catalog you want it to render against. Copy the required a2ui-context.ts
+// companion from the example's Code tab when using this implementation.
 import { readForwardedA2uiContext, systemPromptFrom } from "./a2ui-context";
 
 /** Catalog the surface is pinned to when the model omits `catalogId`. */
@@ -490,7 +537,7 @@ export const generateA2uiTool = createTool({
     );
 
     const result = await generateText({
-      model: openai("gpt-5-mini"),
+      model: openai("gpt-6-luna"),
       system: systemPrompt,
       messages: messages.map((m) => ({
         role: toRole(m.role),

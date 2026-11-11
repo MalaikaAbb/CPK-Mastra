@@ -82,7 +82,7 @@ export const interruptAgent = new Agent({
   id: "interrupt-agent",
   name: "Interrupt Agent",
   tools: { schedule_meeting: scheduleMeetingInterruptTool },
-  model: openai("gpt-5-mini"),
+  model: openai("gpt-6-luna"),
   instructions: `You are a scheduling assistant. Whenever the user asks you to book a call or schedule a meeting, you MUST call the \`schedule_meeting\` tool. Pass a short \`topic\` describing the purpose of the meeting and, if known, an \`attendee\` describing who the meeting is with.
 
 The \`schedule_meeting\` tool surfaces an interactive time-picker to the user and pauses until they pick a slot (or cancel), then returns their selection to you. After it returns, briefly confirm whether the meeting was scheduled and at what time, or note that the user cancelled. Do NOT ask for approval yourself — always call the tool and let the picker handle the decision.
