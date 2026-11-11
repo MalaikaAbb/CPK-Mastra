@@ -5,11 +5,11 @@
 // the page or in its demo Code tab. This file supplies it with the handler
 // shape of the published `api/copilotkit-ogui/route.ts`.
 //
-// Deliberately NO `a2ui` block: per the page's default path, passing a catalog
-// to the provider auto-enables A2UI and injects `generate_a2ui`, "so the
-// runtime needs no `a2ui` block". (The demo page's own header comment claims
-// this route sets `injectA2UITool: false` with a backend-owned tool — that is
-// the opt-out path, and contradicts the page prose; see README §9.)
+// The `a2ui` block follows the page's "Mastra in the same process" prose: the
+// agent owns `generate_a2ui`, so injection is off, and `defaultCatalogId` is
+// pinned to the catalog the demo page registers. The page describes this route
+// but prints no code for it; the option names match its printed separate-
+// process `registerCopilotKit` snippet.
 
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -32,6 +32,10 @@ if (!agent) {
 
 const runtime = new CopilotRuntime({
   agents: { "declarative-gen-ui": agent },
+  a2ui: {
+    injectA2UITool: false,
+    defaultCatalogId: "declarative-gen-ui-catalog",
+  },
 });
 
 export const POST = async (req: NextRequest) => {

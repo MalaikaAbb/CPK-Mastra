@@ -253,12 +253,16 @@ export const WORKING_MEMORY_DB_URL =
 // whose other tools depend on the unpublished `@copilotkit/showcase-shared-tools`.
 // These two agents carry only that agent's published model + instructions.
 //
-// Dynamic schema follows the page's default path: no A2UI tool on the agent —
-// the provider's catalog makes the runtime auto-inject `generate_a2ui`.
+// Dynamic schema: the page's "Mastra in the same process" section says the
+// demo's agent supplies its own `generate_a2ui` (so the route turns injection
+// off). The page prints no agent for it; the key + tool come from the
+// showcase `weatherAgent` (`generate_a2ui: generateA2uiTool`, Code tab
+// agents/index.ts), the tool itself from the Fixed Schema page.
 export const declarativeGenUiAgent = new Agent({
   id: "declarative-gen-ui-agent",
   name: "Declarative Gen UI Agent",
-  model: openai("gpt-5-mini"),
+  tools: { generate_a2ui: generateA2uiTool },
+  model: openai("gpt-6-luna"),
   instructions: "You are a helpful assistant.",
 });
 

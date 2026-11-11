@@ -178,7 +178,7 @@ export const NAV: NavGroup[] = [
         summary:
           "A client-side component catalog the runtime hands to an auto-injected generate_a2ui tool, which designs the whole surface per request.",
         status: "partial",
-        statusNote: "Built from the published code; not yet exercised against a live model in this harness. Needs a harness-supplied runtime route (unpublished).",
+        statusNote: "Built from the published code; not yet exercised against a live model in this harness. Needs a harness-supplied runtime route and agent tool wiring (described on the page, not printed).",
       },
       {
         path: "/generative-ui/a2ui/fixed-schema",
