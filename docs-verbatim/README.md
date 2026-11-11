@@ -109,3 +109,12 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 | Symbol | From | Used by |
 | --- | --- | --- |
 | — | — | fragments only |
+
+## generative-ui/components/transports — `/mastra/generative-ui/components/transports`
+
+React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.tsx` Tool transport, `02.ts` Runtime, `03.tsx` Markdown transport, `04.tsx` Only some agents.
+All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+
+| Symbol | From | Used by |
+| --- | --- | --- |
+| `agent` | — | 02 |
