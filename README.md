@@ -75,6 +75,7 @@ That is required rather than merely convenient: the Shared State pages state tha
 | `openGenUiAgent` / `openGenUiAdvancedAgent` | none — prompt folds `ag-ui` context in | Open Generative UI (via `/api/copilotkit-ogui`) |
 | `declarativeGenUiAgent` | none — runtime auto-injects `generate_a2ui` | A2UI Dynamic Schema |
 | `a2uiFixedSchemaAgent` | `generate_a2ui` | A2UI Fixed Schema |
+| `gen-ui-tool-based` (`chartAgent`) | none — frontend `useComponent` tools arrive as client tools | Components as Tools |
 
 Several rather than one because working memory takes a **single Zod schema per agent**, and the docs define several different ones. The newer agents use the model ids their pages hard-code (`gpt-5-mini`), **not** `OPENAI_MODEL`. Agent ids come from the keys in the Mastra instance's `agents: { … }` object, not from each agent's `name` — that is what routes pass as `agentId`.
 
@@ -175,6 +176,8 @@ Code on a page is never a re-typed approximation: each page reads real files via
 
 **`/generative-ui/your-components/interactive`** — `useHumanInTheLoop` approval gate. **Try:** `Run the command rm -rf /tmp/cache`. **Pass:** an approval card renders with the command in a code block and **nothing further streams** until you click Approve or Deny; the agent's next message reflects your choice. **Fail:** plain text with no buttons, or it continues without waiting. Distinct from Human in the Loop below — that one asks you to *choose* between two values, this one asks you to *authorise* an action.
 
+**`/generative-ui/tool-based`** ⚠️ — Charts registered with `useComponent` are the agent's tools; `chartAgent` declares none and its prompt says when to call `render_bar_chart`. **Try:** `Chart the populations of the five largest US cities.` **Pass:** an inline bar chart with a title and five bars, plus a short reply. **Fail:** prose only, an empty chart, or a model-not-found error (the agent uses the published `gpt-6-luna`). The chart components are borrowed (discrepancy 22).
+
 **`/generative-ui/tool-rendering`** — Named renderer for `weatherInfo` plus a wildcard. **Try:** `What's the weather in Tokyo?` **Pass:** "Calling weather API..." becomes "Called the weather API for Tokyo."
 
 **`/generative-ui/state-rendering`** — `searches` working memory. **Try:** `Add a search for the tallest mountains`, then another. **Pass:** items accumulate in the left pane.
@@ -237,6 +240,7 @@ Code on a page is never a re-typed approximation: each page reads real files via
 | `/mastra/inspector` | `/inspector` | ✅ Working | Dev-only by design. |
 | `/mastra/generative-ui/your-components/display-only` | `/generative-ui/your-components/display-only` | ✅ Working | Needs no Mastra-side declaration. |
 | `/mastra/generative-ui/your-components/interactive` | `/generative-ui/your-components/interactive` | ✅ Working | `useHumanInTheLoop` approval gate. Code is in the rendered page, not the raw markdown. |
+| `/mastra/generative-ui/tool-based` | `/generative-ui/tool-based` | ⚠️ Partial | Agent + demo page as published; bar/pie chart components borrowed from agno (22). Not yet run against a live model. |
 | `/mastra/generative-ui/tool-rendering` | `/generative-ui/tool-rendering` | ✅ Working | |
 | `/mastra/generative-ui/state-rendering` | `/generative-ui/state-rendering` | ✅ Working | |
 | `/mastra/frontend-tools` | `/frontend-tools` | ✅ Working | |
@@ -355,6 +359,12 @@ Also on these pages: the dynamic-schema demo file's header says its route sets `
 *Missing code.* The sidebar sample renders `<YourMainContent />`, which is never defined. It is a stand-in for the host app's own content, so a labelled placeholder fills it.
 *Types.* The threads route has the same `AbstractAgent` type clash as the other v2 runtime routes: `@copilotkit/shared` ships its own `@ag-ui/client`. It runs fine.
 
+**22. Components as Tools: the chart components are never printed, and the agent file is printed out of order** — [page](https://docs.copilotkit.ai/mastra/generative-ui/tool-based)
+*Missing.* The demo page (Code tab) imports `BarChart`/`barChartPropsSchema` from `./bar-chart`, `PieChart`/`pieChartPropsSchema` from `./pie-chart` and `useSuggestions` from `./suggestions`; none is printed. The charts are borrowed from the agno harness (minimal Recharts, labelled); suggestions are left out. The Code tab's `/api/copilotkit` route is a 3-byte stub, so `chartAgent` is registered on this repo's main route under the demo's agent id `gen-ui-tool-based`.
+*Order.* `chart-agent.ts` is printed as two blocks, the agent (which reads `SYSTEM_PROMPT`) before `const SYSTEM_PROMPT`; in one module that order throws at load, so the prompt block comes first here, text unchanged.
+*Prompt.* The published prompt names only `render_bar_chart`, while the demo also registers `render_pie_chart`. Kept as published.
+*Not built.* The headless `CopilotChatToolCallsView` fragment (undefined `assistantMessage`/`allMessages`).
+
 ---
 
 ## 10. Troubleshooting
@@ -464,7 +474,7 @@ mastra/
 
 **Custom Look and Feel** — [Slots](https://docs.copilotkit.ai/mastra/custom-look-and-feel/slots) † · [Headless UI](https://docs.copilotkit.ai/mastra/custom-look-and-feel/headless-ui) † · [Programmatic Control](https://docs.copilotkit.ai/mastra/programmatic-control) · [Inspector](https://docs.copilotkit.ai/mastra/inspector)
 
-**Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps) (not implemented)
+**Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Components as Tools](https://docs.copilotkit.ai/mastra/generative-ui/tool-based) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps) (not implemented)
 
 **App Control** — [Frontend Tools](https://docs.copilotkit.ai/mastra/frontend-tools) · [Human in the Loop](https://docs.copilotkit.ai/mastra/human-in-the-loop/tool-based) · [useInterrupt](https://docs.copilotkit.ai/mastra/human-in-the-loop/useInterrupt) · [Headless Interrupts](https://docs.copilotkit.ai/mastra/human-in-the-loop/headless) · [Governed Actions](https://docs.copilotkit.ai/mastra/human-in-the-loop/governed-actions) · [Background Tasks](https://docs.copilotkit.ai/mastra/background-tasks)
 
