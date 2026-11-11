@@ -261,6 +261,16 @@ export const NAV: NavGroup[] = [
           "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
       },
       {
+        path: "/generative-ui/components/markdown-mode",
+        title: "Markdown mode",
+        docPath: "/mastra/generative-ui/components/markdown-mode",
+        summary:
+          "The agent writes a2ui code blocks inside its markdown reply, with no tool call, rendered in place as they stream.",
+        status: "broken",
+        statusNote:
+          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+      },
+      {
         path: "/generative-ui/open-generative-ui",
         hasDemo: true,
         title: "Open Generative UI",

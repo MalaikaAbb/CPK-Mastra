@@ -118,3 +118,12 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 | Symbol | From | Used by |
 | --- | --- | --- |
 | `agent` | — | 02 |
+
+## generative-ui/components/markdown-mode — `/mastra/generative-ui/components/markdown-mode`
+
+React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.md` Example reply, `02.tsx` Turn it on, `03.tsx` sendContext: false, `04.json` Forwarded catalog, `05.py` Build your own prompt (Python).
+All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+
+| Symbol | From | Used by |
+| --- | --- | --- |
+| `MY_PROMPT`, Python `input` | — | 05 (Python, not Mastra) |
