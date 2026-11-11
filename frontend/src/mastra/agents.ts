@@ -214,7 +214,7 @@ export const backgroundAgentsAgent = new Agent({
     observationalMemory: {
       scope: "thread",
       observation: { messageTokens: 600, bufferTokens: 300 },
-      model: openai("gpt-4.1"),
+      model: openai("gpt-6-luna"),
     },
   },
 }),
