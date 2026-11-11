@@ -221,6 +221,16 @@ export const NAV: NavGroup[] = [
           "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
       },
       {
+        path: "/generative-ui/components/standard-catalog",
+        title: "Standard catalog",
+        docPath: "/mastra/generative-ui/components/standard-catalog",
+        summary:
+          "The 69 built-in standardUI components, and extending, trimming (omit) or overriding them with your own.",
+        status: "broken",
+        statusNote:
+          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+      },
+      {
         path: "/generative-ui/open-generative-ui",
         hasDemo: true,
         title: "Open Generative UI",

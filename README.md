@@ -189,6 +189,8 @@ Code on a page is never a re-typed approximation: each page reads real files via
 
 **`/generative-ui/components/catalogs`** ❌ *reference-only* — Declaring the agent's component vocabulary with createGenerativeUI: typed props, schema libraries, combining catalogs and exporting an A2UI catalog. Needs `@copilotkit/react-core` ≥ 1.81 (this repo: 1.79.1), so the page's code is shown verbatim, not compiled (discrepancy 26). **Pass:** the route shows the page's React snippets with the gap panel.
 
+**`/generative-ui/components/standard-catalog`** ❌ *reference-only* — The 69 built-in standardUI components, and extending, trimming (omit) or overriding them with your own. Needs `@copilotkit/react-core` ≥ 1.81 (this repo: 1.79.1), so the page's code is shown verbatim, not compiled (discrepancy 26). **Pass:** the route shows the page's React snippets with the gap panel.
+
 **`/generative-ui/open-generative-ui`** ⚠️ — The agent writes HTML/CSS/JS into a sandboxed iframe. **Try (minimal):** `Quicksort visualization`. **Pass:** placeholder lines, then an animated, labelled visualisation builds up in an iframe. **Try (advanced, second demo link on the page):** `Calculator (calls evaluateExpression)`. **Pass:** pressing = shows the host-computed result and the browser console logs `[open-gen-ui/advanced] evaluateExpression`. **Fail:** text only, a blank iframe, or buttons that do nothing.
 
 ### App Control
@@ -259,6 +261,7 @@ Code on a page is never a re-typed approximation: each page reads real files via
 | `/mastra/generative-ui/components` | `/generative-ui/components` | ❌ Broken | Reference-only: needs CopilotKit ≥ 1.81 (26). |
 | `/mastra/generative-ui/components/surfaces` | `/generative-ui/components/surfaces` | ❌ Broken | Reference-only: needs CopilotKit ≥ 1.81 (26). |
 | `/mastra/generative-ui/components/catalogs` | `/generative-ui/components/catalogs` | ❌ Broken | Reference-only: needs CopilotKit ≥ 1.81 (26). |
+| `/mastra/generative-ui/components/standard-catalog` | `/generative-ui/components/standard-catalog` | ❌ Broken | Reference-only: needs CopilotKit ≥ 1.81 (26). |
 | `/mastra/generative-ui/open-generative-ui` | `/generative-ui/open-generative-ui` | ⚠️ Partial | Published code minus the aimock header wrapper. Not yet run against a live model. |
 | `/mastra/generative-ui/mcp-apps` | — | 🚧 Not started | Skipped by decision (2026-10-06). The page shows only a BuiltInAgent + local ext-apps server, no Mastra code. |
 | `/mastra/multi-agent/subagents` | `/multi-agent/subagents` | ⚠️ Partial | Delegation runs, but no UI shows it: tool-name mismatch hides cards/banner, and the log's writer is unpublished (18). Not yet run against a live model. |
@@ -369,6 +372,7 @@ Every page in the section imports `@copilotkit/react-core/v2/generative-ui` (`st
 *Components and surfaces.* The page's agent is a TanStack `BuiltInAgent` (factory mode). In this harness it would be swapped for a Mastra agent with the snippet's prompt; the page also requires the agent to pass the run's tools and its system-prompt guide to the model, and `@ag-ui/mastra` forwards tools as client tools but puts run context on Mastra's request context, not in the prompt — unverified until the package bump lands.
 *Surfaces.* Fragments only: `Product`, `ProductRow`, `product` and `shopUI` (defined on the Catalogs page) are referenced but not defined here.
 *Catalogs.* `cartUI`, `Hero`, `Panel` and `fs` are used without being defined; the Valibot example needs `valibot` and `@valibot/to-json-schema`, which this repo does not install.
+*Standard catalog.* `ProductCard` and `productSchema` are used without being defined.
 
 ---
 
@@ -479,7 +483,7 @@ mastra/
 
 **Custom Look and Feel** — [Slots](https://docs.copilotkit.ai/mastra/custom-look-and-feel/slots) † · [Headless UI](https://docs.copilotkit.ai/mastra/custom-look-and-feel/headless-ui) † · [Programmatic Control](https://docs.copilotkit.ai/mastra/programmatic-control) · [Inspector](https://docs.copilotkit.ai/mastra/inspector)
 
-**Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Components and surfaces](https://docs.copilotkit.ai/mastra/generative-ui/components) · [Surfaces](https://docs.copilotkit.ai/mastra/generative-ui/components/surfaces) · [Catalogs](https://docs.copilotkit.ai/mastra/generative-ui/components/catalogs) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps) (not implemented)
+**Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Components and surfaces](https://docs.copilotkit.ai/mastra/generative-ui/components) · [Surfaces](https://docs.copilotkit.ai/mastra/generative-ui/components/surfaces) · [Catalogs](https://docs.copilotkit.ai/mastra/generative-ui/components/catalogs) · [Standard catalog](https://docs.copilotkit.ai/mastra/generative-ui/components/standard-catalog) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps) (not implemented)
 
 **App Control** — [Frontend Tools](https://docs.copilotkit.ai/mastra/frontend-tools) · [Human in the Loop](https://docs.copilotkit.ai/mastra/human-in-the-loop/tool-based) · [useInterrupt](https://docs.copilotkit.ai/mastra/human-in-the-loop/useInterrupt) · [Headless Interrupts](https://docs.copilotkit.ai/mastra/human-in-the-loop/headless) · [Governed Actions](https://docs.copilotkit.ai/mastra/human-in-the-loop/governed-actions) · [Background Tasks](https://docs.copilotkit.ai/mastra/background-tasks)
 

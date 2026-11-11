@@ -81,3 +81,12 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 | `Panel` | — | 08 |
 | `fs` (Node) | — | 07 |
 | `valibot`, `@valibot/to-json-schema` | packages | 05 |
+
+## generative-ui/components/standard-catalog — `/mastra/generative-ui/components/standard-catalog`
+
+React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.tsx` Provider, `02.ts` Add your own components, `03.ts` Drop components, `04.tsx` Replace a component.
+All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+
+| Symbol | From | Used by |
+| --- | --- | --- |
+| `ProductCard`, `productSchema` | — | 02 |
