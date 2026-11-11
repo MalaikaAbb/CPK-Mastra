@@ -127,3 +127,13 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 | Symbol | From | Used by |
 | --- | --- | --- |
 | `MY_PROMPT`, Python `input` | — | 05 (Python, not Mastra) |
+
+## generative-ui/components/from-a2ui — `/mastra/generative-ui/components/from-a2ui`
+
+React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.tsx` Provider, before, `02.tsx` Provider, after, `03.ts` Runtime, before, `04.ts` Runtime, after, `05.ts` Catalog, before, `06.ts` Catalog, after.
+All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+
+| Symbol | From | Used by |
+| --- | --- | --- |
+| `myCatalog`, `agents` | — | 01–04 |
+| `Airport`, `Arrow` | — | 05, 06 |

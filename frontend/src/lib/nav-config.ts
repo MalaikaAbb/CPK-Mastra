@@ -271,6 +271,16 @@ export const NAV: NavGroup[] = [
           "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
       },
       {
+        path: "/generative-ui/components/from-a2ui",
+        title: "Adopt from A2UI",
+        docPath: "/mastra/generative-ui/components/from-a2ui",
+        summary:
+          "Moving from the a2ui renderer (A2UI v0.9) to components and surfaces (A2UI 1.0): provider, catalog, runtime and bindings.",
+        status: "broken",
+        statusNote:
+          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+      },
+      {
         path: "/generative-ui/open-generative-ui",
         hasDemo: true,
         title: "Open Generative UI",
