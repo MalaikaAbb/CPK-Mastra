@@ -317,7 +317,7 @@ export const NAV: NavGroup[] = [
           "A supervisor that delegates to research, writing, and critique sub-agents exposed as tools.",
         status: "broken",
         statusNote:
-          "Delegation runs, but nothing on screen shows it: the published tool keys don't match the published renderers, and the log's writer is never published. Built from the published code; not yet exercised against a live model in this harness.",
+          "Delegation runs and the log's writer is now published, but the published tool keys still don't match the published renderers, so no in-chat cards or banner appear. Built from the published code; not yet exercised against a live model in this harness.",
       },
     ],
   },

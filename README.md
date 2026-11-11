@@ -76,7 +76,7 @@ That is required rather than merely convenient: the Shared State pages state tha
 | `declarativeGenUiAgent` | none — runtime auto-injects `generate_a2ui` | A2UI Dynamic Schema |
 | `a2uiFixedSchemaAgent` | `generate_a2ui` | A2UI Fixed Schema |
 
-Several rather than one because working memory takes a **single Zod schema per agent**, and the docs define several different ones. The newer agents use the model ids their pages hard-code (`gpt-5-mini`), **not** `OPENAI_MODEL`. Agent ids come from the keys in the Mastra instance's `agents: { … }` object, not from each agent's `name` — that is what routes pass as `agentId`.
+Several rather than one because working memory takes a **single Zod schema per agent**, and the docs define several different ones. The newer agents use the model ids their pages hard-code (`gpt-5-mini`; Sub-Agents now `gpt-6-luna`), **not** `OPENAI_MODEL`. Agent ids come from the keys in the Mastra instance's `agents: { … }` object, not from each agent's `name` — that is what routes pass as `agentId`.
 
 ---
 
@@ -86,7 +86,7 @@ Several rather than one because working memory takes a **single Zod schema per a
 |---|---|---|
 | Node.js | 20+ | Next.js 16 requires 20+. |
 | npm | 10+ | Or pnpm/yarn/bun. |
-| OpenAI API key | — | Required. Needs access to `gpt-5-mini` for the Open Gen UI, A2UI, and Sub-Agents routes. |
+| OpenAI API key | — | Required. Needs access to `gpt-5-mini` for the Open Gen UI and A2UI routes, and `gpt-6-luna` for Sub-Agents and Background Tasks' observational memory. |
 | CopilotKit Intelligence project key | — | Optional; only the Threads Drawer route uses it. `npx copilotkit@latest login` then `npx copilotkit@latest project select` writes `CPK_INTELLIGENCE_API_KEY` to `.env` in the current directory — copy it into `frontend/.env.local`. Premium: without it that route shows only its locked view. |
 
 No Python, no second runtime, no separate agent process.
@@ -106,7 +106,7 @@ Then edit `frontend/.env.local`:
 | Variable | What it does |
 |---|---|
 | `OPENAI_API_KEY` | **Required.** Read server-side by the Mastra agents; never exposed to the browser. |
-| `OPENAI_MODEL` | Model for the original seven agents. Defaults to `gpt-4o`. The Open Gen UI, A2UI, and Sub-Agents agents use the published `gpt-5-mini` literal regardless. |
+| `OPENAI_MODEL` | Model for the original seven agents. Defaults to `gpt-4o`. The Open Gen UI and A2UI agents use the published `gpt-5-mini` literal regardless; Sub-Agents uses the published `gpt-6-luna`. |
 | `MASTRA_WORKING_MEMORY_URL` | Optional. Storage for the newer doc agents' memory; defaults to `file:./mastra-memory.db` (in `frontend/`, gitignored). |
 | `CPK_INTELLIGENCE_API_KEY` | Optional, server-only. Turns on CopilotKit Intelligence for `/api/copilotkit-threads`, which the Threads Drawer needs to list and store threads. Unset, that runtime runs in SSE mode and the drawer shows its locked view. |
 | `NEXT_PUBLIC_COPILOTKIT_LICENSE_KEY` | Optional; no route here needs it. |
@@ -211,7 +211,7 @@ Code on a page is never a re-typed approximation: each page reads real files via
 
 ### Multi-Agent
 
-**`/multi-agent/subagents`** ⚠️ — A supervisor whose tools are research / writing / critique sub-agents. **Try:** `Produce a short blog post about the benefits of cold exposure training. Research first, then write, then critique.` **Pass (as published):** in the Inspector, `TOOL_CALL_START` for `researchAgentTool` → `writingAgentTool` → `critiqueAgentTool`, each followed by a `TOOL_CALL_RESULT` with the sub-agent's text, then a chat summary. **No cards, no banner and an empty delegation log are expected** — the renderers listen for different tool names (discrepancy 18) and the log's writer is unpublished. **Fail:** no tool calls at all, or a result containing `[sub-agent error] …`.
+**`/multi-agent/subagents`** ⚠️ — A supervisor whose tools are research / writing / critique sub-agents. **Try:** `Produce a short blog post about the benefits of cold exposure training. Research first, then write, then critique.` **Pass (as published):** in the Inspector, `TOOL_CALL_START` for `researchAgentTool` → `writingAgentTool` → `critiqueAgentTool`, each followed by a `TOOL_CALL_RESULT` with the sub-agent's text, then a chat summary. **No cards and no banner are expected** — the renderers listen for different tool names (discrepancy 18) — but the delegation log should gain one entry per delegation now that the page publishes its writer. **Fail:** no tool calls at all, a result containing `[sub-agent error] …`, or an empty log with `working-memory write failed` in the server log.
 
 ### Backend
 
@@ -252,7 +252,7 @@ Code on a page is never a re-typed approximation: each page reads real files via
 | `/mastra/generative-ui/a2ui/fixed-schema` | `/generative-ui/a2ui/fixed-schema` | ⚠️ Partial | Harness-written `a2ui-context` helpers + runtime route; root zod pinned to 3.25.76 (16); needs `ai` 7 (17). Not yet run against a live model. |
 | `/mastra/generative-ui/open-generative-ui` | `/generative-ui/open-generative-ui` | ⚠️ Partial | Published code minus the aimock header wrapper. Not yet run against a live model. |
 | `/mastra/generative-ui/mcp-apps` | — | 🚧 Not started | Skipped by decision (2026-10-06). The page shows only a BuiltInAgent + local ext-apps server, no Mastra code. |
-| `/mastra/multi-agent/subagents` | `/multi-agent/subagents` | ⚠️ Partial | Delegation runs, but no UI shows it: tool-name mismatch hides cards/banner, and the log's writer is unpublished (18). Not yet run against a live model. |
+| `/mastra/multi-agent/subagents` | `/multi-agent/subagents` | ⚠️ Partial | Delegation runs and the log's writer is now published; the tool-name mismatch still hides cards/banner (18). Not yet run against a live model. |
 | `/mastra/background-tasks` | `/background-tasks` | ✅ Working | |
 | `/mastra/copilot-runtime` | `/copilot-runtime` | ✅ Working | |
 | `/mastra/ag-ui` | `/ag-ui` | ✅ Working | |
@@ -338,7 +338,7 @@ Also on these pages: the dynamic-schema demo file's header says its route sets `
 **18. Sub-Agents: tool names never match the renderers, and the log's writer is never published** — [page](https://docs.copilotkit.ai/mastra/multi-agent/subagents)
 *Names.* The supervisor registers `tools: { researchAgentTool, writingAgentTool, critiqueAgentTool }`. Mastra (`@mastra/core` 1.74, `Agent#listAssignedTools` → `makeCoreTool(tool, { name: k })`) exposes each tool to the model under its **object key**, not its `createTool({ id })`, so the model calls `researchAgentTool` etc. The page's three `useRenderTool({ name: "research_agent" | "writing_agent" | "critique_agent" })` and `inferActiveSubAgent`'s name set never match: no in-chat cards and no banner. The supervisor prompt also tells the model to call `research_agent`, a name that is not registered. Kept as published.
 
-*Log.* All three tools call `writeDelegationsToWorkingMemory` from `./working-memory`, which is not on the page or its Code tab. The import and calls are commented out (not reimplemented), so `state.delegations` is never written and the log stays empty; the in-chat cards are unaffected. Separately, `delegation-log.tsx` types `status` as `"completed"` only, though the tools emit `"failed"` and the schema allows `"running"`, and every status renders in the same green.
+*Log.* The page now prints `working-memory.ts` (the `writeDelegationsToWorkingMemory` helper), so it lives verbatim at `frontend/src/mastra/working-memory.ts` and all three tools call it again; the supervisor's working memory is `scope: "thread"` as the Code tab now shows. The page's optional New chat control and its separate-server `registerCopilotKit` setup are not built — this repo runs Mastra in-process. Separately, `delegation-log.tsx` types `status` as `"completed"` only, though the tools emit `"failed"` and the schema allows `"running"`, and every status renders in the same green.
 
 **19. Published code shared across these pages**
 - *Showcase plumbing.* `@/mastra/_header_forwarding` (aimock header forwarding) is imported by the OGUI route, `a2ui-generate.ts` and `subagents.ts` and never published. The fixed-schema page's own comment names `import { openai } from "@ai-sdk/openai"` as the real-app equivalent, which is what these files use; the OGUI route's `withForwardedHeaders` wrapper is removed with its handler body unchanged.
@@ -368,7 +368,7 @@ Also on these pages: the dynamic-schema demo file's header says its route sets `
 | No activity card on Background Tasks | Missing one of three switches | Tool needs `background`, instance needs `backgroundTasks` + `storage`, runtime needs `untilIdle`. |
 | Activity card appears but never leaves "Working…" | Agent has no `memory`, so `untilIdle` no-ops | Give the agent its own `Memory`. Confirm in the Inspector: a run with no `ACTIVITY_DELTA` after the snapshot is this. See discrepancy 7. |
 | Model-not-found errors | A `gpt-5.4*` id from the docs | Set `OPENAI_MODEL` to something your account has. |
-| Model-not-found on Open Gen UI / A2UI / Sub-Agents | Those agents hard-code `gpt-5-mini` as published | Use a key with `gpt-5-mini` access; `OPENAI_MODEL` does not apply to them. |
+| Model-not-found on Open Gen UI / A2UI / Sub-Agents | Those agents hard-code `gpt-5-mini` (Sub-Agents: `gpt-6-luna`) as published | Use a key with access to those ids; `OPENAI_MODEL` does not apply to them. |
 | A2UI card throws React #31 `object with keys {path}`, or Book flight does nothing | Root `zod` resolved to 4.x | `npm ls zod` must show 3.25.76 at the root (discrepancy 16). Re-pin with `npm install zod@3.25.76 --save-exact`. |
 | Fixed Schema: `UnsupportedModelVersionError` | `ai` resolved to v6 | `ai@^7` must be a direct dependency (discrepancy 17). |
 | Threads Drawer shows a locked view with an Upgrade link | No `CPK_INTELLIGENCE_API_KEY`, or the project's subscription is inactive | Set the key in `frontend/.env.local` and restart. `curl localhost:3000/api/copilotkit-threads/info` must report `"mode":"intelligence"`; `"sse"` means the key was not read. |
@@ -421,6 +421,7 @@ mastra/
         │   ├── agents.ts              # ★ the 7 doc-defined agents + working-memory schemas
         │   ├── tools.ts               # ★ the 3 doc-defined tools
         │   ├── subagents.ts           # ★ sub-agents exposed as tools (published)
+        │   ├── working-memory.ts      # delegation-log writer (published on Sub-Agents)
         │   ├── a2ui/
         │   │   ├── a2ui-generate.ts   # ★ generate_a2ui tool (published)
         │   │   └── a2ui-context.ts    #   its two helpers (harness-written)
