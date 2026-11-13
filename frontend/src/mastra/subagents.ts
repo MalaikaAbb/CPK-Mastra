@@ -4,21 +4,18 @@ import { z } from "zod";
 // carry the inbound `x-aimock-context` / `x-aimock-strict` headers. Without
 // this, sub-agent calls return 404 from aimock under strict mode. See
 // `_header_forwarding.ts` for the ALS-bound fetch wrapper.
-// Harness: `_header_forwarding` is unpublished showcase plumbing; the doc's
-// own a2ui-generate comment names `@ai-sdk/openai` as the real-app equivalent.
+// Harness: `_header_forwarding` is showcase plumbing; the Sub-Agents page now
+// says to swap in `@ai-sdk/openai` when the demo's request handling isn't needed.
 import { openai } from "@ai-sdk/openai";
 import { Agent } from "@mastra/core/agent";
 import crypto from "node:crypto";
-// HARNESS GAP: `./working-memory` is not published on the page or in its demo
-// Code tab. The import and its three call sites below are commented out rather
-// than reimplemented, so the delegation log stays empty (route status: Partial).
-// import { writeDelegationsToWorkingMemory } from "./working-memory";
+import { writeDelegationsToWorkingMemory } from "./working-memory";
 
 // Each sub-agent is a full Mastra `Agent` with its own system prompt. They
 // don't share memory or tools with the supervisor — the supervisor only sees
 // their final text output via the tools below. Mirrors the LangGraph-Python
 // `subagents.py` reference where each sub-agent is a `create_agent(...)`.
-const SUBAGENT_MODEL = openai("gpt-5-mini");
+const SUBAGENT_MODEL = openai("gpt-6-luna");
 
 const researchSubAgent = new Agent({
   id: "research-subagent",
@@ -154,7 +151,7 @@ export const researchAgentTool = createTool({
       task,
       result,
     );
-    // await writeDelegationsToWorkingMemory(executionContext, delegation); // HARNESS GAP — see import
+    await writeDelegationsToWorkingMemory(executionContext, delegation);
     return JSON.stringify({ result: resultText, delegation });
   },
 });
@@ -181,7 +178,7 @@ export const writingAgentTool = createTool({
       task,
       result,
     );
-    // await writeDelegationsToWorkingMemory(executionContext, delegation); // HARNESS GAP — see import
+    await writeDelegationsToWorkingMemory(executionContext, delegation);
     return JSON.stringify({ result: resultText, delegation });
   },
 });
@@ -208,7 +205,7 @@ export const critiqueAgentTool = createTool({
       task,
       result,
     );
-    // await writeDelegationsToWorkingMemory(executionContext, delegation); // HARNESS GAP — see import
+    await writeDelegationsToWorkingMemory(executionContext, delegation);
     return JSON.stringify({ result: resultText, delegation });
   },
 });

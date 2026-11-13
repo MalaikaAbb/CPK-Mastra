@@ -1,0 +1,21 @@
+{
+  "root": "revenue-card",
+  "elements": {
+    "revenue-card": {
+      "type": "MetricCard",
+      "props": { "label": "Total revenue", "value": "$184,302", "trend": "+12%" },
+      "children": ["by-region"]
+    },
+    "by-region": {
+      "type": "BarChart",
+      "props": {
+        "title": "Revenue by region",
+        "description": null,
+        "data": [
+          { "label": "North America", "value": 112000 },
+          { "label": "EMEA", "value": 72302 }
+        ]
+      }
+    }
+  }
+}
