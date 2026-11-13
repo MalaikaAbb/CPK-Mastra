@@ -160,6 +160,8 @@ Code on a page is never a re-typed approximation: each page reads real files via
 
 **`/prebuilt-components/copilot-threads-drawer`** ⚠️ *premium* — `CopilotThreadsDrawer` beside the chat, sharing one `CopilotChatConfigurationProvider`; two demos (CopilotChat with an **As published** / **Header slot** tab, and CopilotSidebar via the second link on the page). **Try (with `CPK_INTELLIGENCE_API_KEY`):** send `Hello`, click **New Conversation**, send `Tell me a fun fact about octopuses`, then click the first row. **Pass:** each conversation gets a row, clicking a row replays that conversation in the chat, the row menu offers Archive and Delete, and the sidebar demo switches the same way. **Try (no key):** open either demo. **Pass:** a locked view with an Upgrade link where the list would be, and chat still works; `curl localhost:3000/api/copilotkit-threads/info` reports `"mode":"sse"` (with a key it should report `"mode":"intelligence"`). **Expected, not a failure:** no drawer launcher on desktop widths, and the **Header slot** tab looking identical to **As published** (discrepancy 20). **Fail:** the locked view with the key set, an empty list after replies, or rows that do not change the chat.
 
+**`/headless-threads`** ❌ *premium* — `useThreads` behind a hand-written list, feeding `threadId` into `CopilotChat`, on the Threads Drawer's Intelligence runtime. **Try (with `CPK_INTELLIGENCE_API_KEY`):** send `Hello`. **Pass (as published):** the chat replies, but the list shows no row for it (it lists agent `my-agent`; the chat runs on `default`) and nothing in the list can be clicked to switch threads (discrepancy 21). **Fail:** the chat itself errors. If rows for the chat's threads appear and clicking one replays it, the page was fixed upstream — re-check.
+
 ### Custom Look and Feel
 
 **`/custom-look-and-feel/slots`** *(live but absent from the doc sidebar)* — Three override levels. **Pass:** level 1 tints the message area, level 2 auto-focuses the input, level 3 shows a custom header, layout, and cursor.
@@ -234,6 +236,7 @@ Code on a page is never a re-typed approximation: each page reads real files via
 | `/mastra/quickstart?agent=bring-your-own` | `/quickstart` | ✅ Working | |
 | `/mastra/prebuilt-components` | `/prebuilt-components` | ✅ Working | Doc page is a 145-byte component stub. |
 | `/mastra/prebuilt-components/copilot-threads-drawer` | `/prebuilt-components/copilot-threads-drawer` | ⚠️ Partial | Premium — needs `CPK_INTELLIGENCE_API_KEY`. Harness-supplied Intelligence runtime; header-slot snippet cannot work in 1.79.1 (20). Pages and keyless runtime (`mode: "sse"`) smoke-tested 2026-10-23; not yet run against a live Intelligence project. |
+| `/mastra/headless-threads` | `/headless-threads` | ❌ Broken | Premium — needs `CPK_INTELLIGENCE_API_KEY`. As published, threads can't be selected and the list watches agent `my-agent`, not the runtime's `default` (21). Not yet run. |
 | `/mastra/custom-look-and-feel/slots` | `/custom-look-and-feel/slots` | ✅ Working | **Not in the doc sidebar**; resolves. |
 | `/mastra/custom-look-and-feel/headless-ui` | `/custom-look-and-feel/headless-ui` | ✅ Working | **Not in the doc sidebar**; resolves. |
 | `/mastra/programmatic-control` | `/programmatic-control` | ✅ Working | |
@@ -364,6 +367,10 @@ Also on these pages: the dynamic-schema demo file's header says its route sets `
 *Order.* `chart-agent.ts` is printed as two blocks, the agent (which reads `SYSTEM_PROMPT`) before `const SYSTEM_PROMPT`; in one module that order throws at load, so the prompt block comes first here, text unchanged.
 *Prompt.* The published prompt names only `render_bar_chart`, while the demo also registers `render_pie_chart`. Kept as published.
 *Not built.* The headless `CopilotChatToolCallsView` fragment (undefined `assistantMessage`/`allMessages`).
+**21. Headless Threads: `App` passes a prop `ThreadSidebar` doesn't take, and the list watches a different agent** — [page](https://docs.copilotkit.ai/mastra/headless-threads)
+*Selection.* The "Switch between threads" step renders `<ThreadSidebar onSelectThread={setActiveThreadId} />`, but the page's `ThreadSidebar` is `function ThreadSidebar()` and its rows only carry Rename / Archive buttons. It is a type error (kept behind `@ts-expect-error`) and, at runtime, nothing ever sets `activeThreadId`, so the chat can't be switched to another thread.
+*Agent id.* `useThreads({ agentId: "my-agent" })` while the page's runtime snippet registers `agents: { default: agent }` and `<CopilotChat>` (no `agentId`) runs on `default`. The list queries an agent that doesn't exist on that runtime. Kept as published.
+*Not printed.* No provider (the demo mounts `CopilotKitProvider` on the shared `/api/copilotkit-threads` route), `verifyAppSession` in `identifyUser` (that route returns a fixed user), and the "one agent per thread" `useAgent` fragment uses an undefined `threadId` (not built). The pagination step re-prints `ThreadSidebar.tsx` with only the paging members; both blocks are merged into one `useThreads` call.
 
 ---
 
@@ -470,7 +477,7 @@ mastra/
 
 **Getting Started** — [Quickstart (bring your own agent)](https://docs.copilotkit.ai/mastra/quickstart?agent=bring-your-own)
 
-**Basics** — [Prebuilt Components](https://docs.copilotkit.ai/mastra/prebuilt-components) · [Threads Drawer](https://docs.copilotkit.ai/mastra/prebuilt-components/copilot-threads-drawer) (runtime side: [Intelligence quickstart](https://docs.copilotkit.ai/mastra/intelligence/quickstart))
+**Basics** — [Prebuilt Components](https://docs.copilotkit.ai/mastra/prebuilt-components) · [Threads Drawer](https://docs.copilotkit.ai/mastra/prebuilt-components/copilot-threads-drawer) · [Headless Threads](https://docs.copilotkit.ai/mastra/headless-threads) (runtime side: [Intelligence quickstart](https://docs.copilotkit.ai/mastra/intelligence/quickstart))
 
 **Custom Look and Feel** — [Slots](https://docs.copilotkit.ai/mastra/custom-look-and-feel/slots) † · [Headless UI](https://docs.copilotkit.ai/mastra/custom-look-and-feel/headless-ui) † · [Programmatic Control](https://docs.copilotkit.ai/mastra/programmatic-control) · [Inspector](https://docs.copilotkit.ai/mastra/inspector)
 
