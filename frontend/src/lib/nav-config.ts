@@ -86,6 +86,17 @@ export const NAV: NavGroup[] = [
         statusNote:
           "Requires CopilotKit Intelligence (CPK_INTELLIGENCE_API_KEY); without it only the locked view is testable. The header-slot snippet cannot work in 1.79.1. Built from the published code; not yet exercised against a live Intelligence project in this harness.",
       },
+      {
+        path: "/headless-threads",
+        hasDemo: true,
+        title: "Headless Threads",
+        docPath: "/mastra/headless-threads",
+        summary:
+          "A hand-drawn thread list over useThreads (rename, archive, paging) feeding a threadId into CopilotChat.",
+        status: "broken",
+        statusNote:
+          "As published, the sidebar takes no onSelectThread prop and has no row click handler, so threads can't be switched; it also lists agent \"my-agent\" while the runtime snippet registers only \"default\". Requires CopilotKit Intelligence. Not yet run.",
+      },
     ],
   },
   {
@@ -151,6 +162,17 @@ export const NAV: NavGroup[] = [
         summary:
           "An approval gate built with useHumanInTheLoop — the run suspends until the user authorises the action.",
         status: "working",
+      },
+      {
+        path: "/generative-ui/tool-based",
+        hasDemo: true,
+        title: "Components as Tools",
+        docPath: "/mastra/generative-ui/tool-based",
+        summary:
+          "Charts registered with useComponent become frontend tools a prompt-only Mastra agent calls to paint them in chat.",
+        status: "partial",
+        statusNote:
+          "Agent and demo page as published; the bar/pie chart components are borrowed (unpublished) and the headless CopilotChatToolCallsView snippet is not built. Not yet run against a live model.",
       },
       {
         path: "/generative-ui/tool-rendering",
