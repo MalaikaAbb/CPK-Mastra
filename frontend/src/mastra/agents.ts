@@ -214,7 +214,7 @@ export const backgroundAgentsAgent = new Agent({
     observationalMemory: {
       scope: "thread",
       observation: { messageTokens: 600, bufferTokens: 300 },
-      model: openai("gpt-4.1"),
+      model: openai("gpt-6-luna"),
     },
   },
 }),
@@ -321,7 +321,7 @@ export const subagentsSupervisorAgent = new Agent({
     writingAgentTool,
     critiqueAgentTool,
   },
-  model: openai("gpt-5-mini"),
+  model: openai("gpt-6-luna"),
   instructions: `You are a supervisor agent that coordinates three specialized sub-agents to produce high-quality deliverables.
 
 Available sub-agents (call them as tools):
@@ -343,6 +343,7 @@ If a delegation's \`status\` field is \`"failed"\`, treat it as a real error: do
     options: {
       workingMemory: {
         enabled: true,
+        scope: "thread",
         schema: SubagentsAgentState,
       },
     },
