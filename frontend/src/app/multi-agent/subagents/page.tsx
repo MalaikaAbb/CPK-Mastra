@@ -9,14 +9,14 @@ export default function Page() {
     <>
       <RouteHeader path="/multi-agent/subagents" />
 
-      <Callout tone="warn" title="Partial: the delegation log's writer is unpublished">
-        Each sub-agent tool records its delegation with{" "}
-        <code>writeDelegationsToWorkingMemory</code> from{" "}
-        <code>./working-memory</code>, which is on neither the page nor its
-        Code tab. The import and its three call sites are commented out, not
-        reimplemented. The supervisor and sub-agents run, but{" "}
-        <code>state.delegations</code> is never written, so the left-hand log
-        stays on its empty state.
+      <Callout tone="info" title="Delegation log writer now published">
+        The page now prints the <code>working-memory.ts</code> helper, so the
+        three sub-agent tools call <code>writeDelegationsToWorkingMemory</code>{" "}
+        again and the supervisor&apos;s working memory is thread-scoped as
+        published. The left-hand log should fill as delegations complete. The
+        page&apos;s optional New chat control and separate-server
+        (<code>registerCopilotKit</code>) setup are not used here: this repo
+        runs Mastra in-process, the page&apos;s own default.
       </Callout>
 
       <Callout tone="warn" title="Published bug: tool names don't match the renderers">
@@ -47,8 +47,8 @@ export default function Page() {
             prompts={[
               "Produce a short blog post about the benefits of cold exposure training. Research first, then write, then critique.",
             ]}
-            expect="As published, here: the supervisor delegates (in the Inspector, TOOL_CALL_START events named researchAgentTool → writingAgentTool → critiqueAgentTool, each with a TOOL_CALL_RESULT holding the sub-agent's text) and then summarises in chat. No sub-agent cards, no banner, and an empty delegation log, all for the two published gaps above."
-            fail="No tool calls at all (the supervisor answered alone), or a result containing “[sub-agent error] …”. If cards do appear, the name mismatch has been fixed upstream and this route should be re-checked."
+            expect="As published, here: the supervisor delegates (in the Inspector, TOOL_CALL_START events named researchAgentTool → writingAgentTool → critiqueAgentTool, each with a TOOL_CALL_RESULT holding the sub-agent's text) and then summarises in chat. No sub-agent cards and no banner, because of the name mismatch above; the delegation log on the left should gain one entry per delegation."
+            fail="No tool calls at all (the supervisor answered alone), or a result containing “[sub-agent error] …” (also check the model id: the sub-agents and supervisor use the published gpt-6-luna), or an empty log with a “working-memory write failed” line in the server log. If cards do appear, the name mismatch has been fixed upstream and this route should be re-checked."
           />
         </div>
       </Panel>
@@ -64,6 +64,10 @@ export default function Page() {
 
       <Panel title="Sub-agents as tools (published)">
         <SourceCode file="frontend/src/mastra/subagents.ts" />
+      </Panel>
+
+      <Panel title="Delegation-log writer (published)">
+        <SourceCode file="frontend/src/mastra/working-memory.ts" />
       </Panel>
 
       <Panel title="Supervisor (published)">

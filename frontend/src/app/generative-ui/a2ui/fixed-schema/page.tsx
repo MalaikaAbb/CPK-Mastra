@@ -9,19 +9,17 @@ export default function Page() {
     <>
       <RouteHeader path="/generative-ui/a2ui/fixed-schema" />
 
-      <Callout tone="warn" title="Harness-written: a2ui-context.ts and the runtime route">
+      <Callout tone="warn" title="Harness-written: the runtime route">
         <p>
-          The published <code>generateA2uiTool</code> imports{" "}
-          <code>readForwardedA2uiContext</code> and{" "}
-          <code>systemPromptFrom</code> from <code>./a2ui-context</code>, which is
-          never published. This repo writes both (marked repo-authored). They
-          read the same <code>&quot;ag-ui&quot;</code> request-context channel and
-          use the same prompt format as the published <code>foldHostContext</code>.
+          The demo page&apos;s <code>/api/copilotkit-a2ui-fixed-schema</code>{" "}
+          route is not published. It is supplied here with exactly the
+          page&apos;s <code>injectA2UITool: false</code> runtime snippet.
         </p>
         <p className="mt-2">
-          The demo page&apos;s <code>/api/copilotkit-a2ui-fixed-schema</code>{" "}
-          route is not published either. It is supplied here with exactly the
-          page&apos;s <code>injectA2UITool: false</code> runtime snippet.
+          The <code>./a2ui-context</code> helpers{" "}
+          (<code>readForwardedA2uiContext</code>, <code>systemPromptFrom</code>)
+          that <code>generateA2uiTool</code> imports are now printed on the page
+          and copied verbatim; the earlier repo-authored version is gone.
         </p>
       </Callout>
 
