@@ -210,8 +210,8 @@ export const NAV: NavGroup[] = [
         docPath: "/mastra/generative-ui/a2ui/dynamic-schema",
         summary:
           "A client-side component catalog the runtime hands to an auto-injected generate_a2ui tool, which designs the whole surface per request.",
-        status: "partial",
-        statusNote: "Built from the published code; not yet exercised against a live model in this harness. Needs a harness-supplied runtime route (unpublished).",
+        status: "broken",
+        statusNote: "The page describes but never prints the same-process runtime route or the agent that owns generate_a2ui; not filled in, so nothing renders. Route config is labelled prose-only.",
       },
       {
         path: "/generative-ui/a2ui/fixed-schema",
@@ -221,7 +221,7 @@ export const NAV: NavGroup[] = [
         summary:
           "A fixed flight-card catalog rendered from an agent-owned generate_a2ui tool, with runtime injection turned off.",
         status: "partial",
-        statusNote: "Built from the published code; not yet exercised against a live model in this harness. Runs on two harness-written helpers the page imports but never publishes.",
+        statusNote: "Built from the published code; not yet exercised against a live model in this harness. The runtime route is harness glue; the a2ui-context helpers are now published.",
       },
       {
         path: "/generative-ui/json-render",

@@ -1,40 +1,44 @@
+// Published on docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema
+// (page snippet + Code tab `src/mastra/tools/a2ui-context.ts`), verbatim.
 /**
- * REPO-AUTHORED — not published on any doc page.
+ * Server-side read of the A2UI schema context the `@ag-ui/mastra` bridge
+ * forwards onto Mastra's request context.
  *
- * `a2ui-generate.ts` (published on /mastra/generative-ui/a2ui/fixed-schema)
- * imports `readForwardedA2uiContext` and `systemPromptFrom` from `./a2ui-context`,
- * but neither the page nor its demo Code tab ships that module. These two
- * functions were written for this harness so the published tool can run.
- *
- * They are grounded in two published facts rather than invented behaviour:
- *
- *  - `@ag-ui/mastra` stores the run's `RunAgentInput.context` on Mastra's request
- *    context as `requestContext.set("ag-ui", { context })` (see
- *    `applyInputContext` in the bridge). That is where the provider's catalog
- *    schema and generation guidelines arrive.
- *  - The published `foldHostContext` (open-gen-ui agents, agents/index.ts) reads
- *    that same key and formats each entry as `### <description>\n<value>`. The
- *    prompt builder below uses the identical format.
+ * The bridge does `requestContext.set("ag-ui", { context })` with
+ * `RunAgentInput.context`, which carries the catalog schema + A2UI generation
+ * guidelines the middleware injected. The dynamic `generate_a2ui` tool must
+ * ground its inner `render_a2ui` subagent on this — the outer model leaves the
+ * tool's `contextEntries` arg empty, so without reading it here the render runs
+ * with no catalog and produces invalid/misnamed components (no surface renders;
+ * varies run to run; masked under aimock). Mirrors `readAgUiContext` in
+ * `@ag-ui/mastra`'s `getA2UITools`. Degrades to `[]` for any unexpected shape.
  */
-
-type ContextEntry = Record<string, unknown>;
-
-type ExecutionContextLike = {
-  requestContext?: { get(key: string): unknown };
-};
-
-/** Context entries the bridge forwarded for this run, or `[]`. */
 export function readForwardedA2uiContext(
   executionContext: unknown,
-): ContextEntry[] {
-  const agui = (executionContext as ExecutionContextLike | undefined)
-    ?.requestContext?.get("ag-ui") as { context?: ContextEntry[] } | undefined;
-  return Array.isArray(agui?.context) ? agui.context : [];
+): Array<Record<string, unknown>> {
+  const requestContext = (
+    executionContext as { requestContext?: { get?: (key: string) => unknown } }
+  )?.requestContext;
+  const entry =
+    typeof requestContext?.get === "function"
+      ? requestContext.get("ag-ui")
+      : undefined;
+  const context = (entry as { context?: unknown } | undefined)?.context;
+  return Array.isArray(context)
+    ? (context as Array<Record<string, unknown>>)
+    : [];
 }
 
-/** Flatten context entries into the inner `render_a2ui` call's system prompt. */
-export function systemPromptFrom(entries: ContextEntry[] | undefined): string {
-  return (entries ?? [])
-    .map((entry) => `### ${String(entry.description ?? "")}\n${String(entry.value ?? "")}`)
+/**
+ * Flatten forwarded context entries into the system prompt for the inner
+ * `render_a2ui` call. Entries without a non-empty string `value` are dropped,
+ * so an empty (ungrounded) prompt is `""` rather than a string of blanks.
+ */
+export function systemPromptFrom(
+  contextEntries: Array<Record<string, unknown>> | undefined,
+): string {
+  return (contextEntries ?? [])
+    .map((entry) => entry?.value)
+    .filter((value): value is string => typeof value === "string" && !!value)
     .join("\n\n");
 }
