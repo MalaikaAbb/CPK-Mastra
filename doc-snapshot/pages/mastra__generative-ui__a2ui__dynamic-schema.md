@@ -1,46 +1,20 @@
 # Dynamic Schema A2UI
 
-> LLM-generated A2UI. A secondary LLM creates both the schema and data from any prompt.
+> Generate a Mastra dashboard from a client-side A2UI catalog.
 
 
 <!-- interactive demo: declarative-gen-ui -->
 
 
-In the dynamic-schema approach, a secondary LLM generates the entire
-UI (schema, data, and layout) based on the conversation context.
-It's the most flexible A2UI flavor; the agent can render any UI for
-any request without pre-defined schemas.
+Dynamic Schema A2UI lets an agent draw a surface from the conversation. The
+frontend supplies the allowed components and their props through a catalog;
+the agent generates the component tree and data for each request.
 
-## How it works
+## Frontend catalog
 
-1. The agent calls the A2UI tool to draw a surface, made available
-   when `injectA2UITool: true`.
-2. The runtime serializes your client-side catalog (component names +
-   Zod prop schemas) into the agent's `copilotkit.context` so the LLM
-   knows which components it may emit.
-3. The tool call streams through LangGraph as `TOOL_CALL_ARGS` events.
-4. The A2UI middleware intercepts the stream and renders cards
-   progressively as data items arrive.
-
-## The 3-file split
-
-The canonical Bring-Your-Own-Catalog (BYOC) layout keeps three files
-side-by-side under `frontend/src/app/a2ui/`:
-
-| File | What lives there |
-|---|---|
-| `definitions.ts` | Zod props schema + human-readable descriptions for each custom component. Platform-agnostic, so the runtime can serialise it to the LLM. |
-| `renderers.tsx` | React implementations keyed by the same names. TypeScript enforces that every definition has a renderer. |
-| `catalog.ts` | `createCatalog(definitions, renderers, { includeBasicCatalog: true })`: merges your custom components with CopilotKit's built-in primitives. |
-
-<Steps>
-<Step>
-### Declare your custom component definitions
-
-Each entry pairs a Zod prop schema with a description. The description
-is crucial; the LLM reads it to decide which component to emit. The
-example below ships a small dashboard catalog (Card / StatusBadge /
-Metric / InfoRow / PrimaryButton):
+Define your components, renderers, and catalog in the demo source. The same
+catalog works whether Mastra runs with the CopilotKit route or in a separate
+process.
 
 ```typescript
 // src/app/demos/declarative-gen-ui/a2ui/definitions.ts
@@ -138,13 +112,6 @@ export const myDefinitions = {
   },
 } satisfies CatalogDefinitions;
 ```
-</Step>
-
-<Step>
-### Implement the React renderers
-
-Every key in `myDefinitions` must have a matching renderer. Props are
-statically typed against the Zod schema, so refactors stay safe:
 
 ```typescript
 // src/app/demos/declarative-gen-ui/a2ui/renderers.tsx
@@ -434,15 +401,6 @@ export const myRenderers: CatalogRenderers<MyDefinitions> = {
   },
 };
 ```
-</Step>
-
-<Step>
-### Wire definitions × renderers into a catalog
-
-`createCatalog` is what you hand to the provider. Flip
-`includeBasicCatalog: true` to merge CopilotKit's built-ins
-(Column, Row, Text, Image, Card, Button, List, Tabs, …), so the LLM
-can compose custom + basic components interchangeably:
 
 ```typescript
 // src/app/demos/declarative-gen-ui/a2ui/catalog.ts
@@ -456,14 +414,9 @@ export const myCatalog = createCatalog(myDefinitions, myRenderers, {
   includeBasicCatalog: true,
 });
 ```
-</Step>
 
-<Step>
-### Pass the catalog to the provider
-
-A single prop (`a2ui={{ catalog }}`) is all the frontend needs; the
-provider registers the catalog and wires up the built-in A2UI
-activity-message renderer:
+Pass the catalog to the provider. Its `runtimeUrl` must point to a **CopilotKit
+endpoint**, and its `agent` must match a key returned by that endpoint.
 
 ```typescript
 // src/app/demos/declarative-gen-ui/page.tsx
@@ -488,86 +441,84 @@ export default function DeclarativeGenUIDemo() {
     </CopilotKit>
 ```
 
-That is all the default path needs. The catalog auto-enables A2UI and
-injects the `generate_a2ui` tool, so the runtime needs no `a2ui` block.
-(No catalog? Turn it on from the runtime instead with
-`a2ui: { injectA2UITool: true }`.)
-</Step>
-</Steps>
+## Mastra in the same process
 
-## I opted out of auto-inject, now what?
+The live demo uses a dedicated CopilotKit runtime route and a local Mastra
+agent. Its agent already supplies its own `generate_a2ui` tool, so the route
+sets `injectA2UITool: false` to avoid registering the tool twice. The route
+also pins `defaultCatalogId` to the catalog registered by the page.
 
-By not passing a catalog, not setting `injectA2UITool`, or by passing
-a catalog and setting `injectA2UITool: false`, you have opted out
-entirely. That means you hook up two pieces yourself: the
-`generate_a2ui` tool which lets your agent generate A2UI surfaces, and
-the `A2UIMiddleware` which lets those surfaces render.
+Use this layout when the Mastra instance is imported into the same process as
+the runtime route. See the [Copilot Runtime guide](/mastra/copilot-runtime)
+for the local agent bridge.
 
-<Steps>
-<Step>
-### The `A2UIMiddleware`
+## Mastra in a separate process
 
-The `A2UIMiddleware` is what turns the agent's `a2ui_operations` into
-rendered surfaces. Without it, the agent's output never becomes UI; it
-falls through as a plain tool result. It can also inject the
-`generate_a2ui` tool for you (`injectA2UITool: true`), letting you skip
-the next step. Attach it to the AG-UI agent:
+When Mastra runs as its own service, register a CopilotKit endpoint **on that
+service**. This keeps the Mastra agent local to the endpoint that injects and
+executes `generate_a2ui`, while the browser reaches it over HTTP. The example
+below is a runnable Mastra fixture under
+`showcase/integrations/mastra/tests/fixtures/remote-a2ui/mastra/index.ts`:
 
-```typescript
-import { A2UIMiddleware } from "@ag-ui/a2ui-middleware";
+Use `@ag-ui/mastra` 1.1.4 or later with compatible `@ag-ui/core` and
+`@ag-ui/client` versions. The Showcase fixture uses 1.1.4 and 0.0.58.
 
-agent.use(new A2UIMiddleware({ injectA2UITool: false }));
+```ts title="src/mastra/index.ts"
+import { Mastra } from "@mastra/core/mastra";
+import { Agent } from "@mastra/core/agent";
+import { getLocalAgent } from "@ag-ui/mastra";
+import { registerCopilotKit } from "@ag-ui/mastra/copilotkit";
+
+const dashboardAgent = new Agent({
+  id: "declarative-gen-ui",
+  name: "Dashboard",
+  model: yourModel,
+  instructions: "Call generate_a2ui for dashboard requests.",
+});
+
+export const mastra = new Mastra({
+  agents: { dashboardAgent },
+  server: {
+    apiRoutes: [
+      registerCopilotKit({
+        path: "/copilotkit",
+        resourceId: "demo-user",
+        agents: () => {
+          const agent = getLocalAgent({
+            mastra,
+            agentId: "dashboardAgent",
+            resourceId: "demo-user",
+          });
+          if (!agent) throw new Error("dashboardAgent is not registered");
+          return { "declarative-gen-ui": agent, default: agent };
+        },
+        a2ui: {
+          injectA2UITool: true,
+          defaultCatalogId: "declarative-gen-ui-catalog",
+        },
+        cors: { origin: "http://localhost:3000" },
+      }),
+    ],
+  },
+});
 ```
-</Step>
 
-<Step>
-### The A2UI agent tool
+Set the provider's `runtimeUrl` to your Mastra service's `/copilotkit` URL (or
+proxy that path through your frontend). Keep the provider's agent name
+`declarative-gen-ui` and catalog ID `declarative-gen-ui-catalog` aligned with
+the route. Use the frontend origin in `cors.origin` when calling the service
+directly from the browser. In production, derive `resourceId` from the
+authenticated caller instead of using the fixed example value.
 
-The `generate_a2ui` tool runs a secondary LLM (a subagent) that designs
-the surface, which is why you hand it a model. Build it with the AG-UI
-factory and add it to your agent's tools:
+The generic `MastraAgent.getRemoteAgents()` bridge described in the
+[runtime guide](/mastra/copilot-runtime) serves ordinary remote agent runs. For
+this A2UI configuration, use the registered endpoint so the A2UI tool runs
+beside the Mastra agent. A completed `render_a2ui` tool call alone does not
+prove that a surface rendered: check that the response contains nonempty
+`a2ui_operations` for components and data, and that the dashboard appears in
+the browser rather than remaining at “Building Interface.”
 
-```python title="agent.py"
-from ag_ui_langgraph import get_a2ui_tools
-from langchain_openai import ChatOpenAI
+## When to use dynamic schemas
 
-generate_a2ui = get_a2ui_tools({
-    "model": ChatOpenAI(model="gpt-4o"),
-    "default_catalog_id": "copilotkit://app-dashboard-catalog",
-})
-
-tools = [my_other_tool, generate_a2ui]
-```
-</Step>
-</Steps>
-
-## Progressive streaming
-
-The secondary LLM's `render_a2ui` tool call streams through LangGraph
-as `TOOL_CALL_ARGS` events. The A2UI middleware:
-
-1. Waits for the full `components` array before emitting anything;
-   the schema must be complete before rendering starts.
-2. Extracts `surfaceId` + `root` from the partial JSON.
-3. Emits `createSurface` + `updateComponents` once the schema is
-   complete.
-4. Extracts complete `items` objects progressively and emits an
-   `updateDataModel` for each, so cards appear one by one as data
-   streams in.
-
-A built-in progress indicator shows while the schema is still
-generating and hides automatically once data items start arriving.
-
-## When should I use dynamic schemas?
-
-- You don't know the UI shape ahead of time; the agent decides what
-  to show based on the user's request.
-- You want to prototype A2UI without committing to a schema file yet.
-- You're building a conversational dashboard where the layout varies
-  per turn.
-
-If the surface is well-known (e.g. a product card, a flight result),
-prefer a **[fixed schema](./fixed-schema)**; it's faster, cheaper,
-and the UI is deterministic.
-
-<IntegrationGrid path="generative-ui/a2ui" />
+Use this approach when the user can ask for different layouts and data. If the
+shape is known ahead of time, use a [fixed schema](./fixed-schema).
