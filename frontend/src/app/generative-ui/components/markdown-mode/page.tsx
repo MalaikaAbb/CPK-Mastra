@@ -2,7 +2,6 @@ import { RouteHeader } from "@/components/route-header";
 import { SourceCodeGroup } from "@/components/source-code";
 import { Callout, Panel } from "@/components/ui";
 
-const V = "docs-verbatim/generative-ui/components/markdown-mode";
 
 export default function Page() {
   return (
@@ -33,15 +32,10 @@ export default function Page() {
         </p>
       </Panel>
 
-      <Panel title="Page snippets (verbatim, React tabs, not compiled)">
-        <p className="mb-3 text-xs text-slate-500"><code>01.md</code> Example reply; <code>02.tsx</code> Turn it on; <code>03.tsx</code> sendContext: false; <code>04.json</code> Forwarded catalog; <code>05.py</code> Build your own prompt (Python)</p>
+      <Panel title="The demo's code" description="The page's code as mounted in the demo (labelled where the harness adds an import, a runtime URL or a borrowed component). Snippets that cannot run are listed in the status note and README item 26, and are not copied here.">
         <SourceCodeGroup
           files={[
-            { file: `${V}/01.md` },
-            { file: `${V}/02.tsx` },
-            { file: `${V}/03.tsx` },
-            { file: `${V}/04.json` },
-            { file: `${V}/05.py` },
+            { file: "frontend/src/app/generative-ui/components/markdown-mode/demo-chat/page.tsx" },
           ]}
         />
       </Panel>

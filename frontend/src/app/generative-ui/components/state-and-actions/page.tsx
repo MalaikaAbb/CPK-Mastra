@@ -1,8 +1,6 @@
 import { RouteHeader } from "@/components/route-header";
-import { SourceCodeGroup } from "@/components/source-code";
 import { Callout, Panel } from "@/components/ui";
 
-const V = "docs-verbatim/generative-ui/components/state-and-actions";
 
 export default function Page() {
   return (
@@ -27,22 +25,13 @@ export default function Page() {
         </p>
       </Panel>
 
-      <Panel title="Page snippets (verbatim, React tabs, not compiled)">
-        <p className="mb-3 text-xs text-slate-500"><code>01.tsx</code> State + bind; <code>02.tsx</code> useGenerativeUIState; <code>03.tsx</code> Functions + events; <code>04.tsx</code> useGenerativeUIFunction; <code>05.tsx</code> Event result in a component; <code>06.ts</code> Who may call a function; <code>07.ts</code> Events to the agent; <code>08.tsx</code> Writable prop; <code>09.tsx</code> Keep what the user types</p>
-        <SourceCodeGroup
-          files={[
-            { file: `${V}/01.tsx` },
-            { file: `${V}/02.tsx` },
-            { file: `${V}/03.tsx` },
-            { file: `${V}/04.tsx` },
-            { file: `${V}/05.tsx` },
-            { file: `${V}/06.ts` },
-            { file: `${V}/07.ts` },
-            { file: `${V}/08.tsx` },
-            { file: `${V}/09.tsx` },
-          ]}
-        />
+      <Panel title="Page snippets (verbatim, React tabs, not      <Panel title="The page's code">
+        <p className="text-sm text-slate-600 dark:text-slate-400">
+          Not copied into this repo: nothing on this page can run here, so its
+          snippets are left on the{" "}
+          <a className="text-[var(--accent)] underline underline-offset-4" href="https://docs.copilotkit.ai/mastra/generative-ui/components/state-and-actions">
+            doc page
+          </a>
+          . The missing pieces are listed above and in README item 26.
+        </p>
       </Panel>
-    </>
-  );
-}

@@ -2,7 +2,6 @@ import { RouteHeader } from "@/components/route-header";
 import { SourceCodeGroup } from "@/components/source-code";
 import { Callout, Panel } from "@/components/ui";
 
-const V = "docs-verbatim/generative-ui/components/theming";
 
 export default function Page() {
   return (
@@ -34,17 +33,12 @@ export default function Page() {
         </p>
       </Panel>
 
-      <Panel title="Page snippets (verbatim, React tabs, not compiled)">
-        <p className="mb-3 text-xs text-slate-500"><code>01.tsx</code> Provider theme; <code>02.ts</code> GenerativeUITheme; <code>03.html</code> Dark class; <code>04.tsx</code> Color-scheme script; <code>05.tsx</code> Theme per mode; <code>06.tsx</code> Theme map; <code>07.css</code> CSS variables</p>
+      <Panel title="The demo's code" description="The page's code as mounted in the demo (labelled where the harness adds an import, a runtime URL or a borrowed component). Snippets that cannot run are listed in the status note and README item 26, and are not copied here.">
         <SourceCodeGroup
           files={[
-            { file: `${V}/01.tsx` },
-            { file: `${V}/02.ts` },
-            { file: `${V}/03.html` },
-            { file: `${V}/04.tsx` },
-            { file: `${V}/05.tsx` },
-            { file: `${V}/06.tsx` },
-            { file: `${V}/07.css` },
+            { file: "frontend/src/app/generative-ui/components/theming/demo-chat/page.tsx" },
+            { file: "frontend/src/app/generative-ui/components/theming/demo-chat/dark-mode.tsx" },
+            { file: "frontend/src/app/generative-ui/components/theming/demo-chat/theming.css" },
           ]}
         />
       </Panel>

@@ -2,7 +2,6 @@ import { RouteHeader } from "@/components/route-header";
 import { SourceCodeGroup } from "@/components/source-code";
 import { Callout, Panel } from "@/components/ui";
 
-const V = "docs-verbatim/generative-ui/components/surfaces";
 
 export default function Page() {
   return (
@@ -34,16 +33,12 @@ export default function Page() {
         </p>
       </Panel>
 
-      <Panel title="Page snippets (verbatim, React tabs, not compiled)">
-        <p className="mb-3 text-xs text-slate-500"><code>01.tsx</code> Page target; <code>02.tsx</code> Limit the components; <code>03.tsx</code> Scroll; <code>04.css</code> Scroll margin; <code>05.tsx</code> One target per item; <code>06.tsx</code> Error boundary</p>
+      <Panel title="The demo's code" description="The page's code as mounted in the demo (labelled where the harness adds an import, a runtime URL or a borrowed component). Snippets that cannot run are listed in the status note and README item 26, and are not copied here.">
         <SourceCodeGroup
           files={[
-            { file: `${V}/01.tsx` },
-            { file: `${V}/02.tsx` },
-            { file: `${V}/03.tsx` },
-            { file: `${V}/04.css` },
-            { file: `${V}/05.tsx` },
-            { file: `${V}/06.tsx` },
+            { file: "frontend/src/app/generative-ui/components/surfaces/demo-chat/page.tsx" },
+            { file: "frontend/src/app/generative-ui/components/surfaces/demo-chat/targets.tsx" },
+            { file: "frontend/src/app/generative-ui/components/surfaces/demo-chat/surfaces.css" },
           ]}
         />
       </Panel>

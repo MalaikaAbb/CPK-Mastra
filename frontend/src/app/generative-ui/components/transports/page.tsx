@@ -2,7 +2,6 @@ import { RouteHeader } from "@/components/route-header";
 import { SourceCodeGroup } from "@/components/source-code";
 import { Callout, Panel } from "@/components/ui";
 
-const V = "docs-verbatim/generative-ui/components/transports";
 
 export default function Page() {
   return (
@@ -34,14 +33,11 @@ export default function Page() {
         </p>
       </Panel>
 
-      <Panel title="Page snippets (verbatim, React tabs, not compiled)">
-        <p className="mb-3 text-xs text-slate-500"><code>01.tsx</code> Tool transport; <code>02.ts</code> Runtime; <code>03.tsx</code> Markdown transport; <code>04.tsx</code> Only some agents</p>
+      <Panel title="The demo's code" description="The page's code as mounted in the demo (labelled where the harness adds an import, a runtime URL or a borrowed component). Snippets that cannot run are listed in the status note and README item 26, and are not copied here.">
         <SourceCodeGroup
           files={[
-            { file: `${V}/01.tsx` },
-            { file: `${V}/02.ts` },
-            { file: `${V}/03.tsx` },
-            { file: `${V}/04.tsx` },
+            { file: "frontend/src/app/generative-ui/components/transports/demo-chat/page.tsx" },
+            { file: "frontend/src/app/api/copilotkit-genui-transports/[[...slug]]/route.ts" },
           ]}
         />
       </Panel>

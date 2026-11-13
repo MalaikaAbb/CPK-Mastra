@@ -2,7 +2,6 @@ import { RouteHeader } from "@/components/route-header";
 import { SourceCodeGroup } from "@/components/source-code";
 import { Callout, Panel } from "@/components/ui";
 
-const V = "docs-verbatim/generative-ui/components/from-a2ui";
 
 export default function Page() {
   return (
@@ -34,16 +33,12 @@ export default function Page() {
         </p>
       </Panel>
 
-      <Panel title="Page snippets (verbatim, React tabs, not compiled)">
-        <p className="mb-3 text-xs text-slate-500"><code>01.tsx</code> Provider, before; <code>02.tsx</code> Provider, after; <code>03.ts</code> Runtime, before; <code>04.ts</code> Runtime, after; <code>05.ts</code> Catalog, before; <code>06.ts</code> Catalog, after</p>
+      <Panel title="The demo's code" description="The page's code as mounted in the demo (labelled where the harness adds an import, a runtime URL or a borrowed component). Snippets that cannot run are listed in the status note and README item 26, and are not copied here.">
         <SourceCodeGroup
           files={[
-            { file: `${V}/01.tsx` },
-            { file: `${V}/02.tsx` },
-            { file: `${V}/03.ts` },
-            { file: `${V}/04.ts` },
-            { file: `${V}/05.ts` },
-            { file: `${V}/06.ts` },
+            { file: "frontend/src/app/generative-ui/components/from-a2ui/demo-chat/app-ui.ts" },
+            { file: "frontend/src/app/generative-ui/components/from-a2ui/demo-chat/page.tsx" },
+            { file: "frontend/src/app/generative-ui/components/_shared/borrowed-ui.tsx" },
           ]}
         />
       </Panel>
