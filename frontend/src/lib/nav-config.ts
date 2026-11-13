@@ -193,6 +193,17 @@ export const NAV: NavGroup[] = [
         status: "working",
       },
       {
+        path: "/generative-ui/a2ui",
+        hasDemo: true,
+        title: "A2UI",
+        docPath: "/mastra/generative-ui/a2ui",
+        summary:
+          "The A2UI overview's two switches: a2ui: {} on the runtime and an optional theme on the provider, around the Quickstart agent.",
+        status: "partial",
+        statusNote:
+          "The page's agent (myAgent) is undefined and emits no A2UI; swapped for the Quickstart agent on a dedicated route. Not yet run, so whether a surface ever renders is unverified.",
+      },
+      {
         path: "/generative-ui/a2ui/dynamic-schema",
         hasDemo: true,
         title: "A2UI · Dynamic Schema",
