@@ -32,6 +32,16 @@ export const INSPECTOR_ENABLED =
 export const NESTED_PROVIDER_ROUTES = [
   "/generative-ui/a2ui/dynamic-schema/demo-chat",
   "/generative-ui/a2ui/fixed-schema/demo-chat",
+  // Components and surfaces: each demo mounts its own CopilotKitProvider
+  // (generativeUI is a provider prop).
+  "/generative-ui/components/demo-chat",
+  "/generative-ui/components/surfaces/demo-chat",
+  "/generative-ui/components/catalogs/demo-chat",
+  "/generative-ui/components/standard-catalog/demo-chat",
+  "/generative-ui/components/theming/demo-chat",
+  "/generative-ui/components/transports/demo-chat",
+  "/generative-ui/components/markdown-mode/demo-chat",
+  "/generative-ui/components/from-a2ui/demo-chat",
   "/generative-ui/open-generative-ui/demo-chat",
   "/generative-ui/open-generative-ui/advanced/demo-chat",
   "/multi-agent/subagents/demo-chat",

@@ -9,19 +9,26 @@ export default function Page() {
     <>
       <RouteHeader path="/generative-ui/components/transports" />
 
-      <Callout tone="warn" title="Reference-only: needs a newer CopilotKit than this repo pins">
+      <Callout tone="info" title="How this route is wired">
         <p>
-          Components and surfaces live in{" "}
-          <code>@copilotkit/react-core/v2/generative-ui</code>, which first
-          ships in 1.81.0. This repo pins <code>^1.77.0</code> (lockfile
-          1.79.1), so none of this page&apos;s code can compile here yet. It is
-          shown as published, not compiled. See README §9 (26) and{" "}
-          <code>docs-verbatim/README.md</code>.
+          The demo runs the page&apos;s provider config on{" "}
+          <code>/api/copilotkit-genui</code> (for this page, <code>/api/copilotkit-genui-transports</code> with the page&apos;s <code>generativeUI: true</code>). The agent is this
+          repo&apos;s <code>componentsAgent</code>, a Mastra agent standing in
+          for the section&apos;s TanStack <code>BuiltInAgent</code> (same
+          prompt, no tools). CopilotKit is 1.87 (was 1.79.1, which has no{" "}
+          <code>v2/generative-ui</code>).
         </p>
-        <p className="mt-2">The runtime fragment uses an undefined <code>agent</code> (in this harness it would be a Mastra agent).</p>
+        <p className="mt-2">
+          The run&apos;s <code>render_ui</code> tool reaches the model with its
+          full schema, but its guide does not: <code>@ag-ui/mastra</code> puts the
+          run&apos;s context entries on Mastra&apos;s <code>requestContext</code>,
+          not in the prompt, and the page shows no Mastra code to read them, so
+          none is added. Expect UI that may be rejected or incomplete until
+          checked in a browser (README Known issues).
+        </p>
       </Callout>
 
-      <Panel title="What it would demonstrate">
+      <Panel title="What it demonstrates">
         <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
           Two ways for UI to reach the browser: the default tool transport (<code>render_ui</code>), or <code>transport: "markdown"</code> where the agent writes UI in its reply. <code>agentIds</code> on the provider (or <code>generativeUI</code> on the runtime) limits which agents get it.
         </p>

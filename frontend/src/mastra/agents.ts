@@ -460,3 +460,28 @@ export const openGenUiAdvancedAgent = new Agent({
   memory: openGenUiMemory("open-gen-ui-advanced-agent-memory"),
 });
 // #endregion
+
+// #region components-agent
+// Components and surfaces — docs.copilotkit.ai/mastra/generative-ui/components
+// ("Add the runtime and an agent")
+/**
+ * The section's agent. The page prints a TanStack `BuiltInAgent` on
+ * `openaiText("gpt-6-luna")`; this harness runs Mastra agents only, so it is a
+ * Mastra `Agent` (framework-own-agents swap, labelled): the snippet's system
+ * prompt verbatim, no tools (the snippet defines none), the repo's `model()`.
+ *
+ * `render_ui` arrives per run as a client tool with its full JSON schema
+ * (`@ag-ui/mastra` passes `parameters` through as `inputSchema`). The run's
+ * context entries — the `render_ui` guide, and markdown mode's schema and
+ * fence guide — are only put on `requestContext.get("ag-ui")`, not into the
+ * prompt, and these instructions do not read them: the page shows no Mastra
+ * code for that, so nothing is added (README Known issues).
+ */
+export const componentsAgent = new Agent({
+  id: "componentsAgent",
+  name: "Components and surfaces Agent",
+  // The page's prompt, verbatim.
+  instructions: "You are a helpful assistant. When a visual answer helps, render it with generative UI.",
+  model: model(),
+});
+// #endregion

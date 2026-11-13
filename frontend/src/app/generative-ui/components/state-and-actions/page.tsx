@@ -9,16 +9,16 @@ export default function Page() {
     <>
       <RouteHeader path="/generative-ui/components/state-and-actions" />
 
-      <Callout tone="warn" title="Reference-only: needs a newer CopilotKit than this repo pins">
+      <Callout tone="warn" title="Broken: reference only">
         <p>
-          Components and surfaces live in{" "}
-          <code>@copilotkit/react-core/v2/generative-ui</code>, which first
-          ships in 1.81.0. This repo pins <code>^1.77.0</code> (lockfile
-          1.79.1), so none of this page&apos;s code can compile here yet. It is
-          shown as published, not compiled. See README §9 (26) and{" "}
-          <code>docs-verbatim/README.md</code>.
+          Nothing on this page is mounted. Its samples need a <code>Cart</code>{" "}
+          type and a <code>cart</code> instance, and a <code>ProductCard</code>,
+          that the page never defines, or are fragments (<code>events</code>,{" "}
+          <code>writable</code>, function declarations) with no catalog around
+          them. Nothing is written in their place, so it has no demo and no
+          backend of its own. CopilotKit is now 1.87, so the version is no
+          longer the blocker.
         </p>
-        <p className="mt-2"><code>Cart</code>, <code>cart.addItem</code> and the full <code>shopUI</code> are referenced but the snippets are fragments of it (object members out of context).</p>
       </Callout>
 
       <Panel title="What it would demonstrate">

@@ -53,7 +53,7 @@ The `useHumanInTheLoop` variant **does** run, at
 ## generative-ui/components — `/mastra/generative-ui/components`
 
 React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.sh` Install, `02.sh` .env.local, `03.ts` Runtime + agent, `04.tsx` Provider, `05.tsx` Layout, `06.tsx` Page, `07.txt` Prompt to try.
-All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+Need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is now on 1.87.1, and the runnable parts are mounted in the route's `demo-chat/` (main README, item 26). Referenced, never defined on the page:
 
 | Symbol | From | Used by |
 | --- | --- | --- |
@@ -63,7 +63,7 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 ## generative-ui/components/surfaces — `/mastra/generative-ui/components/surfaces`
 
 React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.tsx` Page target, `02.tsx` Limit the components, `03.tsx` Scroll, `04.css` Scroll margin, `05.tsx` One target per item, `06.tsx` Error boundary.
-All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+Need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is now on 1.87.1, and the runnable parts are mounted in the route's `demo-chat/` (main README, item 26). Referenced, never defined on the page:
 
 | Symbol | From | Used by |
 | --- | --- | --- |
@@ -73,7 +73,7 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 ## generative-ui/components/catalogs — `/mastra/generative-ui/components/catalogs`
 
 React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.tsx` app/catalog.tsx, `02.tsx` Provider, `03.tsx` Typed props, `04.ts` zod, `05.ts` Valibot, `06.ts` Combine catalogs, `07.ts` Export for A2UI tools, `08.tsx` Positional parameter order.
-All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+Need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is now on 1.87.1, and the runnable parts are mounted in the route's `demo-chat/` (main README, item 26). Referenced, never defined on the page:
 
 | Symbol | From | Used by |
 | --- | --- | --- |
@@ -85,7 +85,7 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 ## generative-ui/components/standard-catalog — `/mastra/generative-ui/components/standard-catalog`
 
 React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.tsx` Provider, `02.ts` Add your own components, `03.ts` Drop components, `04.tsx` Replace a component.
-All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+Need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is now on 1.87.1, and the runnable parts are mounted in the route's `demo-chat/` (main README, item 26). Referenced, never defined on the page:
 
 | Symbol | From | Used by |
 | --- | --- | --- |
@@ -94,7 +94,7 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 ## generative-ui/components/state-and-actions — `/mastra/generative-ui/components/state-and-actions`
 
 React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.tsx` State + bind, `02.tsx` useGenerativeUIState, `03.tsx` Functions + events, `04.tsx` useGenerativeUIFunction, `05.tsx` Event result in a component, `06.ts` Who may call a function, `07.ts` Events to the agent, `08.tsx` Writable prop, `09.tsx` Keep what the user types.
-All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+Need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is now on 1.87.1, and the runnable parts are mounted in the route's `demo-chat/` (main README, item 26). Referenced, never defined on the page:
 
 | Symbol | From | Used by |
 | --- | --- | --- |
@@ -104,7 +104,7 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 ## generative-ui/components/theming — `/mastra/generative-ui/components/theming`
 
 React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.tsx` Provider theme, `02.ts` GenerativeUITheme, `03.html` Dark class, `04.tsx` Color-scheme script, `05.tsx` Theme per mode, `06.tsx` Theme map, `07.css` CSS variables.
-All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+Need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is now on 1.87.1, and the runnable parts are mounted in the route's `demo-chat/` (main README, item 26). Referenced, never defined on the page:
 
 | Symbol | From | Used by |
 | --- | --- | --- |
@@ -113,7 +113,7 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 ## generative-ui/components/transports — `/mastra/generative-ui/components/transports`
 
 React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.tsx` Tool transport, `02.ts` Runtime, `03.tsx` Markdown transport, `04.tsx` Only some agents.
-All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+Need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is now on 1.87.1, and the runnable parts are mounted in the route's `demo-chat/` (main README, item 26). Referenced, never defined on the page:
 
 | Symbol | From | Used by |
 | --- | --- | --- |
@@ -122,7 +122,7 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 ## generative-ui/components/markdown-mode — `/mastra/generative-ui/components/markdown-mode`
 
 React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.md` Example reply, `02.tsx` Turn it on, `03.tsx` sendContext: false, `04.json` Forwarded catalog, `05.py` Build your own prompt (Python).
-All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+Need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is now on 1.87.1, and the runnable parts are mounted in the route's `demo-chat/` (main README, item 26). Referenced, never defined on the page:
 
 | Symbol | From | Used by |
 | --- | --- | --- |
@@ -131,7 +131,7 @@ All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is o
 ## generative-ui/components/from-a2ui — `/mastra/generative-ui/components/from-a2ui`
 
 React-tab page snippets (Angular tabs skipped; no demo Code tab), in page order: `01.tsx` Provider, before, `02.tsx` Provider, after, `03.ts` Runtime, before, `04.ts` Runtime, after, `05.ts` Catalog, before, `06.ts` Catalog, after.
-All need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is on 1.79.1. Referenced, never defined on the page:
+Need `@copilotkit/react-core` ≥ 1.81 (`/v2/generative-ui`); this repo is now on 1.87.1, and the runnable parts are mounted in the route's `demo-chat/` (main README, item 26). Referenced, never defined on the page:
 
 | Symbol | From | Used by |
 | --- | --- | --- |

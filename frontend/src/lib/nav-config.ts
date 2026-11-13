@@ -192,43 +192,47 @@ export const NAV: NavGroup[] = [
       },
       {
         path: "/generative-ui/components",
+        hasDemo: true,
         title: "Components and surfaces",
         docPath: "/mastra/generative-ui/components",
         summary:
           "The agent renders catalog components (the 69-component standard catalog) in the chat via a render_ui tool the runtime adds when the provider sends a catalog.",
-        status: "broken",
+        status: "partial",
         statusNote:
-          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+          "Wired to componentsAgent (a Mastra agent standing in for the section's BuiltInAgent; page prompt, no tools) on CopilotKit 1.87. render_ui reaches the model with its full schema, but not its guide: @ag-ui/mastra puts the run's context on requestContext, not in the prompt. Not browser-checked. Mounted: the page's standardUI provider.",
       },
       {
         path: "/generative-ui/components/surfaces",
+        hasDemo: true,
         title: "Surfaces",
         docPath: "/mastra/generative-ui/components/surfaces",
         summary:
           "Named GenerativeUISurface areas on the page that the agent can fill from the chat, with component limits, scrolling, per-item targets and error boundaries.",
-        status: "broken",
+        status: "partial",
         statusNote:
-          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+          "Wired to componentsAgent (a Mastra agent standing in for the section's BuiltInAgent; page prompt, no tools) on CopilotKit 1.87. render_ui reaches the model with its full schema, but not its guide: @ag-ui/mastra puts the run's context on requestContext, not in the prompt. Not browser-checked. Mounted: error-boundary provider, 'featured' (limited) and 'sidebar-notes' targets. Not mounted: FeaturedProducts and the per-item target (undefined products/Product/product).",
       },
       {
         path: "/generative-ui/components/catalogs",
+        hasDemo: true,
         title: "Catalogs",
         docPath: "/mastra/generative-ui/components/catalogs",
         summary:
           "Declaring the agent's component vocabulary with createGenerativeUI: typed props, schema libraries, combining catalogs and exporting an A2UI catalog.",
-        status: "broken",
+        status: "partial",
         statusNote:
-          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+          "Wired to componentsAgent (a Mastra agent standing in for the section's BuiltInAgent; page prompt, no tools) on CopilotKit 1.87. render_ui reaches the model with its full schema, but not its guide: @ag-ui/mastra puts the run's context on requestContext, not in the prompt. Not browser-checked. Mounted: shopUI. Not mounted: Combine/export (undefined cartUI); schema-library and positional-order fragments.",
       },
       {
         path: "/generative-ui/components/standard-catalog",
+        hasDemo: true,
         title: "Standard catalog",
         docPath: "/mastra/generative-ui/components/standard-catalog",
         summary:
           "The 69 built-in standardUI components, and extending, trimming (omit) or overriding them with your own.",
-        status: "broken",
+        status: "partial",
         statusNote:
-          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+          "Wired to componentsAgent (a Mastra agent standing in for the section's BuiltInAgent; page prompt, no tools) on CopilotKit 1.87. render_ui reaches the model with its full schema, but not its guide: @ag-ui/mastra puts the run's context on requestContext, not in the prompt. Not browser-checked. Mounted: as is, omit, overrides. Not mounted: extend (undefined ProductCard, productSchema).",
       },
       {
         path: "/generative-ui/components/state-and-actions",
@@ -238,47 +242,51 @@ export const NAV: NavGroup[] = [
           "Binding live app state into generated components, running app functions on clicks, sending events to the agent and keeping user input.",
         status: "broken",
         statusNote:
-          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+          "Reference only, no backend. Every sample needs pieces the page never defines (Cart type and cart instance, ProductCard) or is a fragment (events, writable, function declarations), so nothing is mounted.",
       },
       {
         path: "/generative-ui/components/theming",
+        hasDemo: true,
         title: "Theming",
         docPath: "/mastra/generative-ui/components/theming",
         summary:
           "Styling the standard components with a GenerativeUITheme (variables, per-mode colors, dark mode) or plain CSS variables.",
-        status: "broken",
+        status: "partial",
         statusNote:
-          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+          "Wired to componentsAgent (a Mastra agent standing in for the section's BuiltInAgent; page prompt, no tools) on CopilotKit 1.87. render_ui reaches the model with its full schema, but not its guide: @ag-ui/mastra puts the run's context on requestContext, not in the prompt. Not browser-checked. Mounted: provider theme, CSS variables, dark-mode script. Shown only: per-mode/map fragments, theme file.",
       },
       {
         path: "/generative-ui/components/transports",
+        hasDemo: true,
         title: "Transports",
         docPath: "/mastra/generative-ui/components/transports",
         summary:
           "Choosing between the render_ui tool transport and the markdown transport, and limiting generative UI to some agents.",
-        status: "broken",
+        status: "partial",
         statusNote:
-          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+          "Wired to componentsAgent (a Mastra agent standing in for the section's BuiltInAgent; page prompt, no tools) on CopilotKit 1.87. render_ui reaches the model with its full schema, but not its guide: @ag-ui/mastra puts the run's context on requestContext, not in the prompt. Not browser-checked. Mounted on a generativeUI: true runtime: tool, markdown, agentIds as default. The markdown variant cannot work (it depends on context only). No shop agent is published.",
       },
       {
         path: "/generative-ui/components/markdown-mode",
+        hasDemo: true,
         title: "Markdown mode",
         docPath: "/mastra/generative-ui/components/markdown-mode",
         summary:
           "The agent writes a2ui code blocks inside its markdown reply, with no tool call, rendered in place as they stream.",
         status: "broken",
         statusNote:
-          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+          "Wired to componentsAgent on CopilotKit 1.87, but expected to show no UI: markdown mode sends the schema and fence guide only as context, which @ag-ui/mastra puts on requestContext and the agent's instructions do not read. Not browser-checked.",
       },
       {
         path: "/generative-ui/components/from-a2ui",
+        hasDemo: true,
         title: "Adopt from A2UI",
         docPath: "/mastra/generative-ui/components/from-a2ui",
         summary:
           "Moving from the a2ui renderer (A2UI v0.9) to components and surfaces (A2UI 1.0): provider, catalog, runtime and bindings.",
-        status: "broken",
+        status: "partial",
         statusNote:
-          "Reference-only: needs @copilotkit/react-core >= 1.81 (/v2/generative-ui); this repo is on 1.79.1. Code shown verbatim, not compiled.",
+          "Wired to componentsAgent (a Mastra agent standing in for the section's BuiltInAgent; page prompt, no tools) on CopilotKit 1.87. render_ui reaches the model with its full schema, but not its guide: @ag-ui/mastra puts the run's context on requestContext, not in the prompt. Not browser-checked. Mounted: the After catalog; Airport/Arrow borrowed from aws-strands-ts.",
       },
       {
         path: "/generative-ui/open-generative-ui",

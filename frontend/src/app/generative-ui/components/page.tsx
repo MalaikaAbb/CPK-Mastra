@@ -9,19 +9,26 @@ export default function Page() {
     <>
       <RouteHeader path="/generative-ui/components" />
 
-      <Callout tone="warn" title="Reference-only: needs a newer CopilotKit than this repo pins">
+      <Callout tone="info" title="How this route is wired">
         <p>
-          Components and surfaces live in{" "}
-          <code>@copilotkit/react-core/v2/generative-ui</code>, which first
-          ships in 1.81.0. This repo pins <code>^1.77.0</code> (lockfile
-          1.79.1), so none of this page&apos;s code can compile here yet. It is
-          shown as published, not compiled. See README §9 (26) and{" "}
-          <code>docs-verbatim/README.md</code>.
+          The demo runs the page&apos;s provider config on{" "}
+          <code>/api/copilotkit-genui</code>. The agent is this
+          repo&apos;s <code>componentsAgent</code>, a Mastra agent standing in
+          for the section&apos;s TanStack <code>BuiltInAgent</code> (same
+          prompt, no tools). CopilotKit is 1.87 (was 1.79.1, which has no{" "}
+          <code>v2/generative-ui</code>).
         </p>
-        <p className="mt-2">The page&apos;s agent is a TanStack <code>BuiltInAgent</code> (factory mode). In this harness it would be swapped for a Mastra agent with the snippet&apos;s prompt; the page also requires the agent to pass the run&apos;s tools <em>and</em> its system-prompt guide to the model, and <code>@ag-ui/mastra</code> forwards tools as client tools but puts run context on Mastra&apos;s request context, not in the prompt — unverified until the package bump lands.</p>
+        <p className="mt-2">
+          The run&apos;s <code>render_ui</code> tool reaches the model with its
+          full schema, but its guide does not: <code>@ag-ui/mastra</code> puts the
+          run&apos;s context entries on Mastra&apos;s <code>requestContext</code>,
+          not in the prompt, and the page shows no Mastra code to read them, so
+          none is added. Expect UI that may be rejected or incomplete until
+          checked in a browser (README Known issues).
+        </p>
       </Callout>
 
-      <Panel title="What it would demonstrate">
+      <Panel title="What it demonstrates">
         <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
           The quick start: give the provider the standard catalog with <code>generativeUI={"{"}{"{"} ui: standardUI {"}"}{"}"}</code>, and every run that carries it gets a <code>render_ui</code> tool plus a guide listing the components. The agent answers visual questions (a plan comparison, say) with a live table that fills in as it streams and can be edited by follow-ups.
         </p>
