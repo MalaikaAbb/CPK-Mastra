@@ -15,6 +15,8 @@ import {
   subagentsSupervisorAgent,
   weatherAgent,
 } from "./agents";
+import { mcpAppsAgent } from "./mcp-apps-agent";
+import { chartAgent } from "./chart-agent";
 
 /**
  * The Mastra instance the Copilot Runtime binds with `getLocalAgents`.
@@ -40,6 +42,10 @@ export const mastra = new Mastra({
     // (`useAgent({ agentId: "subagents" })`), so the published page resolves
     // it on the main runtime route without renaming anything.
     subagents: subagentsSupervisorAgent,
+    // Components as Tools: the published demo page uses agent
+    // "gen-ui-tool-based" on /api/copilotkit, so the page's `chartAgent` is
+    // registered under that key.
+    "gen-ui-tool-based": chartAgent,
     // Served by dedicated runtime routes (api/copilotkit-ogui,
     // api/copilotkit-declarative-gen-ui, api/copilotkit-a2ui-fixed-schema),
     // which look these up by key with `getLocalAgent`.
@@ -47,6 +53,8 @@ export const mastra = new Mastra({
     openGenUiAdvancedAgent,
     declarativeGenUiAgent,
     a2uiFixedSchemaAgent,
+    // MCP Apps (api/copilotkit-mcp-apps), looked up by key with `getLocalAgent`.
+    mcpAppsAgent,
   },
   storage: new LibSQLStore({ id: "mastra-storage", url: ":memory:" }),
   backgroundTasks: { enabled: true },
