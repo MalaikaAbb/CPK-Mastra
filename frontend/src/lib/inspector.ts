@@ -30,6 +30,7 @@ export const INSPECTOR_ENABLED =
  * be the second one on the page.
  */
 export const NESTED_PROVIDER_ROUTES = [
+  "/generative-ui/a2ui/demo-chat",
   "/generative-ui/a2ui/dynamic-schema/demo-chat",
   "/generative-ui/a2ui/fixed-schema/demo-chat",
   "/generative-ui/open-generative-ui/demo-chat",
@@ -37,6 +38,9 @@ export const NESTED_PROVIDER_ROUTES = [
   "/multi-agent/subagents/demo-chat",
   "/prebuilt-components/copilot-threads-drawer/demo-chat",
   "/prebuilt-components/copilot-threads-drawer/sidebar/demo-chat",
+  "/generative-ui/mcp-apps/demo-chat",
+  "/generative-ui/tool-based/demo-chat",
+  "/headless-threads/demo-chat",
 ] as const;
 
 /**
