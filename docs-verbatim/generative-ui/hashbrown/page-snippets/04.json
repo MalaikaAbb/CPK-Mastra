@@ -1,0 +1,13 @@
+{
+  "ui": [
+    { "metric": { "props": { "label": "Total Revenue", "value": "$1.2M" } } },
+    {
+      "pieChart": {
+        "props": {
+          "title": "Revenue by Segment",
+          "data": "[{\"label\":\"Enterprise\",\"value\":600000},{\"label\":\"SMB\",\"value\":400000},{\"label\":\"Startup\",\"value\":200000}]"
+        }
+      }
+    }
+  ]
+}
