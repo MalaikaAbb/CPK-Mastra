@@ -49,3 +49,52 @@ The `useHumanInTheLoop` variant **does** run, at
   `metadata.mastra.suspendPayload` rather than `metadata.action`.
 - `handle-approval.ts` is the resume-side check. It calls `executeSideEffect`,
   which is never defined.
+
+## webmcp — `/mastra/webmcp`
+
+`page-snippets/02.ts` is the "WebMCP only, with no agent" variant: a module-level
+`new CopilotKitCore({ tools: [...] })`. Not compiled (it would mount a second core
+beside the app provider). Referenced, never defined: `searchOrders` (also in the
+React snippet, which is live with a `@ts-expect-error`).
+## generative-ui/mcp-apps — `/mastra/generative-ui/mcp-apps`
+
+Only the per-agent alternative (`page-snippets/06.ts`, `.use(new MCPAppsMiddleware(...))`
+on a `BuiltInAgent`) is kept here: it needs `@ag-ui/mcp-apps-middleware`, which
+this repo does not install, and builds a `BuiltInAgent`. The page's main runtime,
+provider and page are live in `frontend/` (Mastra agent swapped in).
+## generative-ui/json-render — `/mastra/generative-ui/json-render`
+
+Page snippets only (the page has no demo Code tab): `01` chat.tsx, `02`
+json-render-renderer.tsx, `03` catalog.ts, `04` registry.tsx, `05` example
+agent output. Referenced, never published:
+
+| Symbol | Imported from | Used by |
+| --- | --- | --- |
+| the Mastra agent + its "answer in plain JSON" prompt (agent id `byoc_json_render`) | — | the whole flow; nothing emits a spec without it |
+| runtime route, `page.tsx` (`<CopilotKit>`) | — | the demo |
+| `JsonRenderSpec` | `./types` | 02 |
+| `MetricCard`, `MetricCardComponentProps` | `./metric-card` | 04 |
+| `BarChart` / `PieChart` (+ `…ComponentProps`) | `./charts/bar-chart`, `./charts/pie-chart` | 04 |
+| `useByocJsonRenderSuggestions` | `./suggestions` | 01 |
+
+Packages the code needs and this repo does not install: `@json-render/react`,
+`@json-render/core` (0.18.0 per the page) and a `zod4` alias for zod 4 (the
+root pin is zod 3.25.76 for A2UI).
+
+## generative-ui/hashbrown — `/mastra/generative-ui/hashbrown`
+
+Page snippets only (no demo Code tab): `01` page.tsx, `02` chat.tsx, `03`
+hashbrown-renderer.tsx, `04` example assistant message. Referenced, never
+published:
+
+| Symbol | Imported from | Used by |
+| --- | --- | --- |
+| the agent + prompt streaming `{ "ui": [...] }` (agent id `declarative-hashbrown-demo`; 03's comment names `src/agents/byoc_hashbrown_agent.py`) | — | the whole flow |
+| `/api/copilotkit-declarative-hashbrown` | — | 01 (`runtimeUrl`) |
+| `PieChart`, `BarChart` | `./charts/pie-chart`, `./charts/bar-chart` | 03 |
+| `MetricCard` | `./metric-card` | 03 |
+| `SalesStage` | `./types` | 03 |
+| `useByocHashbrownSuggestions` | `./suggestions` | 02 |
+
+Packages needed and not installed: `@hashbrownai/core`, `@hashbrownai/react`
+(page: `0.5.0-beta.4`; 03 imports `prompt` from core, which 0.8 removed).

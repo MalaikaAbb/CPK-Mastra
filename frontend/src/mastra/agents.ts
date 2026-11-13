@@ -214,7 +214,7 @@ export const backgroundAgentsAgent = new Agent({
     observationalMemory: {
       scope: "thread",
       observation: { messageTokens: 600, bufferTokens: 300 },
-      model: openai("gpt-4.1"),
+      model: openai("gpt-6-luna"),
     },
   },
 }),
@@ -253,8 +253,11 @@ export const WORKING_MEMORY_DB_URL =
 // whose other tools depend on the unpublished `@copilotkit/showcase-shared-tools`.
 // These two agents carry only that agent's published model + instructions.
 //
-// Dynamic schema follows the page's default path: no A2UI tool on the agent —
-// the provider's catalog makes the runtime auto-inject `generate_a2ui`.
+// Dynamic schema — DOC GAP: the page's "Mastra in the same process" section says
+// the demo's agent owns its own `generate_a2ui`, but no such agent is printed.
+// Not filled in: this agent keeps only the showcase `weatherAgent`'s earlier
+// published model + instructions and has NO A2UI tool, so with the route's
+// injection turned off nothing renders (route status: broken).
 export const declarativeGenUiAgent = new Agent({
   id: "declarative-gen-ui-agent",
   name: "Declarative Gen UI Agent",
@@ -267,7 +270,7 @@ export const a2uiFixedSchemaAgent = new Agent({
   id: "a2ui-fixed-schema-agent",
   name: "A2UI Fixed Schema Agent",
   tools: { searchFlightsA2uiTool },
-  model: openai("gpt-5-mini"),
+  model: openai("gpt-6-luna"),
   instructions: "You are a helpful assistant.",
 });
 // #endregion
@@ -321,7 +324,7 @@ export const subagentsSupervisorAgent = new Agent({
     writingAgentTool,
     critiqueAgentTool,
   },
-  model: openai("gpt-5-mini"),
+  model: openai("gpt-6-luna"),
   instructions: `You are a supervisor agent that coordinates three specialized sub-agents to produce high-quality deliverables.
 
 Available sub-agents (call them as tools):
@@ -343,6 +346,7 @@ If a delegation's \`status\` field is \`"failed"\`, treat it as a real error: do
     options: {
       workingMemory: {
         enabled: true,
+        scope: "thread",
         schema: SubagentsAgentState,
       },
     },
