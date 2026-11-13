@@ -86,6 +86,17 @@ export const NAV: NavGroup[] = [
         statusNote:
           "Requires CopilotKit Intelligence (CPK_INTELLIGENCE_API_KEY); without it only the locked view is testable. The header-slot snippet cannot work in 1.79.1. Built from the published code; not yet exercised against a live Intelligence project in this harness.",
       },
+      {
+        path: "/headless-threads",
+        hasDemo: true,
+        title: "Headless Threads",
+        docPath: "/mastra/headless-threads",
+        summary:
+          "A hand-drawn thread list over useThreads (rename, archive, paging) feeding a threadId into CopilotChat.",
+        status: "broken",
+        statusNote:
+          "As published, the sidebar takes no onSelectThread prop and has no row click handler, so threads can't be switched; it also lists agent \"my-agent\" while the runtime snippet registers only \"default\". Requires CopilotKit Intelligence. Not yet run.",
+      },
     ],
   },
   {
@@ -153,6 +164,17 @@ export const NAV: NavGroup[] = [
         status: "working",
       },
       {
+        path: "/generative-ui/tool-based",
+        hasDemo: true,
+        title: "Components as Tools",
+        docPath: "/mastra/generative-ui/tool-based",
+        summary:
+          "Charts registered with useComponent become frontend tools a prompt-only Mastra agent calls to paint them in chat.",
+        status: "partial",
+        statusNote:
+          "Agent and demo page as published; the bar/pie chart components are borrowed (unpublished) and the headless CopilotChatToolCallsView snippet is not built. Not yet run against a live model.",
+      },
+      {
         path: "/generative-ui/tool-rendering",
         hasDemo: true,
         title: "Tool Rendering",
@@ -200,6 +222,26 @@ export const NAV: NavGroup[] = [
           "A fixed flight-card catalog rendered from an agent-owned generate_a2ui tool, with runtime injection turned off.",
         status: "partial",
         statusNote: "Built from the published code; not yet exercised against a live model in this harness. Runs on two harness-written helpers the page imports but never publishes.",
+      },
+      {
+        path: "/generative-ui/json-render",
+        title: "JSON Render",
+        docPath: "/mastra/generative-ui/json-render",
+        summary:
+          "An agent reply in { root, elements } JSON parsed in the assistant-message slot and drawn by @json-render/react through a Zod-described registry.",
+        status: "broken",
+        statusNote:
+          "Reference-only: the agent/prompt, runtime route, provider page, types and the registry's components are never printed, and the json-render packages aren't installed here.",
+      },
+      {
+        path: "/generative-ui/hashbrown",
+        title: "Hashbrown",
+        docPath: "/mastra/generative-ui/hashbrown",
+        summary:
+          "A streamed { ui: [...] } envelope parsed progressively by Hashbrown and rendered through a UI kit of charts and cards.",
+        status: "broken",
+        statusNote:
+          "Reference-only: the agent/prompt, runtime route, charts, metric card, types and suggestions are never printed, and the Hashbrown packages aren't installed here.",
       },
       {
         path: "/generative-ui/open-generative-ui",
