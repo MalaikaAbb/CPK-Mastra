@@ -325,7 +325,7 @@ This repo's `backgroundAgentsAgent` therefore carries a `Memory` the doc's versi
 Predictive State Updates imports it from `@copilotkit/react-core` while importing everything else from `/v2`. Both live in `/v2`.
 
 **9. Four different model ids**
-Across these pages the docs specify `gpt-5.4`, `gpt-5.4-mini`, `gpt-4o`, and `gpt-4.1` — and the Quickstart's callout says GPT-4o while its code says otherwise. All agents here read one `OPENAI_MODEL`, defaulting to `gpt-4o`. The Quickstart's `myAgent` code and its Anthropic callout now both name `gpt-6-luna` (was `gpt-5.4`); `myAgent` still reads `OPENAI_MODEL`.
+Across these pages the docs specify `gpt-5.4`, `gpt-5.4-mini`, `gpt-4o`, and `gpt-4.1` — and the Quickstart's callout says GPT-4o while its code says otherwise. All agents here read one `OPENAI_MODEL`, defaulting to `gpt-4o`. Reading agent state now prints `languageAgent` with `gpt-6-luna` (was `gpt-5.4`); it still reads `OPENAI_MODEL` here. Writing agent state prints the same `languageAgent` change. Predictive State Updates now prints `streamingAgent` with `gpt-6-luna` (was `gpt-4o`); it still reads `OPENAI_MODEL` here.
 
 **10. `useHumanInTheLoop` does not infer its arg type**
 Unlike `useRenderTool`, it defaults to `Record<string, unknown>`, so the HITL page's `args.option_1` is `unknown` and unusable in JSX. The generic is supplied explicitly.
