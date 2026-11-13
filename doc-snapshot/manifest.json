@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "docsRoot": "https://docs.copilotkit.ai/mastra",
-  "syncedAt": "2026-11-11T14:10:30.948Z",
+  "syncedAt": "2026-11-13T11:10:50.443Z",
   "pages": {
     "/mastra": {
       "file": "mastra.md",
@@ -14,7 +14,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:31 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:51 GMT"
     },
     "/mastra/ag-ui": {
       "file": "mastra__ag-ui.md",
@@ -26,7 +26,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:31 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:51 GMT"
     },
     "/mastra/agent-app-context": {
       "file": "mastra__agent-app-context.md",
@@ -38,7 +38,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:31 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:51 GMT"
     },
     "/mastra/background-tasks": {
       "file": "mastra__background-tasks.md",
@@ -50,7 +50,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:31 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:51 GMT"
     },
     "/mastra/copilot-runtime": {
       "file": "mastra__copilot-runtime.md",
@@ -62,7 +62,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:31 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:51 GMT"
     },
     "/mastra/custom-look-and-feel/headless-ui": {
       "file": "mastra__custom-look-and-feel__headless-ui.md",
@@ -74,7 +74,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:31 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:51 GMT"
     },
     "/mastra/custom-look-and-feel/slots": {
       "file": "mastra__custom-look-and-feel__slots.md",
@@ -86,7 +86,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:32 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:51 GMT"
     },
     "/mastra/frontend-tools": {
       "file": "mastra__frontend-tools.md",
@@ -98,31 +98,187 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:32 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:51 GMT"
+    },
+    "/mastra/generative-ui/a2ui": {
+      "file": "mastra__generative-ui__a2ui.md",
+      "sha256": "e97ecf88830fa48ea88a7e999857aafc7dbdaa506fecb8effbfb1c8d3e8999eb",
+      "bytes": 4096,
+      "lines": 115,
+      "routes": [
+        "/generative-ui/a2ui"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:51 GMT"
     },
     "/mastra/generative-ui/a2ui/dynamic-schema": {
       "file": "mastra__generative-ui__a2ui__dynamic-schema.md",
-      "sha256": "dec76ebcc31e342fdf02b49aad8c52156fa0be128b55b8b508b826f0d6200a1d",
-      "bytes": 18299,
+      "sha256": "b7cc39f754a363070c42da8d1768b7ea0a44bd9261f3c608cbb950dd8f3c454b",
+      "bytes": 18340,
       "lines": 525,
       "routes": [
         "/generative-ui/a2ui/dynamic-schema"
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:32 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:51 GMT"
     },
     "/mastra/generative-ui/a2ui/fixed-schema": {
       "file": "mastra__generative-ui__a2ui__fixed-schema.md",
-      "sha256": "64d7de0c11cf59d1388f1912b2b69ffccaf2a4c7fb2fe572ae4e2779612287e0",
-      "bytes": 25280,
+      "sha256": "b6f1e24307535ecbb4c0041af1dc6cda1e2c5694deb75e855b23c39f137a5c32",
+      "bytes": 25454,
       "lines": 677,
       "routes": [
         "/generative-ui/a2ui/fixed-schema"
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:32 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:51 GMT"
+    },
+    "/mastra/generative-ui/components": {
+      "file": "mastra__generative-ui__components.md",
+      "sha256": "cd2f4ac3bfec001ba63a1459476d4b9dacead916f269c342ce03178fb537ee2d",
+      "bytes": 33469,
+      "lines": 795,
+      "routes": [
+        "/generative-ui/components"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:51 GMT"
+    },
+    "/mastra/generative-ui/components/catalogs": {
+      "file": "mastra__generative-ui__components__catalogs.md",
+      "sha256": "e04971ead4a95a36b9d1e398c728527d177ef7ef9437a4873c1fbfb0e87dec8d",
+      "bytes": 23817,
+      "lines": 520,
+      "routes": [
+        "/generative-ui/components/catalogs"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:51 GMT"
+    },
+    "/mastra/generative-ui/components/from-a2ui": {
+      "file": "mastra__generative-ui__components__from-a2ui.md",
+      "sha256": "ba41e7e9e8e917a98fa92428b714e4dafe0c806a66090838d0ec304c929aabb9",
+      "bytes": 16632,
+      "lines": 279,
+      "routes": [
+        "/generative-ui/components/from-a2ui"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:51 GMT"
+    },
+    "/mastra/generative-ui/components/markdown-mode": {
+      "file": "mastra__generative-ui__components__markdown-mode.md",
+      "sha256": "d5ff3d1472407a4ac6895de6a799f8fb9d434a68a17136445978033373bc347b",
+      "bytes": 8723,
+      "lines": 188,
+      "routes": [
+        "/generative-ui/components/markdown-mode"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:51 GMT"
+    },
+    "/mastra/generative-ui/components/standard-catalog": {
+      "file": "mastra__generative-ui__components__standard-catalog.md",
+      "sha256": "d753917e275f51b22c26d74bc29d34616ec10401a22fd8fde0ca6ab63e079561",
+      "bytes": 16138,
+      "lines": 238,
+      "routes": [
+        "/generative-ui/components/standard-catalog"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
+    },
+    "/mastra/generative-ui/components/state-and-actions": {
+      "file": "mastra__generative-ui__components__state-and-actions.md",
+      "sha256": "d356b68e4866829853e1c367d169f1f4a5254cab41a987a6c41fffcc18a3c2c0",
+      "bytes": 23515,
+      "lines": 556,
+      "routes": [
+        "/generative-ui/components/state-and-actions"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
+    },
+    "/mastra/generative-ui/components/surfaces": {
+      "file": "mastra__generative-ui__components__surfaces.md",
+      "sha256": "acec12a4d0df2c13ece64ad03e0eb94a7c41214d49a7583b6009af70cdf5ee51",
+      "bytes": 21240,
+      "lines": 427,
+      "routes": [
+        "/generative-ui/components/surfaces"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
+    },
+    "/mastra/generative-ui/components/theming": {
+      "file": "mastra__generative-ui__components__theming.md",
+      "sha256": "07b5ec55a1b77761bcfa489809b301b6483dab7ac5cb86961eabeb9e8bcac10e",
+      "bytes": 6798,
+      "lines": 203,
+      "routes": [
+        "/generative-ui/components/theming"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
+    },
+    "/mastra/generative-ui/components/transports": {
+      "file": "mastra__generative-ui__components__transports.md",
+      "sha256": "28c8d35b29516b7f4ea6ce23a3177a2b458cc4837a18901178756a41d32407fc",
+      "bytes": 5154,
+      "lines": 139,
+      "routes": [
+        "/generative-ui/components/transports"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
+    },
+    "/mastra/generative-ui/hashbrown": {
+      "file": "mastra__generative-ui__hashbrown.md",
+      "sha256": "34956c9d583ffd181674d1870f04305a3266b0edaa338366dc44cad64e69123d",
+      "bytes": 11950,
+      "lines": 355,
+      "routes": [
+        "/generative-ui/hashbrown"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
+    },
+    "/mastra/generative-ui/json-render": {
+      "file": "mastra__generative-ui__json-render.md",
+      "sha256": "a2096a154811ff2f33de11dc8fce174394439d75a56725da3c33d19757afec57",
+      "bytes": 9576,
+      "lines": 265,
+      "routes": [
+        "/generative-ui/json-render"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
+    },
+    "/mastra/generative-ui/mcp-apps": {
+      "file": "mastra__generative-ui__mcp-apps.md",
+      "sha256": "84babfa2e824b45c467ab6d45205895b325ea5c063ae65586597e722a18b0052",
+      "bytes": 8708,
+      "lines": 315,
+      "routes": [
+        "/generative-ui/mcp-apps"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
     },
     "/mastra/generative-ui/open-generative-ui": {
       "file": "mastra__generative-ui__open-generative-ui.md",
@@ -134,7 +290,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:32 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
     },
     "/mastra/generative-ui/state-rendering": {
       "file": "mastra__generative-ui__state-rendering.md",
@@ -146,7 +302,19 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:32 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
+    },
+    "/mastra/generative-ui/tool-based": {
+      "file": "mastra__generative-ui__tool-based.md",
+      "sha256": "096f35d264915d1851ce223ba30483a14f0a457bfeb8b2003f4209ad26e50b62",
+      "bytes": 5311,
+      "lines": 145,
+      "routes": [
+        "/generative-ui/tool-based"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
     },
     "/mastra/generative-ui/tool-rendering": {
       "file": "mastra__generative-ui__tool-rendering.md",
@@ -158,7 +326,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:32 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
     },
     "/mastra/generative-ui/your-components/display-only": {
       "file": "mastra__generative-ui__your-components__display-only.md",
@@ -170,7 +338,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:32 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
     },
     "/mastra/generative-ui/your-components/interactive": {
       "file": "mastra__generative-ui__your-components__interactive.md",
@@ -182,7 +350,19 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:32 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
+    },
+    "/mastra/headless-threads": {
+      "file": "mastra__headless-threads.md",
+      "sha256": "cc9364cb372b498edea5144ab97367016c52ba6b8b29e953d55dd3d9604df3a0",
+      "bytes": 11778,
+      "lines": 251,
+      "routes": [
+        "/headless-threads"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
     },
     "/mastra/human-in-the-loop/governed-actions": {
       "file": "mastra__human-in-the-loop__governed-actions.md",
@@ -194,19 +374,19 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:32 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
     },
     "/mastra/human-in-the-loop/headless": {
       "file": "mastra__human-in-the-loop__headless.md",
-      "sha256": "8adcbaacdcf5d07c97fd5525aaba8c76754aaa48e47292b2fd0906d9e57a077a",
-      "bytes": 10140,
+      "sha256": "612c176460c674fcd9a507cfab71dcb7a6dfa8580418e6b069e97f8d76cf5966",
+      "bytes": 10197,
       "lines": 295,
       "routes": [
         "/human-in-the-loop/headless"
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:32 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
     },
     "/mastra/human-in-the-loop/tool-based": {
       "file": "mastra__human-in-the-loop__tool-based.md",
@@ -218,7 +398,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:32 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:52 GMT"
     },
     "/mastra/human-in-the-loop/useInterrupt": {
       "file": "mastra__human-in-the-loop__useInterrupt.md",
@@ -230,7 +410,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:32 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:53 GMT"
     },
     "/mastra/inspector": {
       "file": "mastra__inspector.md",
@@ -242,19 +422,19 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:32 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:53 GMT"
     },
     "/mastra/multi-agent/subagents": {
       "file": "mastra__multi-agent__subagents.md",
-      "sha256": "96725c901c3b3ffe0d455a23e0a882f05eae8c518164141963cb90392ca07137",
-      "bytes": 28104,
-      "lines": 784,
+      "sha256": "ce87f1657335f98e5652c885da51b50b2289a8df2e97d1c89714acdf29ac9b8e",
+      "bytes": 28541,
+      "lines": 786,
       "routes": [
         "/multi-agent/subagents"
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:32 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:53 GMT"
     },
     "/mastra/prebuilt-components": {
       "file": "mastra__prebuilt-components.md",
@@ -266,7 +446,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:33 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:53 GMT"
     },
     "/mastra/prebuilt-components/copilot-threads-drawer": {
       "file": "mastra__prebuilt-components__copilot-threads-drawer.md",
@@ -278,7 +458,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:33 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:53 GMT"
     },
     "/mastra/programmatic-control": {
       "file": "mastra__programmatic-control.md",
@@ -290,7 +470,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:33 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:53 GMT"
     },
     "/mastra/quickstart": {
       "file": "mastra__quickstart.md",
@@ -302,7 +482,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:33 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:53 GMT"
     },
     "/mastra/shared-state/in-app-agent-read": {
       "file": "mastra__shared-state__in-app-agent-read.md",
@@ -314,7 +494,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:33 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:53 GMT"
     },
     "/mastra/shared-state/in-app-agent-write": {
       "file": "mastra__shared-state__in-app-agent-write.md",
@@ -326,7 +506,7 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:33 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:53 GMT"
     },
     "/mastra/shared-state/predictive-state-updates": {
       "file": "mastra__shared-state__predictive-state-updates.md",
@@ -338,11 +518,23 @@
       ],
       "status": "ok",
       "age": 0,
-      "date": "Wed, 11 Nov 2026 14:10:33 GMT"
+      "date": "Fri, 13 Nov 2026 11:10:53 GMT"
+    },
+    "/mastra/webmcp": {
+      "file": "mastra__webmcp.md",
+      "sha256": "7810789106827407dd416e4ff4617543ce63015dd2061f5277f49d9605db41b9",
+      "bytes": 7485,
+      "lines": 165,
+      "routes": [
+        "/webmcp"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Fri, 13 Nov 2026 11:10:53 GMT"
     }
   },
   "sitemap": {
-    "fetchedAt": "2026-11-11T14:10:30.948Z",
+    "fetchedAt": "2026-11-13T11:10:50.443Z",
     "urlsUnderRoot": 176,
     "knownUnmapped": [
       "https://docs.copilotkit.ai/mastra/AG-UI-Streams",
@@ -384,6 +576,7 @@
       "https://docs.copilotkit.ai/mastra/cookbook/arcade",
       "https://docs.copilotkit.ai/mastra/cookbook/claude-managed-agents",
       "https://docs.copilotkit.ai/mastra/cookbook/daytona",
+      "https://docs.copilotkit.ai/mastra/cookbook/google-antigravity",
       "https://docs.copilotkit.ai/mastra/cookbook/jev-generative-ui",
       "https://docs.copilotkit.ai/mastra/cookbook/manufact",
       "https://docs.copilotkit.ai/mastra/cookbook/openbox-governed-copilotkit",
