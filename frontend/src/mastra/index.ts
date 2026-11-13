@@ -5,6 +5,7 @@ import {
   a2uiFixedSchemaAgent,
   backgroundAgentsAgent,
   colleaguesContactAgent,
+  componentsAgent,
   declarativeGenUiAgent,
   languageAgent,
   myAgent,
@@ -53,6 +54,7 @@ export const mastra = new Mastra({
     openGenUiAdvancedAgent,
     declarativeGenUiAgent,
     a2uiFixedSchemaAgent,
+    componentsAgent,
     // MCP Apps (api/copilotkit-mcp-apps), looked up by key with `getLocalAgent`.
     mcpAppsAgent,
   },

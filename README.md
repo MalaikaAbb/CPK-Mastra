@@ -5,13 +5,13 @@ A navigable, working test harness for the CopilotKit Mastra integration — each
 | | |
 |---|---|
 | **Doc sync date** | Machine-maintained — `doc-snapshot/manifest.json` → `syncedAt`, rewritten on every sync |
-| **CopilotKit packages** | `@copilotkit/react-core` 1.77.0 · `@copilotkit/runtime` 1.77.0 · `@copilotkit/a2ui-renderer` 1.77.0 |
+| **CopilotKit packages** | `@copilotkit/react-core` ^1.87.0 · `@copilotkit/runtime` ^1.87.0 (lockfile 1.87.1, upgraded 2026-11-13 from ^1.77.0 / 1.79.1 for Components and surfaces) · `@ag-ui/client`/`@ag-ui/core` 1.0.2 (the exact version 1.87.1 depends on) · `@ag-ui/mastra` 1.1.2 |
 | **AG-UI packages** | `@ag-ui/mastra` 1.1.2 · `@ag-ui/client` 1.0.1 |
 | **Mastra packages** | `@mastra/core` 1.74.0 · `@mastra/memory` 1.28.2 · `@mastra/libsql` 1.22.3 |
 | **AI SDK** | `ai` 7.0.128 (direct — see discrepancy 17) · `@ai-sdk/openai` 4.0.57 |
 | **zod** | 3.25.76, pinned exactly to match `@copilotkit/a2ui-renderer` (discrepancy 16) |
 | **Frontend** | Next.js 16.3.0 (App Router) · React 19.2 · TypeScript · Tailwind 4 |
-| **Build status** | No CI. Typecheck (2026-10-07, ~15 s): every route added in the 2026-10-06 round is clean with no suppressions; 6 errors remain from the 1.77 bump, in `slots/demo-chat`, `providers.tsx` (`event.code`) and `agents.ts`. The new routes have not been run against a live model. |
+| **Build status** | No CI. Typecheck (2026-10-07, ~15 s): every route added in the 2026-10-06 round is clean with no suppressions; 6 errors remain from the 1.77 bump, in `slots/demo-chat`, `providers.tsx` (`event.code`) and `agents.ts`. The new routes have not been run against a live model. 2026-11-13, on 1.87.1: the 1.87 bump clears the Slots `messageGroup`/`messageRow`/`groupMessages` errors; the baseline errors left are Slots (implicit any, slot type), `LayoutProps`, `providers.tsx` (`event.code`) and `agents.ts`. |
 
 ---
 
@@ -191,6 +191,25 @@ Code on a page is never a re-typed approximation: each page reads real files via
 
 **`/generative-ui/a2ui/fixed-schema`** ⚠️ — A fixed flight-card catalog; the agent's own `generate_a2ui` returns the operations container, runtime injection off. **Try:** `Find me a flight from SFO to JFK on United for $289.` **Pass:** a card with SFO → JFK, a United badge, $289 and a Book button that flips to "Booked". **Fail:** no card; React error #31 (`object with keys {path}`) means a binding reached a renderer unresolved (discrepancy 16); `UnsupportedModelVersionError` means `ai` resolved to v6 (discrepancy 17).
 
+All Components and surfaces routes except State and actions have a demo wired to the backend: the page's provider config on `/api/copilotkit-genui` (Transports: `/api/copilotkit-genui-transports`, its `generativeUI: true` runtime), with `componentsAgent` (`src/mastra/agents.ts`), a Mastra agent standing in for the section's TanStack `BuiltInAgent` (page prompt, no tools). `render_ui` reaches the model with its full schema; its guide does not (26). None has been checked in a browser.
+
+**`/generative-ui/components`** → demo ⚠️ — The page's `standardUI` provider and a chat. *Try:* "Compare the Starter, Team, and Enterprise plans in a table". **Pass:** a live table in the chat. **Fail:** a plain-text table, or `render_ui` calls the runtime rejects (the guide is missing, 26).
+
+**`/generative-ui/components/surfaces`** → demo ⚠️ — Error-boundary provider over `shopUI`, with the `featured` (ProductGrid/ProductCard only) and `sidebar-notes` (`autoScroll={false}`) targets. `FeaturedProducts` and the per-item target are not mounted (undefined `products`, `Product`, `product`). *Try:* "show three running shoes in the featured area". **Pass:** cards appear in the featured box, not the chat.
+
+**`/generative-ui/components/catalogs`** → demo ⚠️ — `shopUI`. Combine/export (undefined `cartUI`) and the schema-library / positional-order fragments are shown, not run. *Try:* "show me three running shoes as product cards". **Pass:** a grid of product cards.
+
+**`/generative-ui/components/standard-catalog`** → demo ⚠️ — `standardUI` as is, `omit(["Map", "Video", "HtmlView"])`, `overrides: { Card: MyCard }`. Extend is not mounted (undefined `ProductCard`, `productSchema`). *Try (override):* "put a short summary of our three plans in a card". **Pass:** a rounded-2xl card with a shadow.
+
+**`/generative-ui/components/state-and-actions`** ❌ *reference-only* — No demo and no backend: every sample needs a `Cart`/`cart` or `ProductCard` the page never defines, or is a fragment.
+
+**`/generative-ui/components/theming`** → demo ⚠️ — The provider theme, the page's `.a2ui-surface` CSS and its dark-mode script. Per-mode/map fragments and the theme file are shown only. *Try:* "show a card with a primary button, a slider, and a bar chart of three months". **Pass:** amber accents.
+
+**`/generative-ui/components/transports`** → demo ⚠️ — Tool, markdown, and `agentIds: ["shop"]` chatting as `default`, on the page's `generativeUI: true` runtime. *Try:* "compare the Starter, Team, and Enterprise plans in a table" in each. **Pass:** tool — a separate tool-call message; agentIds — plain text. The markdown variant is expected to show no UI (26). No `shop` agent is published.
+
+**`/generative-ui/components/markdown-mode`** → demo ❌ — Both providers. Expected: no `a2ui` block, because the schema and the fence guide travel only as context, which the agent never sees (26).
+
+**`/generative-ui/components/from-a2ui`** → demo ⚠️ — The After catalog; `Airport`/`Arrow` borrowed from aws-strands-ts (the page never defines them). *Try:* "show a flight card from SFO (San Francisco) to JFK (New York) with a Book button". **Pass:** two airports with an arrow between them.
 **`/generative-ui/json-render`** ❌ *reference-only* — No live demo: the agent/prompt that emits the `{ root, elements }` spec is never printed, nor the provider page, runtime route, `./types` or the registry's components, and the `@json-render/*` packages aren't installed (discrepancy 23). **Pass:** the page shows the four printed frontend files and the example output, with the gap panel above them.
 
 **`/generative-ui/hashbrown`** ❌ *reference-only* — No live demo: the agent/prompt that streams the `{ ui: [...] }` envelope, its runtime route, the charts, metric card, `./types` and suggestions are never printed, and `@hashbrownai/*` isn't installed (discrepancy 24). **Pass:** the page shows the three printed frontend files and the example message, with the gap panel above them.
@@ -272,6 +291,15 @@ Code on a page is never a re-typed approximation: each page reads real files via
 | `/mastra/generative-ui/a2ui` | `/generative-ui/a2ui` | ⚠️ Partial | Page's undefined `myAgent` swapped for the Quickstart agent on a dedicated route; whether anything renders is unverified (25). |
 | `/mastra/generative-ui/a2ui/dynamic-schema` | `/generative-ui/a2ui/dynamic-schema` | ⚠️ Partial | Harness-supplied runtime route; needs root zod pinned to 3.25.76 (16). Not yet run against a live model. |
 | `/mastra/generative-ui/a2ui/fixed-schema` | `/generative-ui/a2ui/fixed-schema` | ⚠️ Partial | Harness-written `a2ui-context` helpers + runtime route; root zod pinned to 3.25.76 (16); needs `ai` 7 (17). Not yet run against a live model. |
+| `/mastra/generative-ui/components` | `/generative-ui/components` | ⚠️ Partial | Demo wired to `componentsAgent`; `render_ui` guide not delivered (26). |
+| `/mastra/generative-ui/components/surfaces` | `/generative-ui/components/surfaces` | ⚠️ Partial | Demo wired: `featured`/`sidebar-notes` targets; `FeaturedProducts`, per-item target not mounted (26). |
+| `/mastra/generative-ui/components/catalogs` | `/generative-ui/components/catalogs` | ⚠️ Partial | Demo wired: `shopUI`; Combine/export need undefined `cartUI` (26). |
+| `/mastra/generative-ui/components/standard-catalog` | `/generative-ui/components/standard-catalog` | ⚠️ Partial | Demo wired: as is, `omit`, `overrides`; extend needs undefined `ProductCard`/`productSchema` (26). |
+| `/mastra/generative-ui/components/state-and-actions` | `/generative-ui/components/state-and-actions` | ❌ Broken | Reference only, no backend: needs undefined `Cart`/`cart`/`ProductCard`, or fragments (26). |
+| `/mastra/generative-ui/components/theming` | `/generative-ui/components/theming` | ⚠️ Partial | Demo wired: provider theme, CSS, dark-mode script (26). |
+| `/mastra/generative-ui/components/transports` | `/generative-ui/components/transports` | ⚠️ Partial | Demo wired on `generativeUI: true` runtime; markdown variant gets no context; no `shop` agent (26). |
+| `/mastra/generative-ui/components/markdown-mode` | `/generative-ui/components/markdown-mode` | ❌ Broken | Demo wired, expected no UI: schema + guide travel only as context, which the Mastra agent never sees (26). |
+| `/mastra/generative-ui/components/from-a2ui` | `/generative-ui/components/from-a2ui` | ⚠️ Partial | Demo wired: After catalog, `Airport`/`Arrow` borrowed from aws-strands-ts (26). |
 | `/mastra/generative-ui/json-render` | `/generative-ui/json-render` | ❌ Broken | Reference-only: agent, provider, route, types and registry components unpublished; `@json-render/*` not installed (23). |
 | `/mastra/generative-ui/hashbrown` | `/generative-ui/hashbrown` | ❌ Broken | Reference-only: agent, route, charts, metric card, types unpublished; `@hashbrownai/*` not installed (24). |
 | `/mastra/generative-ui/open-generative-ui` | `/generative-ui/open-generative-ui` | ⚠️ Partial | Published code minus the aimock header wrapper. Not yet run against a live model. |
@@ -379,6 +407,17 @@ Also on these pages: the dynamic-schema page now drops its auto-inject default a
 *Missing code.* The sidebar sample renders `<YourMainContent />`, which is never defined. It is a stand-in for the host app's own content, so a labelled placeholder fills it.
 *Types.* The threads route has the same `AbstractAgent` type clash as the other v2 runtime routes: `@copilotkit/shared` ships its own `@ag-ui/client`. It runs fine.
 
+**26. Components and surfaces: upgraded CopilotKit, a Mastra stand-in agent, and the run's context never reaches the prompt** — [section](https://docs.copilotkit.ai/mastra/generative-ui/components)
+Every page in the section imports `@copilotkit/react-core/v2/generative-ui`, which first ships in 1.81.0. The frontend is now on `^1.87.0` (lockfile 1.87.1) with `@ag-ui/client`/`@ag-ui/core` 1.0.2, the exact version 1.87.1 depends on; `@ag-ui/mastra` stays on 1.1.2 (it accepts both). The quick start's agent is a TanStack `BuiltInAgent`; here it is `componentsAgent` in `src/mastra/agents.ts` (the snippet's prompt, no tools), served through `getLocalAgent` on `/api/copilotkit-genui` and `/api/copilotkit-genui-transports` (`generativeUI: true`).
+*The guide gap.* The page says the agent "must use the tools and the context entries of the run" and names `CopilotKitMiddleware` for LangGraph only. `@ag-ui/mastra` 1.1.2 passes `render_ui` to the model as a client tool with its full JSON schema, but puts the run's context entries on `requestContext.get("ag-ui")`, not in the prompt. The runtime's `render_ui` guide, and markdown mode's component schema and fence guide, travel only as context, so the model never sees them. No page shows Mastra code to read them, so none is added (this repo's Open Generative UI agents fold context into their instructions with `foldHostContext`, from that page's Code tab; it is not reused here). Expect tool-transport UI that may be rejected or incomplete, and no UI in markdown mode, until checked in a browser.
+*Surfaces.* Fragments only: `Product`, `ProductRow`, `product` and `shopUI` (defined on the Catalogs page) are referenced but not defined here.
+*Catalogs.* `cartUI`, `Hero`, `Panel` and `fs` are used without being defined; the Valibot example needs `valibot` and `@valibot/to-json-schema`, which this repo does not install.
+*Standard catalog.* `ProductCard` and `productSchema` are used without being defined.
+*State and actions.* `Cart`, `cart.addItem` and the full `shopUI` are referenced but the snippets are fragments of it (object members out of context).
+*Theming.* Fragments only (theme objects and a provider fragment); nothing beyond the package bump is missing.
+*Transports.* The runtime fragment uses an undefined `agent` (in this harness it would be a Mastra agent).
+*Markdown mode.* The "build your own prompt" example is Python (`input.forwarded_props`, `MY_PROMPT`), not Mastra code.
+*Adopt from A2UI.* `myCatalog`, `agents`, `Airport`, `Arrow` are referenced without definitions.
 **29. HITL overview: interrupts called unsupported while the sidebar documents them** — [page](https://docs.copilotkit.ai/mastra/human-in-the-loop/index)
 The overview (no code) says Mastra supports HITL only through `useHumanInTheLoop` frontend tools and marks interrupt-based HITL "Not Supported", linking to `/human-in-the-loop/interrupt-flow`. The same Mastra sidebar carries `useInterrupt` and headless-interrupt pages built on Mastra's `suspend()` (discrepancies 13 and 14 here). Both CTA cards link without the `/mastra` prefix. The route is a reference panel.
 **28. WebMCP: the handler calls a function the page never defines** — [page](https://docs.copilotkit.ai/mastra/webmcp)
@@ -512,7 +551,7 @@ mastra/
 
 **Custom Look and Feel** — [Slots](https://docs.copilotkit.ai/mastra/custom-look-and-feel/slots) † · [Headless UI](https://docs.copilotkit.ai/mastra/custom-look-and-feel/headless-ui) † · [Programmatic Control](https://docs.copilotkit.ai/mastra/programmatic-control) · [Inspector](https://docs.copilotkit.ai/mastra/inspector)
 
-**Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps)
+**Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Components and surfaces](https://docs.copilotkit.ai/mastra/generative-ui/components) · [Surfaces](https://docs.copilotkit.ai/mastra/generative-ui/components/surfaces) · [Catalogs](https://docs.copilotkit.ai/mastra/generative-ui/components/catalogs) · [Standard catalog](https://docs.copilotkit.ai/mastra/generative-ui/components/standard-catalog) · [State and actions](https://docs.copilotkit.ai/mastra/generative-ui/components/state-and-actions) · [Theming](https://docs.copilotkit.ai/mastra/generative-ui/components/theming) · [Transports](https://docs.copilotkit.ai/mastra/generative-ui/components/transports) · [Markdown mode](https://docs.copilotkit.ai/mastra/generative-ui/components/markdown-mode) · [Adopt from A2UI](https://docs.copilotkit.ai/mastra/generative-ui/components/from-a2ui) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps) (not implemented)
 
 **App Control** — [Frontend Tools](https://docs.copilotkit.ai/mastra/frontend-tools) · [HITL Overview](https://docs.copilotkit.ai/mastra/human-in-the-loop/index) · [Human in the Loop](https://docs.copilotkit.ai/mastra/human-in-the-loop/tool-based) · [useInterrupt](https://docs.copilotkit.ai/mastra/human-in-the-loop/useInterrupt) · [Headless Interrupts](https://docs.copilotkit.ai/mastra/human-in-the-loop/headless) · [Governed Actions](https://docs.copilotkit.ai/mastra/human-in-the-loop/governed-actions) · [Background Tasks](https://docs.copilotkit.ai/mastra/background-tasks)
 
