@@ -279,6 +279,14 @@ export const NAV: NavGroup[] = [
         status: "working",
       },
       {
+        path: "/human-in-the-loop",
+        title: "HITL Overview",
+        docPath: "/mastra/human-in-the-loop/index",
+        summary:
+          "Orientation: tool-based HITL (useHumanInTheLoop) is the supported Mastra path; native interrupts are labelled unsupported.",
+        status: "reference",
+        statusNote:
+          "No code on the page; a reference panel linking this harness's HITL routes.",
         path: "/webmcp",
         hasDemo: true,
         title: "WebMCP",

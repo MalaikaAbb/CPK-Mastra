@@ -204,6 +204,7 @@ Code on a page is never a re-typed approximation: each page reads real files via
 
 **`/frontend-tools`** — `sayHello` executing in the browser. **Try:** `Say hello to Malaika`. **Pass:** a browser alert appears, then the agent confirms.
 
+**`/human-in-the-loop`** 📖 *reference* — The HITL overview has no code; the route summarises it and links the four HITL routes. **Pass:** the page renders with the links and the inconsistency note (discrepancy 29).
 **`/webmcp`** ❌ — The page's `OrderSearch` frontend tool with `webmcp: { annotations: { readOnlyHint: true } }`, mounted inside the root provider next to a `myAgent` chat. **Try:** in Chrome 149+ with `chrome://flags/#enable-webmcp-testing`, open the demo and check `document.modelContext` / the Model Context Tool Inspector; also ask the chat `Find my shipped orders.` **Pass (as published):** `searchOrders` is listed with its `status` enum and read-only hint, and every call fails with `searchOrders is not defined` (discrepancy 28). In other browsers: nothing is registered, no error. **Fail:** the tool is missing from the inspector with WebMCP enabled, or the page errors on load.
 
 **`/human-in-the-loop/tool-based`** — `offerOptions`. **Try:** `Can you show me two good options for a restaurant name?` **Pass:** two buttons render and **nothing further streams** until you click one.
@@ -264,6 +265,7 @@ Code on a page is never a re-typed approximation: each page reads real files via
 | `/mastra/shared-state/in-app-agent-write` | `/shared-state/in-app-agent-write` | ✅ Working | |
 | `/mastra/shared-state/predictive-state-updates` | `/shared-state/predictive-state-updates` | ✅ Working | Re-checked 2026-10-06: page unchanged since snapshot. |
 | `/mastra/agent-app-context` | `/agent-app-context` | ✅ Working | |
+| `/mastra/human-in-the-loop/index` | `/human-in-the-loop` | 📖 Reference | Overview, no code; says interrupts aren't supported for Mastra while the sidebar documents them (29). |
 | `/mastra/human-in-the-loop/tool-based` | `/human-in-the-loop/tool-based` | ✅ Working | Re-checked 2026-10-06: page unchanged since snapshot. |
 | `/mastra/human-in-the-loop/useInterrupt` | `/human-in-the-loop/useInterrupt` | ❌ Broken | Reference-only: the `suspend()` tool is unpublished (13). |
 | `/mastra/human-in-the-loop/headless` | `/human-in-the-loop/headless` | ❌ Broken | Reference-only: same backend gap, plus undefined symbols in snippets (14). |
@@ -378,6 +380,8 @@ Also on these pages: the dynamic-schema demo file's header says its route sets `
 *Missing code.* The sidebar sample renders `<YourMainContent />`, which is never defined. It is a stand-in for the host app's own content, so a labelled placeholder fills it.
 *Types.* The threads route has the same `AbstractAgent` type clash as the other v2 runtime routes: `@copilotkit/shared` ships its own `@ag-ui/client`. It runs fine.
 
+**29. HITL overview: interrupts called unsupported while the sidebar documents them** — [page](https://docs.copilotkit.ai/mastra/human-in-the-loop/index)
+The overview (no code) says Mastra supports HITL only through `useHumanInTheLoop` frontend tools and marks interrupt-based HITL "Not Supported", linking to `/human-in-the-loop/interrupt-flow`. The same Mastra sidebar carries `useInterrupt` and headless-interrupt pages built on Mastra's `suspend()` (discrepancies 13 and 14 here). Both CTA cards link without the `/mastra` prefix. The route is a reference panel.
 **28. WebMCP: the handler calls a function the page never defines** — [page](https://docs.copilotkit.ai/mastra/webmcp)
 Both snippets' handlers do `await searchOrders(status)`; `searchOrders` is neither defined nor imported. Kept as published behind `@ts-expect-error` in `frontend/src/app/webmcp/OrderSearch.tsx`, with no stub, so the tool registers (and can be discovered over WebMCP) but every call throws a `ReferenceError`. The core-only variant (`new CopilotKitCore({ tools })` from `@copilotkit/core`) is kept in `docs-verbatim/webmcp/page-snippets/02.ts`, not compiled, to avoid a second module-level core beside the app provider.
 **27. MCP Apps: the runtime is built around a `BuiltInAgent` and an MCP server the page doesn't ship** — [page](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps)
@@ -510,7 +514,7 @@ mastra/
 
 **Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps)
 
-**App Control** — [Frontend Tools](https://docs.copilotkit.ai/mastra/frontend-tools) · [WebMCP](https://docs.copilotkit.ai/mastra/webmcp) · [Human in the Loop](https://docs.copilotkit.ai/mastra/human-in-the-loop/tool-based) · [useInterrupt](https://docs.copilotkit.ai/mastra/human-in-the-loop/useInterrupt) · [Headless Interrupts](https://docs.copilotkit.ai/mastra/human-in-the-loop/headless) · [Governed Actions](https://docs.copilotkit.ai/mastra/human-in-the-loop/governed-actions) · [Background Tasks](https://docs.copilotkit.ai/mastra/background-tasks)
+**App Control** — [Frontend Tools](https://docs.copilotkit.ai/mastra/frontend-tools) · [HITL Overview](https://docs.copilotkit.ai/mastra/human-in-the-loop/index) · [Human in the Loop](https://docs.copilotkit.ai/mastra/human-in-the-loop/tool-based) · [useInterrupt](https://docs.copilotkit.ai/mastra/human-in-the-loop/useInterrupt) · [Headless Interrupts](https://docs.copilotkit.ai/mastra/human-in-the-loop/headless) · [Governed Actions](https://docs.copilotkit.ai/mastra/human-in-the-loop/governed-actions) · [Background Tasks](https://docs.copilotkit.ai/mastra/background-tasks)
 
 **Multi-Agent** — [Sub-Agents](https://docs.copilotkit.ai/mastra/multi-agent/subagents)
 
