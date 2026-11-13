@@ -50,6 +50,12 @@ The `useHumanInTheLoop` variant **does** run, at
 - `handle-approval.ts` is the resume-side check. It calls `executeSideEffect`,
   which is never defined.
 
+## generative-ui/mcp-apps — `/mastra/generative-ui/mcp-apps`
+
+Only the per-agent alternative (`page-snippets/06.ts`, `.use(new MCPAppsMiddleware(...))`
+on a `BuiltInAgent`) is kept here: it needs `@ag-ui/mcp-apps-middleware`, which
+this repo does not install, and builds a `BuiltInAgent`. The page's main runtime,
+provider and page are live in `frontend/` (Mastra agent swapped in).
 ## generative-ui/json-render — `/mastra/generative-ui/json-render`
 
 Page snippets only (the page has no demo Code tab): `01` chat.tsx, `02`

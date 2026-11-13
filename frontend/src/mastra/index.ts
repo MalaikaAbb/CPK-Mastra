@@ -15,6 +15,7 @@ import {
   subagentsSupervisorAgent,
   weatherAgent,
 } from "./agents";
+import { mcpAppsAgent } from "./mcp-apps-agent";
 import { chartAgent } from "./chart-agent";
 
 /**
@@ -52,6 +53,8 @@ export const mastra = new Mastra({
     openGenUiAdvancedAgent,
     declarativeGenUiAgent,
     a2uiFixedSchemaAgent,
+    // MCP Apps (api/copilotkit-mcp-apps), looked up by key with `getLocalAgent`.
+    mcpAppsAgent,
   },
   storage: new LibSQLStore({ id: "mastra-storage", url: ":memory:" }),
   backgroundTasks: { enabled: true },

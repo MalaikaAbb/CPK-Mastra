@@ -75,6 +75,7 @@ That is required rather than merely convenient: the Shared State pages state tha
 | `subagents` (`subagentsSupervisorAgent`) | `research_agent` · `writing_agent` · `critique_agent` (each wraps its own sub-agent) · working memory: `delegations` | Sub-Agents |
 | `openGenUiAgent` / `openGenUiAdvancedAgent` | none — prompt folds `ag-ui` context in | Open Generative UI (via `/api/copilotkit-ogui`) |
 | `declarativeGenUiAgent` | none — runtime auto-injects `generate_a2ui` | A2UI Dynamic Schema |
+| `mcpAppsAgent` | none — MCP tools added per run by the runtime's `mcpApps` | MCP Apps (via `/api/copilotkit-mcp-apps`) |
 | `a2uiFixedSchemaAgent` | `generate_a2ui` | A2UI Fixed Schema |
 | `gen-ui-tool-based` (`chartAgent`) | none — frontend `useComponent` tools arrive as client tools | Components as Tools |
 
@@ -197,6 +198,8 @@ Code on a page is never a re-typed approximation: each page reads real files via
 
 **`/generative-ui/open-generative-ui`** ⚠️ — The agent writes HTML/CSS/JS into a sandboxed iframe. **Try (minimal):** `Quicksort visualization`. **Pass:** placeholder lines, then an animated, labelled visualisation builds up in an iframe. **Try (advanced, second demo link on the page):** `Calculator (calls evaluateExpression)`. **Pass:** pressing = shows the host-computed result and the browser console logs `[open-gen-ui/advanced] evaluateExpression`. **Fail:** text only, a blank iframe, or buttons that do nothing.
 
+**`/generative-ui/mcp-apps`** ⚠️ — UI resources from an MCP server rendered as sandboxed iframes in a `CopilotSidebar`, via the runtime's `mcpApps` option on `/api/copilotkit-mcp-apps` (Mastra agent swapped in for the page's `BuiltInAgent`). **Setup:** clone [modelcontextprotocol/ext-apps](https://github.com/modelcontextprotocol/ext-apps) and start one of its demo servers so it serves `http://localhost:3108/mcp` (the URL the page hard-codes). **Try:** `What tools do you have? Use one that shows a UI.` **Pass:** the agent calls a server tool and an interactive iframe renders in the sidebar. **Fail:** with the server up, no tools are listed or a UI tool renders nothing (discrepancy 27).
+
 ### App Control
 
 **`/frontend-tools`** — `sayHello` executing in the browser. **Try:** `Say hello to Malaika`. **Pass:** a browser alert appears, then the agent confirms.
@@ -268,7 +271,7 @@ Code on a page is never a re-typed approximation: each page reads real files via
 | `/mastra/generative-ui/json-render` | `/generative-ui/json-render` | ❌ Broken | Reference-only: agent, provider, route, types and registry components unpublished; `@json-render/*` not installed (23). |
 | `/mastra/generative-ui/hashbrown` | `/generative-ui/hashbrown` | ❌ Broken | Reference-only: agent, route, charts, metric card, types unpublished; `@hashbrownai/*` not installed (24). |
 | `/mastra/generative-ui/open-generative-ui` | `/generative-ui/open-generative-ui` | ⚠️ Partial | Published code minus the aimock header wrapper. Not yet run against a live model. |
-| `/mastra/generative-ui/mcp-apps` | — | 🚧 Not started | Skipped by decision (2026-10-06). The page shows only a BuiltInAgent + local ext-apps server, no Mastra code. |
+| `/mastra/generative-ui/mcp-apps` | `/generative-ui/mcp-apps` | ⚠️ Partial | Runtime as published with a Mastra agent swapped in for `BuiltInAgent`; needs an ext-apps MCP server on :3108 (27). Not yet run. |
 | `/mastra/multi-agent/subagents` | `/multi-agent/subagents` | ⚠️ Partial | Delegation runs, but no UI shows it: tool-name mismatch hides cards/banner, and the log's writer is unpublished (18). Not yet run against a live model. |
 | `/mastra/background-tasks` | `/background-tasks` | ✅ Working | |
 | `/mastra/copilot-runtime` | `/copilot-runtime` | ✅ Working | |
@@ -372,6 +375,8 @@ Also on these pages: the dynamic-schema demo file's header says its route sets `
 *Missing code.* The sidebar sample renders `<YourMainContent />`, which is never defined. It is a stand-in for the host app's own content, so a labelled placeholder fills it.
 *Types.* The threads route has the same `AbstractAgent` type clash as the other v2 runtime routes: `@copilotkit/shared` ships its own `@ag-ui/client`. It runs fine.
 
+**27. MCP Apps: the runtime is built around a `BuiltInAgent` and an MCP server the page doesn't ship** — [page](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps)
+The Mastra page's runtime builds a CopilotKit `BuiltInAgent` (`model: "openai/gpt-6-luna"`, `prompt: "You are a helpful assistant."`). Per this repo's framework rule it is a Mastra `mcpAppsAgent` with the same model and prompt (`frontend/src/mastra/mcp-apps-agent.ts`), on `/api/copilotkit-mcp-apps` (the page's `/api/copilotkit` is the shared runtime here); `mcpApps`, `InMemoryAgentRunner` and the multi-route handler are as published. The MCP server at `localhost:3108` is not part of the page; it links to the ext-apps repo. The `.use(MCPAppsMiddleware)` alternative needs `@ag-ui/mcp-apps-middleware` (not installed) and is kept in `docs-verbatim/generative-ui/mcp-apps/page-snippets/06.ts`, not compiled.
 **25. A2UI overview: the runtime snippet's agent is undefined and emits no A2UI** — [page](https://docs.copilotkit.ai/mastra/generative-ui/a2ui)
 The Backend snippet registers `agents: { default: myAgent }` without defining `myAgent`, then says any A2UI output from the agent renders automatically. This repo uses its Quickstart Mastra agent for `myAgent` (no tools) on `/api/copilotkit-a2ui` (the snippet's `/api/copilotkit` is this repo's shared runtime). Nothing on the page makes that agent produce A2UI, so a surface appears only if `a2ui: {}` gives it a tool by itself — unverified here. The theme snippet's `myCustomTheme: A2UITheme = {}` is kept as published.
 **23. JSON Render: only the frontend glue is printed** — [page](https://docs.copilotkit.ai/mastra/generative-ui/json-render)
@@ -498,7 +503,7 @@ mastra/
 
 **Custom Look and Feel** — [Slots](https://docs.copilotkit.ai/mastra/custom-look-and-feel/slots) † · [Headless UI](https://docs.copilotkit.ai/mastra/custom-look-and-feel/headless-ui) † · [Programmatic Control](https://docs.copilotkit.ai/mastra/programmatic-control) · [Inspector](https://docs.copilotkit.ai/mastra/inspector)
 
-**Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI](https://docs.copilotkit.ai/mastra/generative-ui/a2ui) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps) (not implemented)
+**Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps)
 
 **App Control** — [Frontend Tools](https://docs.copilotkit.ai/mastra/frontend-tools) · [Human in the Loop](https://docs.copilotkit.ai/mastra/human-in-the-loop/tool-based) · [useInterrupt](https://docs.copilotkit.ai/mastra/human-in-the-loop/useInterrupt) · [Headless Interrupts](https://docs.copilotkit.ai/mastra/human-in-the-loop/headless) · [Governed Actions](https://docs.copilotkit.ai/mastra/human-in-the-loop/governed-actions) · [Background Tasks](https://docs.copilotkit.ai/mastra/background-tasks)
 
