@@ -25,7 +25,7 @@ export default function Page() {
         </p>
       </Panel>
 
-      <Panel title="Page snippets (verbatim, React tabs, not      <Panel title="The page's code">
+      <Panel title="The page's code">
         <p className="text-sm text-slate-600 dark:text-slate-400">
           Not copied into this repo: nothing on this page can run here, so its
           snippets are left on the{" "}
@@ -35,3 +35,6 @@ export default function Page() {
           . The missing pieces are listed above and in README item 26.
         </p>
       </Panel>
+    </>
+  );
+}
