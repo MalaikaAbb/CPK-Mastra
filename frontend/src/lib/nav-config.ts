@@ -213,6 +213,26 @@ export const NAV: NavGroup[] = [
         statusNote: "Built from the published code; not yet exercised against a live model in this harness. Runs on two harness-written helpers the page imports but never publishes.",
       },
       {
+        path: "/generative-ui/json-render",
+        title: "JSON Render",
+        docPath: "/mastra/generative-ui/json-render",
+        summary:
+          "An agent reply in { root, elements } JSON parsed in the assistant-message slot and drawn by @json-render/react through a Zod-described registry.",
+        status: "broken",
+        statusNote:
+          "Reference-only: the agent/prompt, runtime route, provider page, types and the registry's components are never printed, and the json-render packages aren't installed here.",
+      },
+      {
+        path: "/generative-ui/hashbrown",
+        title: "Hashbrown",
+        docPath: "/mastra/generative-ui/hashbrown",
+        summary:
+          "A streamed { ui: [...] } envelope parsed progressively by Hashbrown and rendered through a UI kit of charts and cards.",
+        status: "broken",
+        statusNote:
+          "Reference-only: the agent/prompt, runtime route, charts, metric card, types and suggestions are never printed, and the Hashbrown packages aren't installed here.",
+      },
+      {
         path: "/generative-ui/open-generative-ui",
         hasDemo: true,
         title: "Open Generative UI",
