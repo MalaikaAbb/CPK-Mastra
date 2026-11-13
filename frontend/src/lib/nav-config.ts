@@ -164,6 +164,17 @@ export const NAV: NavGroup[] = [
         status: "working",
       },
       {
+        path: "/generative-ui/tool-based",
+        hasDemo: true,
+        title: "Components as Tools",
+        docPath: "/mastra/generative-ui/tool-based",
+        summary:
+          "Charts registered with useComponent become frontend tools a prompt-only Mastra agent calls to paint them in chat.",
+        status: "partial",
+        statusNote:
+          "Agent and demo page as published; the bar/pie chart components are borrowed (unpublished) and the headless CopilotChatToolCallsView snippet is not built. Not yet run against a live model.",
+      },
+      {
         path: "/generative-ui/tool-rendering",
         hasDemo: true,
         title: "Tool Rendering",
