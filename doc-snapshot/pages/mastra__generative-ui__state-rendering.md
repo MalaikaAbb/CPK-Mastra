@@ -74,7 +74,7 @@ as this guide uses it as a starting point.
     export const searchAgent = new Agent({
       id: "search-agent",
       name: "Search Agent",
-      model: openai("gpt-5.4"),
+      model: openai("gpt-6-luna"),
       instructions: `
         You are a helpful assistant for storing searches.
 

@@ -35,7 +35,305 @@ canonical example.
 
 ## Setting up sub-agents
 
-<!-- setup skipped: subagents-setup is not bundled for mastra -->
+### Mastra sub-agents setup
+
+Save the complete helper below as `src/mastra/tools/working-memory.ts` next to
+`subagents.ts`. The latter imports `writeDelegationsToWorkingMemory` from that
+file. The three chat cards render from sub-agent tool calls; the separate
+delegation log reads `agent.state.delegations` from working memory.
+
+The demo's `subagents.ts` also imports `@/mastra/_header_forwarding` to pass
+diagnostic headers and safe message IDs to OpenAI. That file is included with
+the demo source. Copy it with the example, or replace its `openai` import in
+`subagents.ts` with `import { openai } from "@ai-sdk/openai";` if your app does
+not need the demo's request handling.
+
+
+~~~~typescript title="working-memory.ts - delegation state helper"
+/**
+ * Shape of the slice of `ToolExecutionContext` we actually consume. We keep
+ * this typed loosely (Record<string, unknown>) so we don't pin to the exact
+ * Mastra tool-context internal shape — the bits we need (`agent.threadId`,
+ * `agent.resourceId`, `mastra`) are stable but adjacent fields in
+ * `ToolExecutionContext` change between Mastra beta releases.
+ */
+export interface MaybeToolExecutionContext {
+  agent?: {
+    agentId?: string;
+    threadId?: string;
+    resourceId?: string;
+  };
+  mastra?: {
+    getAgentById?: (id: string) => unknown;
+    getAgent?: (id: string) => unknown;
+  };
+  threadId?: string;
+  resourceId?: string;
+}
+
+interface MemoryLike {
+  getWorkingMemory?: (args: {
+    threadId?: string;
+    resourceId?: string;
+  }) => Promise<unknown>;
+  updateWorkingMemory: (args: {
+    threadId?: string;
+    resourceId?: string;
+    workingMemory: string;
+  }) => Promise<unknown>;
+}
+
+interface AgentLike {
+  getMemory?: () => unknown;
+}
+
+function logWorkingMemoryFailure(
+  component: string,
+  reason: string,
+  err?: unknown,
+): void {
+  console.error(
+    JSON.stringify({
+      at: new Date().toISOString(),
+      level: "error",
+      component,
+      message: `working-memory write failed: ${reason}`,
+      errorClass:
+        err instanceof Error
+          ? err.constructor.name
+          : err
+            ? "UnknownError"
+            : undefined,
+      detail:
+        err instanceof Error ? err.message : err ? String(err) : undefined,
+    }),
+  );
+}
+
+async function resolveMemoryAndIds(
+  ctx: MaybeToolExecutionContext,
+  agentId: string,
+  component: string,
+): Promise<{
+  memory: MemoryLike;
+  threadId?: string;
+  resourceId?: string;
+} | null> {
+  const threadId = ctx.agent?.threadId ?? ctx.threadId;
+  const resourceId = ctx.agent?.resourceId ?? ctx.resourceId;
+  if (!threadId && !resourceId) {
+    logWorkingMemoryFailure(
+      component,
+      "no threadId or resourceId on tool execution context",
+    );
+    return null;
+  }
+  const mastra = ctx.mastra;
+  if (!mastra) {
+    logWorkingMemoryFailure(component, "no mastra on tool execution context");
+    return null;
+  }
+  let agent: unknown;
+  try {
+    if (typeof mastra.getAgentById === "function") {
+      agent = mastra.getAgentById(agentId);
+    } else if (typeof mastra.getAgent === "function") {
+      agent = mastra.getAgent(agentId);
+    } else {
+      logWorkingMemoryFailure(
+        component,
+        "mastra has no getAgentById/getAgent method",
+      );
+      return null;
+    }
+  } catch (err) {
+    logWorkingMemoryFailure(component, "mastra.getAgentById threw", err);
+    return null;
+  }
+  const a = agent as AgentLike | undefined;
+  if (!a || typeof a.getMemory !== "function") {
+    logWorkingMemoryFailure(
+      component,
+      `agent ${agentId} has no getMemory method`,
+    );
+    return null;
+  }
+  let memory: unknown;
+  try {
+    // `Agent.getMemory` is async in current @mastra/core (returns a Promise) —
+    // it must be awaited, or `memory.updateWorkingMemory` reads off the Promise
+    // as undefined and the write silently no-ops ("memory has no
+    // updateWorkingMemory method"). await is safe if a sync value is returned.
+    memory = await a.getMemory();
+  } catch (err) {
+    logWorkingMemoryFailure(component, "agent.getMemory threw", err);
+    return null;
+  }
+  if (
+    !memory ||
+    typeof (memory as MemoryLike).updateWorkingMemory !== "function"
+  ) {
+    logWorkingMemoryFailure(
+      component,
+      `agent ${agentId} memory has no updateWorkingMemory method`,
+    );
+    return null;
+  }
+  return { memory: memory as MemoryLike, threadId, resourceId };
+}
+
+async function readExistingWorkingMemory(
+  memory: MemoryLike,
+  threadId: string | undefined,
+  resourceId: string | undefined,
+): Promise<Record<string, unknown>> {
+  if (typeof memory.getWorkingMemory !== "function") {
+    return {};
+  }
+  let raw: unknown;
+  try {
+    raw = await memory.getWorkingMemory({ threadId, resourceId });
+  } catch {
+    return {};
+  }
+  if (!raw) return {};
+  if (typeof raw === "string") {
+    try {
+      const parsed = JSON.parse(raw);
+      return typeof parsed === "object" && parsed !== null
+        ? (parsed as Record<string, unknown>)
+        : {};
+    } catch {
+      return {};
+    }
+  }
+  if (typeof raw === "object") {
+    return raw as Record<string, unknown>;
+  }
+  return {};
+}
+
+/**
+ * Append a delegation entry to the supervisor agent's `delegations` array in
+ * working memory. Determinism guarantee: this is what drives the UI's live
+ * delegation log — it MUST run on every supervisor tool call, regardless of
+ * whether the LLM remembers to mention the delegation in its next turn.
+ */
+export async function writeDelegationsToWorkingMemory(
+  ctx: MaybeToolExecutionContext,
+  newDelegation: Record<string, unknown>,
+): Promise<void> {
+  const component = "subagents";
+  const agentId = ctx.agent?.agentId ?? "subagentsSupervisorAgent";
+  const resolved = await resolveMemoryAndIds(ctx, agentId, component);
+  if (!resolved) return;
+  try {
+    const existing = await readExistingWorkingMemory(
+      resolved.memory,
+      resolved.threadId,
+      resolved.resourceId,
+    );
+    const existingDelegations = Array.isArray(existing.delegations)
+      ? (existing.delegations as unknown[])
+      : [];
+    const merged: Record<string, unknown> = {
+      ...existing,
+      delegations: [...existingDelegations, newDelegation],
+    };
+    await resolved.memory.updateWorkingMemory({
+      threadId: resolved.threadId,
+      resourceId: resolved.resourceId,
+      workingMemory: JSON.stringify(merged),
+    });
+  } catch (err) {
+    logWorkingMemoryFailure(component, "updateWorkingMemory threw", err);
+  }
+}
+~~~~
+
+
+The supervisor's `Memory` enables working memory with the
+`SubagentsAgentState` schema. Its delegation tools call
+`writeDelegationsToWorkingMemory` to update the log. Keep working memory
+enabled with `scope: "thread"` so each conversation has its own delegation
+log. The chat cards come from tool calls and do not depend on the log.
+
+If you add a **New chat** control, clear the frontend's delegation state
+before starting the new thread. The Mastra adapter sends non-empty frontend
+state to working memory before it creates a new local thread, so retaining the
+old log can make the first message fail with `Thread ... not found`. This
+applies to both deployment options below:
+
+```tsx title="New chat control"
+import { useAgent, useCopilotChatConfiguration } from "@copilotkit/react-core/v2";
+
+function NewSubagentsChat() {
+  const { agent } = useAgent({ agentId: "subagentsSupervisorAgent" });
+  const chat = useCopilotChatConfiguration();
+
+  return (
+    <button onClick={() => {
+      agent.setState({});
+      chat?.startNewThread();
+    }}>
+      New chat
+    </button>
+  );
+}
+```
+
+Use `subagents` as the agent ID for the demo's local runtime alias.
+
+When Mastra and your frontend run **in the same process**, use
+`getLocalAgent` in your Copilot Runtime route, as the demo does, and pass the
+same `resourceId` on each run for that user. Give each new conversation a new
+thread ID and clear frontend delegation state as shown above.
+When Mastra runs as a **separate server**, expose a CopilotKit route on that
+server. The generic `MastraAgent.getRemoteAgents` client forwards the sub-agent
+tool calls but does not forward the working-memory state used by the log.
+Install `@ag-ui/mastra@1.1.1` and `@copilotkit/runtime` on the Mastra server,
+then add this to the `Mastra` instance that registers `subagentsSupervisorAgent`:
+
+```ts title="src/mastra/index.ts"
+import { Mastra } from "@mastra/core/mastra";
+import { registerCopilotKit } from "@ag-ui/mastra/copilotkit";
+import { subagentsSupervisorAgent } from "./agents";
+
+export const mastra = new Mastra({
+  agents: { subagentsSupervisorAgent },
+  server: {
+    apiRoutes: [
+      registerCopilotKit({
+        path: "/copilotkit",
+        resourceId: "user-1",
+        cors: { origin: "http://localhost:3000" },
+      }),
+    ],
+  },
+});
+```
+
+Point the frontend runtime URL at
+`http://127.0.0.1:4111/copilotkit` and select the registered agent key
+`subagentsSupervisorAgent` wherever the frontend selects or reads agent
+state. The demo's local runtime maps the short `subagents` alias, while the
+separate Mastra server exposes its registered key directly.
+
+Set the CORS origin to your frontend's actual origin. In a multi-user server,
+add `setContext` to the `registerCopilotKit` options and set
+`MASTRA_RESOURCE_ID_KEY` from your authenticated user. For example, after
+importing `MASTRA_RESOURCE_ID_KEY` from `@mastra/core/request-context`:
+
+```ts
+setContext: async (c, requestContext) => {
+  const user = await requireAuthenticatedUser(c); // your server's auth layer
+  requestContext.set(MASTRA_RESOURCE_ID_KEY, user.id);
+},
+```
+
+The static `resourceId` above is only a single-user fallback. Confirm the
+three tool cards complete and the log receives state. After using the New chat
+control, the new conversation should start with an empty log.
 
 Each sub-agent is an isolated agent call with its own model, system
 prompt, and optional tools. They don't share memory or tools with the
@@ -58,7 +356,7 @@ import { writeDelegationsToWorkingMemory } from "./working-memory";
 // don't share memory or tools with the supervisor — the supervisor only sees
 // their final text output via the tools below. Mirrors the LangGraph-Python
 // `subagents.py` reference where each sub-agent is a `create_agent(...)`.
-const SUBAGENT_MODEL = openai("gpt-5-mini");
+const SUBAGENT_MODEL = openai("gpt-6-luna");
 
 const researchSubAgent = new Agent({
   id: "research-subagent",
@@ -122,7 +420,7 @@ import { writeDelegationsToWorkingMemory } from "./working-memory";
 // don't share memory or tools with the supervisor — the supervisor only sees
 // their final text output via the tools below. Mirrors the LangGraph-Python
 // `subagents.py` reference where each sub-agent is a `create_agent(...)`.
-const SUBAGENT_MODEL = openai("gpt-5-mini");
+const SUBAGENT_MODEL = openai("gpt-6-luna");
 
 const researchSubAgent = new Agent({
   id: "research-subagent",

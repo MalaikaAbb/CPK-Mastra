@@ -105,7 +105,7 @@ as this guide uses it as a starting point.
     id: "background-agents",
     name: "Background Agents Agent",
     tools: { runDeepResearchTool }, // [!code highlight]
-    model: openai("gpt-4.1"),
+    model: openai("gpt-6-luna"),
     instructions:
       "You are a research assistant that dispatches long-running work to the " +
       "background. When the user asks you to research a topic, call the " +
@@ -220,7 +220,7 @@ Two switches, both required:
        observationalMemory: {
          scope: "thread",
          observation: { messageTokens: 600, bufferTokens: 300 },
-         model: openai("gpt-4.1"),
+         model: openai("gpt-6-luna"),
        },
      },
    }),

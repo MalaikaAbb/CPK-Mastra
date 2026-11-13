@@ -51,6 +51,8 @@ Four pages need a runtime configured differently from the main one, so those exi
 |---|---|---|
 | `/api/copilotkit-ogui` | `openGenerativeUI: { agents: [...] }` | Open Generative UI (published) |
 | `/api/copilotkit-a2ui-fixed-schema` | `a2ui: { injectA2UITool: false }` | A2UI Fixed Schema (harness glue — the page's runtime snippet) |
+| `/api/copilotkit-declarative-gen-ui` | `a2ui: { injectA2UITool: false, defaultCatalogId }` (prose-only config; no agent tool) | A2UI Dynamic Schema (harness glue, broken) |
+| `/api/copilotkit-a2ui` | `a2ui: {}`, single-route, `default` = `myAgent` | A2UI overview (the page's runtime snippet) |
 | `/api/copilotkit-declarative-gen-ui` | no `a2ui` block (auto-inject) | A2UI Dynamic Schema (harness glue) |
 | `/api/copilotkit-threads/[[...slug]]` | **multi-route**; `intelligence` + `identifyUser` when `CPK_INTELLIGENCE_API_KEY` is set, plain SSE otherwise; `myAgent` as `default` | Threads Drawer (harness glue — the Intelligence quickstart's TypeScript runtime) |
 
@@ -74,9 +76,11 @@ That is required rather than merely convenient: the Shared State pages state tha
 | `subagents` (`subagentsSupervisorAgent`) | `research_agent` · `writing_agent` · `critique_agent` (each wraps its own sub-agent) · working memory: `delegations` | Sub-Agents |
 | `openGenUiAgent` / `openGenUiAdvancedAgent` | none — prompt folds `ag-ui` context in | Open Generative UI (via `/api/copilotkit-ogui`) |
 | `declarativeGenUiAgent` | none — runtime auto-injects `generate_a2ui` | A2UI Dynamic Schema |
+| `mcpAppsAgent` | none — MCP tools added per run by the runtime's `mcpApps` | MCP Apps (via `/api/copilotkit-mcp-apps`) |
 | `a2uiFixedSchemaAgent` | `generate_a2ui` | A2UI Fixed Schema |
+| `gen-ui-tool-based` (`chartAgent`) | none — frontend `useComponent` tools arrive as client tools | Components as Tools |
 
-Several rather than one because working memory takes a **single Zod schema per agent**, and the docs define several different ones. The newer agents use the model ids their pages hard-code (`gpt-5-mini`), **not** `OPENAI_MODEL`. Agent ids come from the keys in the Mastra instance's `agents: { … }` object, not from each agent's `name` — that is what routes pass as `agentId`.
+Several rather than one because working memory takes a **single Zod schema per agent**, and the docs define several different ones. The newer agents use the model ids their pages hard-code (`gpt-5-mini`; Sub-Agents now `gpt-6-luna`), **not** `OPENAI_MODEL`. Agent ids come from the keys in the Mastra instance's `agents: { … }` object, not from each agent's `name` — that is what routes pass as `agentId`.
 
 ---
 
@@ -86,7 +90,7 @@ Several rather than one because working memory takes a **single Zod schema per a
 |---|---|---|
 | Node.js | 20+ | Next.js 16 requires 20+. |
 | npm | 10+ | Or pnpm/yarn/bun. |
-| OpenAI API key | — | Required. Needs access to `gpt-5-mini` for the Open Gen UI, A2UI, and Sub-Agents routes. |
+| OpenAI API key | — | Required. Needs access to `gpt-5-mini` for the Open Gen UI and A2UI routes, and `gpt-6-luna` for Sub-Agents and Background Tasks' observational memory. |
 | CopilotKit Intelligence project key | — | Optional; only the Threads Drawer route uses it. `npx copilotkit@latest login` then `npx copilotkit@latest project select` writes `CPK_INTELLIGENCE_API_KEY` to `.env` in the current directory — copy it into `frontend/.env.local`. Premium: without it that route shows only its locked view. |
 
 No Python, no second runtime, no separate agent process.
@@ -106,7 +110,7 @@ Then edit `frontend/.env.local`:
 | Variable | What it does |
 |---|---|
 | `OPENAI_API_KEY` | **Required.** Read server-side by the Mastra agents; never exposed to the browser. |
-| `OPENAI_MODEL` | Model for the original seven agents. Defaults to `gpt-4o`. The Open Gen UI, A2UI, and Sub-Agents agents use the published `gpt-5-mini` literal regardless. |
+| `OPENAI_MODEL` | Model for the original seven agents. Defaults to `gpt-4o`. The Open Gen UI and A2UI agents use the published `gpt-5-mini` literal regardless; Sub-Agents uses the published `gpt-6-luna`. |
 | `MASTRA_WORKING_MEMORY_URL` | Optional. Storage for the newer doc agents' memory; defaults to `file:./mastra-memory.db` (in `frontend/`, gitignored). |
 | `CPK_INTELLIGENCE_API_KEY` | Optional, server-only. Turns on CopilotKit Intelligence for `/api/copilotkit-threads`, which the Threads Drawer needs to list and store threads. Unset, that runtime runs in SSE mode and the drawer shows its locked view. |
 | `NEXT_PUBLIC_COPILOTKIT_LICENSE_KEY` | Optional; no route here needs it. |
@@ -159,6 +163,8 @@ Code on a page is never a re-typed approximation: each page reads real files via
 
 **`/prebuilt-components/copilot-threads-drawer`** ⚠️ *premium* — `CopilotThreadsDrawer` beside the chat, sharing one `CopilotChatConfigurationProvider`; two demos (CopilotChat with an **As published** / **Header slot** tab, and CopilotSidebar via the second link on the page). **Try (with `CPK_INTELLIGENCE_API_KEY`):** send `Hello`, click **New Conversation**, send `Tell me a fun fact about octopuses`, then click the first row. **Pass:** each conversation gets a row, clicking a row replays that conversation in the chat, the row menu offers Archive and Delete, and the sidebar demo switches the same way. **Try (no key):** open either demo. **Pass:** a locked view with an Upgrade link where the list would be, and chat still works; `curl localhost:3000/api/copilotkit-threads/info` reports `"mode":"sse"` (with a key it should report `"mode":"intelligence"`). **Expected, not a failure:** no drawer launcher on desktop widths, and the **Header slot** tab looking identical to **As published** (discrepancy 20). **Fail:** the locked view with the key set, an empty list after replies, or rows that do not change the chat.
 
+**`/headless-threads`** ❌ *premium* — `useThreads` behind a hand-written list, feeding `threadId` into `CopilotChat`, on the Threads Drawer's Intelligence runtime. **Try (with `CPK_INTELLIGENCE_API_KEY`):** send `Hello`. **Pass (as published):** the chat replies, but the list shows no row for it (it lists agent `my-agent`; the chat runs on `default`) and nothing in the list can be clicked to switch threads (discrepancy 21). **Fail:** the chat itself errors. If rows for the chat's threads appear and clicking one replays it, the page was fixed upstream — re-check.
+
 ### Custom Look and Feel
 
 **`/custom-look-and-feel/slots`** *(live but absent from the doc sidebar)* — Three override levels. **Pass:** level 1 tints the message area, level 2 auto-focuses the input, level 3 shows a custom header, layout, and cursor.
@@ -175,11 +181,13 @@ Code on a page is never a re-typed approximation: each page reads real files via
 
 **`/generative-ui/your-components/interactive`** — `useHumanInTheLoop` approval gate. **Try:** `Run the command rm -rf /tmp/cache`. **Pass:** an approval card renders with the command in a code block and **nothing further streams** until you click Approve or Deny; the agent's next message reflects your choice. **Fail:** plain text with no buttons, or it continues without waiting. Distinct from Human in the Loop below — that one asks you to *choose* between two values, this one asks you to *authorise* an action.
 
+**`/generative-ui/tool-based`** ⚠️ — Charts registered with `useComponent` are the agent's tools; `chartAgent` declares none and its prompt says when to call `render_bar_chart`. **Try:** `Chart the populations of the five largest US cities.` **Pass:** an inline bar chart with a title and five bars, plus a short reply. **Fail:** prose only, an empty chart, or a model-not-found error (the agent uses the published `gpt-6-luna`). The chart components are borrowed (discrepancy 22).
+
 **`/generative-ui/tool-rendering`** — Named renderer for `weatherInfo` plus a wildcard. **Try:** `What's the weather in Tokyo?` **Pass:** "Calling weather API..." becomes "Called the weather API for Tokyo."
 
 **`/generative-ui/state-rendering`** — `searches` working memory. **Try:** `Add a search for the tallest mountains`, then another. **Pass:** items accumulate in the left pane.
 
-**`/generative-ui/a2ui/dynamic-schema`** ⚠️ — A component catalog on the provider; the runtime injects `generate_a2ui` and a second model call designs the whole surface. **Try:** `Show me my sales dashboard for this quarter.` **Pass:** a progress indicator, then a surface built from Metric / DataTable / Pie or Bar chart inside Cards. **Fail:** plain text, an empty surface, or raw operations JSON.
+**`/generative-ui/a2ui/dynamic-schema`** ❌ — A component catalog on the provider; the page says an agent-owned `generate_a2ui` designs the surface, but neither that agent nor the same-process route is printed. **Try:** `Show me my sales dashboard for this quarter.` **Pass (as published here):** a plain-text reply, no surface (discrepancy 17 paragraph). **Fail:** a request error; a rendered surface means something injected an unprinted tool — re-check.
 
 **`/generative-ui/a2ui/fixed-schema`** ⚠️ — A fixed flight-card catalog; the agent's own `generate_a2ui` returns the operations container, runtime injection off. **Try:** `Find me a flight from SFO to JFK on United for $289.` **Pass:** a card with SFO → JFK, a United badge, $289 and a Book button that flips to "Booked". **Fail:** no card; React error #31 (`object with keys {path}`) means a binding reached a renderer unresolved (discrepancy 16); `UnsupportedModelVersionError` means `ai` resolved to v6 (discrepancy 17).
 
@@ -202,12 +210,20 @@ All Components and surfaces routes except State and actions have a demo wired to
 **`/generative-ui/components/markdown-mode`** → demo ❌ — Both providers. Expected: no `a2ui` block, because the schema and the fence guide travel only as context, which the agent never sees (26).
 
 **`/generative-ui/components/from-a2ui`** → demo ⚠️ — The After catalog; `Airport`/`Arrow` borrowed from aws-strands-ts (the page never defines them). *Try:* "show a flight card from SFO (San Francisco) to JFK (New York) with a Book button". **Pass:** two airports with an arrow between them.
+**`/generative-ui/json-render`** ❌ *reference-only* — No live demo: the agent/prompt that emits the `{ root, elements }` spec is never printed, nor the provider page, runtime route, `./types` or the registry's components, and the `@json-render/*` packages aren't installed (discrepancy 23). **Pass:** the page shows the four printed frontend files and the example output, with the gap panel above them.
+
+**`/generative-ui/hashbrown`** ❌ *reference-only* — No live demo: the agent/prompt that streams the `{ ui: [...] }` envelope, its runtime route, the charts, metric card, `./types` and suggestions are never printed, and `@hashbrownai/*` isn't installed (discrepancy 24). **Pass:** the page shows the three printed frontend files and the example message, with the gap panel above them.
 
 **`/generative-ui/open-generative-ui`** ⚠️ — The agent writes HTML/CSS/JS into a sandboxed iframe. **Try (minimal):** `Quicksort visualization`. **Pass:** placeholder lines, then an animated, labelled visualisation builds up in an iframe. **Try (advanced, second demo link on the page):** `Calculator (calls evaluateExpression)`. **Pass:** pressing = shows the host-computed result and the browser console logs `[open-gen-ui/advanced] evaluateExpression`. **Fail:** text only, a blank iframe, or buttons that do nothing.
+
+**`/generative-ui/mcp-apps`** ⚠️ — UI resources from an MCP server rendered as sandboxed iframes in a `CopilotSidebar`, via the runtime's `mcpApps` option on `/api/copilotkit-mcp-apps` (Mastra agent swapped in for the page's `BuiltInAgent`). **Setup:** clone [modelcontextprotocol/ext-apps](https://github.com/modelcontextprotocol/ext-apps) and start one of its demo servers so it serves `http://localhost:3108/mcp` (the URL the page hard-codes). **Try:** `What tools do you have? Use one that shows a UI.` **Pass:** the agent calls a server tool and an interactive iframe renders in the sidebar. **Fail:** with the server up, no tools are listed or a UI tool renders nothing (discrepancy 27).
 
 ### App Control
 
 **`/frontend-tools`** — `sayHello` executing in the browser. **Try:** `Say hello to Malaika`. **Pass:** a browser alert appears, then the agent confirms.
+
+**`/human-in-the-loop`** 📖 *reference* — The HITL overview has no code; the route summarises it and links the four HITL routes. **Pass:** the page renders with the links and the inconsistency note (discrepancy 29).
+**`/webmcp`** ❌ — The page's `OrderSearch` frontend tool with `webmcp: { annotations: { readOnlyHint: true } }`, mounted inside the root provider next to a `myAgent` chat. **Try:** in Chrome 149+ with `chrome://flags/#enable-webmcp-testing`, open the demo and check `document.modelContext` / the Model Context Tool Inspector; also ask the chat `Find my shipped orders.` **Pass (as published):** `searchOrders` is listed with its `status` enum and read-only hint, and every call fails with `searchOrders is not defined` (discrepancy 28). In other browsers: nothing is registered, no error. **Fail:** the tool is missing from the inspector with WebMCP enabled, or the page errors on load.
 
 **`/human-in-the-loop/tool-based`** — `offerOptions`. **Try:** `Can you show me two good options for a restaurant name?` **Pass:** two buttons render and **nothing further streams** until you click one.
 
@@ -231,7 +247,7 @@ All Components and surfaces routes except State and actions have a demo wired to
 
 ### Multi-Agent
 
-**`/multi-agent/subagents`** ⚠️ — A supervisor whose tools are research / writing / critique sub-agents. **Try:** `Produce a short blog post about the benefits of cold exposure training. Research first, then write, then critique.` **Pass (as published):** in the Inspector, `TOOL_CALL_START` for `researchAgentTool` → `writingAgentTool` → `critiqueAgentTool`, each followed by a `TOOL_CALL_RESULT` with the sub-agent's text, then a chat summary. **No cards, no banner and an empty delegation log are expected** — the renderers listen for different tool names (discrepancy 18) and the log's writer is unpublished. **Fail:** no tool calls at all, or a result containing `[sub-agent error] …`.
+**`/multi-agent/subagents`** ⚠️ — A supervisor whose tools are research / writing / critique sub-agents. **Try:** `Produce a short blog post about the benefits of cold exposure training. Research first, then write, then critique.` **Pass (as published):** in the Inspector, `TOOL_CALL_START` for `researchAgentTool` → `writingAgentTool` → `critiqueAgentTool`, each followed by a `TOOL_CALL_RESULT` with the sub-agent's text, then a chat summary. **No cards and no banner are expected** — the renderers listen for different tool names (discrepancy 18) — but the delegation log should gain one entry per delegation now that the page publishes its writer. **Fail:** no tool calls at all, a result containing `[sub-agent error] …`, or an empty log with `working-memory write failed` in the server log.
 
 ### Backend
 
@@ -251,23 +267,28 @@ All Components and surfaces routes except State and actions have a demo wired to
 | `/mastra/quickstart?agent=bring-your-own` | `/quickstart` | ✅ Working | |
 | `/mastra/prebuilt-components` | `/prebuilt-components` | ✅ Working | Doc page is a 145-byte component stub. |
 | `/mastra/prebuilt-components/copilot-threads-drawer` | `/prebuilt-components/copilot-threads-drawer` | ⚠️ Partial | Premium — needs `CPK_INTELLIGENCE_API_KEY`. Harness-supplied Intelligence runtime; header-slot snippet cannot work in 1.79.1 (20). Pages and keyless runtime (`mode: "sse"`) smoke-tested 2026-10-23; not yet run against a live Intelligence project. |
+| `/mastra/headless-threads` | `/headless-threads` | ❌ Broken | Premium — needs `CPK_INTELLIGENCE_API_KEY`. As published, threads can't be selected and the list watches agent `my-agent`, not the runtime's `default` (21). Not yet run. |
 | `/mastra/custom-look-and-feel/slots` | `/custom-look-and-feel/slots` | ✅ Working | **Not in the doc sidebar**; resolves. |
 | `/mastra/custom-look-and-feel/headless-ui` | `/custom-look-and-feel/headless-ui` | ✅ Working | **Not in the doc sidebar**; resolves. |
 | `/mastra/programmatic-control` | `/programmatic-control` | ✅ Working | |
 | `/mastra/inspector` | `/inspector` | ✅ Working | Dev-only by design. |
 | `/mastra/generative-ui/your-components/display-only` | `/generative-ui/your-components/display-only` | ✅ Working | Needs no Mastra-side declaration. |
 | `/mastra/generative-ui/your-components/interactive` | `/generative-ui/your-components/interactive` | ✅ Working | `useHumanInTheLoop` approval gate. Code is in the rendered page, not the raw markdown. |
+| `/mastra/generative-ui/tool-based` | `/generative-ui/tool-based` | ⚠️ Partial | Agent + demo page as published; bar/pie chart components borrowed from agno (22). Not yet run against a live model. |
 | `/mastra/generative-ui/tool-rendering` | `/generative-ui/tool-rendering` | ✅ Working | |
 | `/mastra/generative-ui/state-rendering` | `/generative-ui/state-rendering` | ✅ Working | |
 | `/mastra/frontend-tools` | `/frontend-tools` | ✅ Working | |
+| `/mastra/webmcp` | `/webmcp` | ❌ Broken | Registration as published; the handler's `searchOrders` is never defined, so every call throws (28). Needs Chrome 149+ WebMCP. Not yet run. |
 | `/mastra/shared-state/in-app-agent-read` | `/shared-state/in-app-agent-read` | ✅ Working | |
 | `/mastra/shared-state/in-app-agent-write` | `/shared-state/in-app-agent-write` | ✅ Working | |
 | `/mastra/shared-state/predictive-state-updates` | `/shared-state/predictive-state-updates` | ✅ Working | Re-checked 2026-10-06: page unchanged since snapshot. |
 | `/mastra/agent-app-context` | `/agent-app-context` | ✅ Working | |
+| `/mastra/human-in-the-loop/index` | `/human-in-the-loop` | 📖 Reference | Overview, no code; says interrupts aren't supported for Mastra while the sidebar documents them (29). |
 | `/mastra/human-in-the-loop/tool-based` | `/human-in-the-loop/tool-based` | ✅ Working | Re-checked 2026-10-06: page unchanged since snapshot. |
 | `/mastra/human-in-the-loop/useInterrupt` | `/human-in-the-loop/useInterrupt` | ❌ Broken | Reference-only: the `suspend()` tool is unpublished (13). |
 | `/mastra/human-in-the-loop/headless` | `/human-in-the-loop/headless` | ❌ Broken | Reference-only: same backend gap, plus undefined symbols in snippets (14). |
 | `/mastra/human-in-the-loop/governed-actions` | `/human-in-the-loop/governed-actions` | ⚠️ Partial | HITL variant live; interrupt variant reference-only (15). Not yet run against a live model. |
+| `/mastra/generative-ui/a2ui` | `/generative-ui/a2ui` | ⚠️ Partial | Page's undefined `myAgent` swapped for the Quickstart agent on a dedicated route; whether anything renders is unverified (25). |
 | `/mastra/generative-ui/a2ui/dynamic-schema` | `/generative-ui/a2ui/dynamic-schema` | ⚠️ Partial | Harness-supplied runtime route; needs root zod pinned to 3.25.76 (16). Not yet run against a live model. |
 | `/mastra/generative-ui/a2ui/fixed-schema` | `/generative-ui/a2ui/fixed-schema` | ⚠️ Partial | Harness-written `a2ui-context` helpers + runtime route; root zod pinned to 3.25.76 (16); needs `ai` 7 (17). Not yet run against a live model. |
 | `/mastra/generative-ui/components` | `/generative-ui/components` | ⚠️ Partial | Demo wired to `componentsAgent`; `render_ui` guide not delivered (26). |
@@ -279,9 +300,11 @@ All Components and surfaces routes except State and actions have a demo wired to
 | `/mastra/generative-ui/components/transports` | `/generative-ui/components/transports` | ⚠️ Partial | Demo wired on `generativeUI: true` runtime; markdown variant gets no context; no `shop` agent (26). |
 | `/mastra/generative-ui/components/markdown-mode` | `/generative-ui/components/markdown-mode` | ❌ Broken | Demo wired, expected no UI: schema + guide travel only as context, which the Mastra agent never sees (26). |
 | `/mastra/generative-ui/components/from-a2ui` | `/generative-ui/components/from-a2ui` | ⚠️ Partial | Demo wired: After catalog, `Airport`/`Arrow` borrowed from aws-strands-ts (26). |
+| `/mastra/generative-ui/json-render` | `/generative-ui/json-render` | ❌ Broken | Reference-only: agent, provider, route, types and registry components unpublished; `@json-render/*` not installed (23). |
+| `/mastra/generative-ui/hashbrown` | `/generative-ui/hashbrown` | ❌ Broken | Reference-only: agent, route, charts, metric card, types unpublished; `@hashbrownai/*` not installed (24). |
 | `/mastra/generative-ui/open-generative-ui` | `/generative-ui/open-generative-ui` | ⚠️ Partial | Published code minus the aimock header wrapper. Not yet run against a live model. |
 | `/mastra/generative-ui/mcp-apps` | — | 🚧 Not started | Skipped by decision (2026-10-06). The page shows only a BuiltInAgent + local ext-apps server, no Mastra code. |
-| `/mastra/multi-agent/subagents` | `/multi-agent/subagents` | ⚠️ Partial | Delegation runs, but no UI shows it: tool-name mismatch hides cards/banner, and the log's writer is unpublished (18). Not yet run against a live model. |
+| `/mastra/multi-agent/subagents` | `/multi-agent/subagents` | ⚠️ Partial | Delegation runs and the log's writer is now published; the tool-name mismatch still hides cards/banner (18). Not yet run against a live model. |
 | `/mastra/background-tasks` | `/background-tasks` | ✅ Working | |
 | `/mastra/copilot-runtime` | `/copilot-runtime` | ✅ Working | |
 | `/mastra/ag-ui` | `/ag-ui` | ✅ Working | |
@@ -330,7 +353,7 @@ This repo's `backgroundAgentsAgent` therefore carries a `Memory` the doc's versi
 Predictive State Updates imports it from `@copilotkit/react-core` while importing everything else from `/v2`. Both live in `/v2`.
 
 **9. Four different model ids**
-Across these pages the docs specify `gpt-5.4`, `gpt-5.4-mini`, `gpt-4o`, and `gpt-4.1` — and the Quickstart's callout says GPT-4o while its code says otherwise. All agents here read one `OPENAI_MODEL`, defaulting to `gpt-4o`.
+Across these pages the docs specify `gpt-5.4`, `gpt-5.4-mini`, `gpt-4o`, and `gpt-4.1` — and the Quickstart's callout says GPT-4o while its code says otherwise. All agents here read one `OPENAI_MODEL`, defaulting to `gpt-4o`. Agent App Context now prints `colleaguesContactAgent` with `gpt-6-luna` (was `gpt-4o`); it still reads `OPENAI_MODEL` here.
 
 **10. `useHumanInTheLoop` does not infer its arg type**
 Unlike `useRenderTool`, it defaults to `Record<string, unknown>`, so the HITL page's `args.option_1` is `unknown` and unusable in JSX. The generic is supplied explicitly.
@@ -360,14 +383,14 @@ Both pages' `definitions.ts` import `z` from `"zod"`, and the page's install lin
 `import { z } from "zod/v3"` fixes the runtime but not the types, because zod 4's bundled v3 and the renderer's own zod 3.25.76 are separate copies. That needed ~20 `@ts-expect-error`s and stretched `tsc` to about 12 minutes. **Current fix (2026-10-07):** the root `zod` is pinned to exactly `3.25.76`, the same copy the renderer uses, so both `definitions.ts` files keep the published `from "zod"` import byte-for-byte and need no suppressions. Every other package accepts zod 3; `@mastra/memory` (which depends on `^4.4.3`) gets its own nested zod 4.
 
 **17. A2UI fixed-schema: `generateText` from `ai` 6 rejects `@ai-sdk/openai` 4 models** — [page](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema)
-The published tool calls `generateText({ model: openai("gpt-5-mini") })`. `@ai-sdk/openai` 4.x returns a `specificationVersion: "v4"` model; `ai` 6 (what resolved transitively before) accepts only v2/v3 and throws `UnsupportedModelVersionError`. `ai@^7` is now a direct dependency. Dynamic schema is unaffected — its auto-injected tool runs through a Mastra `Agent`, which handles v4 models.
+The published tool calls `generateText({ model: openai("gpt-6-luna") })` (it was `gpt-5-mini`). `@ai-sdk/openai` 4.x returns a `specificationVersion: "v4"` model; `ai` 6 (what resolved transitively before) accepts only v2/v3 and throws `UnsupportedModelVersionError`. `ai@^7` is now a direct dependency. Dynamic schema does not use this tool here (its agent is not printed).
 
-Also on these pages: the dynamic-schema demo file's header says its route sets `injectA2UITool: false` with a backend-owned tool, contradicting the page prose (catalog → auto-inject, "no `a2ui` block"); this repo follows the prose. The fixed-schema tool's fallback `catalogId` is `copilotkit://app-dashboard-catalog` while the page's catalog is `copilotkit://flight-fixed-catalog`. Both A2UI demo pages point at runtime routes (`/api/copilotkit-a2ui-fixed-schema`, `/api/copilotkit-declarative-gen-ui`) that are not published, and the main published route maps both aliases to a `weatherAgent` whose tools use the unpublished `@copilotkit/showcase-shared-tools`; this repo supplies the two routes and two minimal agents. The `a2ui-generate` tool's `./a2ui-context` import (`readForwardedA2uiContext`, `systemPromptFrom`) is unpublished and was written here — it reads the same `ag-ui` request-context key and uses the same `### description\nvalue` format as the published `foldHostContext`.
+Also on these pages: the dynamic-schema page now drops its auto-inject default and says the demo's same-process route sets `injectA2UITool: false` and pins `defaultCatalogId` because the agent owns `generate_a2ui` — but prints neither that route nor that agent. **Not filled in:** the harness route carries only the described `a2ui` config (labelled prose-only) and `declarativeGenUiAgent` has no A2UI tool, so the route is broken and renders nothing. The page's separate-process `registerCopilotKit` example is not built (Mastra runs in-process). The fixed-schema tool's fallback `catalogId` is `copilotkit://app-dashboard-catalog` while the page's catalog is `copilotkit://flight-fixed-catalog`. Both A2UI demo pages point at runtime routes (`/api/copilotkit-a2ui-fixed-schema`, `/api/copilotkit-declarative-gen-ui`) that are not published, and the main published route maps both aliases to a `weatherAgent` whose tools use the unpublished `@copilotkit/showcase-shared-tools`; this repo supplies the two routes and two minimal agents. The `a2ui-generate` tool's `./a2ui-context` companion (`readForwardedA2uiContext`, `systemPromptFrom`) is now printed on the Fixed Schema page and copied verbatim to `frontend/src/mastra/a2ui/a2ui-context.ts`; the earlier repo-authored version is removed. The tool's inner `generateText` model and the fixed-schema agent now use the published `gpt-6-luna`.
 
 **18. Sub-Agents: tool names never match the renderers, and the log's writer is never published** — [page](https://docs.copilotkit.ai/mastra/multi-agent/subagents)
 *Names.* The supervisor registers `tools: { researchAgentTool, writingAgentTool, critiqueAgentTool }`. Mastra (`@mastra/core` 1.74, `Agent#listAssignedTools` → `makeCoreTool(tool, { name: k })`) exposes each tool to the model under its **object key**, not its `createTool({ id })`, so the model calls `researchAgentTool` etc. The page's three `useRenderTool({ name: "research_agent" | "writing_agent" | "critique_agent" })` and `inferActiveSubAgent`'s name set never match: no in-chat cards and no banner. The supervisor prompt also tells the model to call `research_agent`, a name that is not registered. Kept as published.
 
-*Log.* All three tools call `writeDelegationsToWorkingMemory` from `./working-memory`, which is not on the page or its Code tab. The import and calls are commented out (not reimplemented), so `state.delegations` is never written and the log stays empty; the in-chat cards are unaffected. Separately, `delegation-log.tsx` types `status` as `"completed"` only, though the tools emit `"failed"` and the schema allows `"running"`, and every status renders in the same green.
+*Log.* The page now prints `working-memory.ts` (the `writeDelegationsToWorkingMemory` helper), so it lives verbatim at `frontend/src/mastra/working-memory.ts` and all three tools call it again; the supervisor's working memory is `scope: "thread"` as the Code tab now shows. The page's optional New chat control and its separate-server `registerCopilotKit` setup are not built — this repo runs Mastra in-process. Separately, `delegation-log.tsx` types `status` as `"completed"` only, though the tools emit `"failed"` and the schema allows `"running"`, and every status renders in the same green.
 
 **19. Published code shared across these pages**
 - *Showcase plumbing.* `@/mastra/_header_forwarding` (aimock header forwarding) is imported by the OGUI route, `a2ui-generate.ts` and `subagents.ts` and never published. The fixed-schema page's own comment names `import { openai } from "@ai-sdk/openai"` as the real-app equivalent, which is what these files use; the OGUI route's `withForwardedHeaders` wrapper is removed with its handler body unchanged.
@@ -395,6 +418,28 @@ Every page in the section imports `@copilotkit/react-core/v2/generative-ui`, whi
 *Transports.* The runtime fragment uses an undefined `agent` (in this harness it would be a Mastra agent).
 *Markdown mode.* The "build your own prompt" example is Python (`input.forwarded_props`, `MY_PROMPT`), not Mastra code.
 *Adopt from A2UI.* `myCatalog`, `agents`, `Airport`, `Arrow` are referenced without definitions.
+**29. HITL overview: interrupts called unsupported while the sidebar documents them** — [page](https://docs.copilotkit.ai/mastra/human-in-the-loop/index)
+The overview (no code) says Mastra supports HITL only through `useHumanInTheLoop` frontend tools and marks interrupt-based HITL "Not Supported", linking to `/human-in-the-loop/interrupt-flow`. The same Mastra sidebar carries `useInterrupt` and headless-interrupt pages built on Mastra's `suspend()` (discrepancies 13 and 14 here). Both CTA cards link without the `/mastra` prefix. The route is a reference panel.
+**28. WebMCP: the handler calls a function the page never defines** — [page](https://docs.copilotkit.ai/mastra/webmcp)
+Both snippets' handlers do `await searchOrders(status)`; `searchOrders` is neither defined nor imported. Kept as published behind `@ts-expect-error` in `frontend/src/app/webmcp/OrderSearch.tsx`, with no stub, so the tool registers (and can be discovered over WebMCP) but every call throws a `ReferenceError`. The core-only variant (`new CopilotKitCore({ tools })` from `@copilotkit/core`) is kept in `docs-verbatim/webmcp/page-snippets/02.ts`, not compiled, to avoid a second module-level core beside the app provider.
+**27. MCP Apps: the runtime is built around a `BuiltInAgent` and an MCP server the page doesn't ship** — [page](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps)
+The Mastra page's runtime builds a CopilotKit `BuiltInAgent` (`model: "openai/gpt-6-luna"`, `prompt: "You are a helpful assistant."`). Per this repo's framework rule it is a Mastra `mcpAppsAgent` with the same model and prompt (`frontend/src/mastra/mcp-apps-agent.ts`), on `/api/copilotkit-mcp-apps` (the page's `/api/copilotkit` is the shared runtime here); `mcpApps`, `InMemoryAgentRunner` and the multi-route handler are as published. The MCP server at `localhost:3108` is not part of the page; it links to the ext-apps repo. The `.use(MCPAppsMiddleware)` alternative needs `@ag-ui/mcp-apps-middleware` (not installed) and is kept in `docs-verbatim/generative-ui/mcp-apps/page-snippets/06.ts`, not compiled.
+**25. A2UI overview: the runtime snippet's agent is undefined and emits no A2UI** — [page](https://docs.copilotkit.ai/mastra/generative-ui/a2ui)
+The Backend snippet registers `agents: { default: myAgent }` without defining `myAgent`, then says any A2UI output from the agent renders automatically. This repo uses its Quickstart Mastra agent for `myAgent` (no tools) on `/api/copilotkit-a2ui` (the snippet's `/api/copilotkit` is this repo's shared runtime). Nothing on the page makes that agent produce A2UI, so a surface appears only if `a2ui: {}` gives it a tool by itself — unverified here. The theme snippet's `myCustomTheme: A2UITheme = {}` is kept as published.
+**23. JSON Render: only the frontend glue is printed** — [page](https://docs.copilotkit.ai/mastra/generative-ui/json-render)
+The page (no Code tab) prints `chat.tsx`, `json-render-renderer.tsx`, `catalog.ts`, `registry.tsx` and an example of the agent's JSON. The Mastra agent and the prompt that makes it answer in `{ root, elements }` JSON (the page only says "the agent prompts ask for plain JSON") are not printed, nor `page.tsx`, the runtime route, `./types` (`JsonRenderSpec`), `./metric-card`, `./charts/*` or `./suggestions`. With no agent to emit a spec the route is reference-only: code in `docs-verbatim/generative-ui/json-render/`, not compiled. It would also need `@json-render/react`/`@json-render/core` 0.18.0 and a `zod4` alias, which this repo does not install.
+
+**24. Hashbrown: only the frontend glue is printed, and it points at a Python agent** — [page](https://docs.copilotkit.ai/mastra/generative-ui/hashbrown)
+The page (no Code tab) prints `page.tsx`, `chat.tsx`, `hashbrown-renderer.tsx` and an example assistant message. The agent that streams the `{ "ui": [...] }` envelope is not printed — the renderer's header comment names `src/agents/byoc_hashbrown_agent.py`, a Python file, on the Mastra page — and neither are `/api/copilotkit-declarative-hashbrown`, `./charts/*`, `./metric-card`, `./types` (`SalesStage`) or `./suggestions`. Reference-only: code in `docs-verbatim/generative-ui/hashbrown/`, not compiled. It would also need `@hashbrownai/core`/`@hashbrownai/react` (the page names `0.5.0-beta.4`), not installed here.
+**22. Components as Tools: the chart components are never printed, and the agent file is printed out of order** — [page](https://docs.copilotkit.ai/mastra/generative-ui/tool-based)
+*Missing.* The demo page (Code tab) imports `BarChart`/`barChartPropsSchema` from `./bar-chart`, `PieChart`/`pieChartPropsSchema` from `./pie-chart` and `useSuggestions` from `./suggestions`; none is printed. The charts are borrowed from the agno harness (minimal Recharts, labelled); suggestions are left out. The Code tab's `/api/copilotkit` route is a 3-byte stub, so `chartAgent` is registered on this repo's main route under the demo's agent id `gen-ui-tool-based`.
+*Order.* `chart-agent.ts` is printed as two blocks, the agent (which reads `SYSTEM_PROMPT`) before `const SYSTEM_PROMPT`; in one module that order throws at load, so the prompt block comes first here, text unchanged.
+*Prompt.* The published prompt names only `render_bar_chart`, while the demo also registers `render_pie_chart`. Kept as published.
+*Not built.* The headless `CopilotChatToolCallsView` fragment (undefined `assistantMessage`/`allMessages`).
+**21. Headless Threads: `App` passes a prop `ThreadSidebar` doesn't take, and the list watches a different agent** — [page](https://docs.copilotkit.ai/mastra/headless-threads)
+*Selection.* The "Switch between threads" step renders `<ThreadSidebar onSelectThread={setActiveThreadId} />`, but the page's `ThreadSidebar` is `function ThreadSidebar()` and its rows only carry Rename / Archive buttons. It is a type error (kept behind `@ts-expect-error`) and, at runtime, nothing ever sets `activeThreadId`, so the chat can't be switched to another thread.
+*Agent id.* `useThreads({ agentId: "my-agent" })` while the page's runtime snippet registers `agents: { default: agent }` and `<CopilotChat>` (no `agentId`) runs on `default`. The list queries an agent that doesn't exist on that runtime. Kept as published.
+*Not printed.* No provider (the demo mounts `CopilotKitProvider` on the shared `/api/copilotkit-threads` route), `verifyAppSession` in `identifyUser` (that route returns a fixed user), and the "one agent per thread" `useAgent` fragment uses an undefined `threadId` (not built). The pagination step re-prints `ThreadSidebar.tsx` with only the paging members; both blocks are merged into one `useThreads` call.
 
 ---
 
@@ -409,7 +454,7 @@ Every page in the section imports `@copilotkit/react-core/v2/generative-ui`, whi
 | No activity card on Background Tasks | Missing one of three switches | Tool needs `background`, instance needs `backgroundTasks` + `storage`, runtime needs `untilIdle`. |
 | Activity card appears but never leaves "Working…" | Agent has no `memory`, so `untilIdle` no-ops | Give the agent its own `Memory`. Confirm in the Inspector: a run with no `ACTIVITY_DELTA` after the snapshot is this. See discrepancy 7. |
 | Model-not-found errors | A `gpt-5.4*` id from the docs | Set `OPENAI_MODEL` to something your account has. |
-| Model-not-found on Open Gen UI / A2UI / Sub-Agents | Those agents hard-code `gpt-5-mini` as published | Use a key with `gpt-5-mini` access; `OPENAI_MODEL` does not apply to them. |
+| Model-not-found on Open Gen UI / A2UI / Sub-Agents | Those agents hard-code `gpt-5-mini` (Sub-Agents: `gpt-6-luna`) as published | Use a key with access to those ids; `OPENAI_MODEL` does not apply to them. |
 | A2UI card throws React #31 `object with keys {path}`, or Book flight does nothing | Root `zod` resolved to 4.x | `npm ls zod` must show 3.25.76 at the root (discrepancy 16). Re-pin with `npm install zod@3.25.76 --save-exact`. |
 | Fixed Schema: `UnsupportedModelVersionError` | `ai` resolved to v6 | `ai@^7` must be a direct dependency (discrepancy 17). |
 | Threads Drawer shows a locked view with an Upgrade link | No `CPK_INTELLIGENCE_API_KEY`, or the project's subscription is inactive | Set the key in `frontend/.env.local` and restart. `curl localhost:3000/api/copilotkit-threads/info` must report `"mode":"intelligence"`; `"sse"` means the key was not read. |
@@ -462,6 +507,7 @@ mastra/
         │   ├── agents.ts              # ★ the 7 doc-defined agents + working-memory schemas
         │   ├── tools.ts               # ★ the 3 doc-defined tools
         │   ├── subagents.ts           # ★ sub-agents exposed as tools (published)
+        │   ├── working-memory.ts      # delegation-log writer (published on Sub-Agents)
         │   ├── a2ui/
         │   │   ├── a2ui-generate.ts   # ★ generate_a2ui tool (published)
         │   │   └── a2ui-context.ts    #   its two helpers (harness-written)
@@ -501,13 +547,13 @@ mastra/
 
 **Getting Started** — [Quickstart (bring your own agent)](https://docs.copilotkit.ai/mastra/quickstart?agent=bring-your-own)
 
-**Basics** — [Prebuilt Components](https://docs.copilotkit.ai/mastra/prebuilt-components) · [Threads Drawer](https://docs.copilotkit.ai/mastra/prebuilt-components/copilot-threads-drawer) (runtime side: [Intelligence quickstart](https://docs.copilotkit.ai/mastra/intelligence/quickstart))
+**Basics** — [Prebuilt Components](https://docs.copilotkit.ai/mastra/prebuilt-components) · [Threads Drawer](https://docs.copilotkit.ai/mastra/prebuilt-components/copilot-threads-drawer) · [Headless Threads](https://docs.copilotkit.ai/mastra/headless-threads) (runtime side: [Intelligence quickstart](https://docs.copilotkit.ai/mastra/intelligence/quickstart))
 
 **Custom Look and Feel** — [Slots](https://docs.copilotkit.ai/mastra/custom-look-and-feel/slots) † · [Headless UI](https://docs.copilotkit.ai/mastra/custom-look-and-feel/headless-ui) † · [Programmatic Control](https://docs.copilotkit.ai/mastra/programmatic-control) · [Inspector](https://docs.copilotkit.ai/mastra/inspector)
 
 **Generative UI** — [Display-only](https://docs.copilotkit.ai/mastra/generative-ui/your-components/display-only) · [Interactive](https://docs.copilotkit.ai/mastra/generative-ui/your-components/interactive) · [Tool Rendering](https://docs.copilotkit.ai/mastra/generative-ui/tool-rendering) · [State Rendering](https://docs.copilotkit.ai/mastra/generative-ui/state-rendering) · [A2UI Dynamic Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/dynamic-schema) · [A2UI Fixed Schema](https://docs.copilotkit.ai/mastra/generative-ui/a2ui/fixed-schema) · [Components and surfaces](https://docs.copilotkit.ai/mastra/generative-ui/components) · [Surfaces](https://docs.copilotkit.ai/mastra/generative-ui/components/surfaces) · [Catalogs](https://docs.copilotkit.ai/mastra/generative-ui/components/catalogs) · [Standard catalog](https://docs.copilotkit.ai/mastra/generative-ui/components/standard-catalog) · [State and actions](https://docs.copilotkit.ai/mastra/generative-ui/components/state-and-actions) · [Theming](https://docs.copilotkit.ai/mastra/generative-ui/components/theming) · [Transports](https://docs.copilotkit.ai/mastra/generative-ui/components/transports) · [Markdown mode](https://docs.copilotkit.ai/mastra/generative-ui/components/markdown-mode) · [Adopt from A2UI](https://docs.copilotkit.ai/mastra/generative-ui/components/from-a2ui) · [Open Generative UI](https://docs.copilotkit.ai/mastra/generative-ui/open-generative-ui) · [MCP Apps](https://docs.copilotkit.ai/mastra/generative-ui/mcp-apps) (not implemented)
 
-**App Control** — [Frontend Tools](https://docs.copilotkit.ai/mastra/frontend-tools) · [Human in the Loop](https://docs.copilotkit.ai/mastra/human-in-the-loop/tool-based) · [useInterrupt](https://docs.copilotkit.ai/mastra/human-in-the-loop/useInterrupt) · [Headless Interrupts](https://docs.copilotkit.ai/mastra/human-in-the-loop/headless) · [Governed Actions](https://docs.copilotkit.ai/mastra/human-in-the-loop/governed-actions) · [Background Tasks](https://docs.copilotkit.ai/mastra/background-tasks)
+**App Control** — [Frontend Tools](https://docs.copilotkit.ai/mastra/frontend-tools) · [HITL Overview](https://docs.copilotkit.ai/mastra/human-in-the-loop/index) · [Human in the Loop](https://docs.copilotkit.ai/mastra/human-in-the-loop/tool-based) · [useInterrupt](https://docs.copilotkit.ai/mastra/human-in-the-loop/useInterrupt) · [Headless Interrupts](https://docs.copilotkit.ai/mastra/human-in-the-loop/headless) · [Governed Actions](https://docs.copilotkit.ai/mastra/human-in-the-loop/governed-actions) · [Background Tasks](https://docs.copilotkit.ai/mastra/background-tasks)
 
 **Multi-Agent** — [Sub-Agents](https://docs.copilotkit.ai/mastra/multi-agent/subagents)
 
