@@ -8,6 +8,168 @@ Holds the 3 most recent dated entries. When a change lands on a fourth
 date, the oldest entry is dropped. Entries are counted, not aged, so a gap of
 weeks between changes does not expire anything.
 
+## 2026-11-13
+
+### 11:10 UTC — 20 pages, highest severity high
+
+**High — A2UI · Dynamic Schema**
+
+`/mastra/generative-ui/a2ui/dynamic-schema` · route `/generative-ui/a2ui/dynamic-schema` · under “Frontend catalog” · in a `typescript` block
+
+4 code lines changed.
+
+````diff
+- ? "text-emerald-600"
++ ? "text-emerald-600 dark:text-emerald-400"
+- ? "text-rose-600"
++ ? "text-rose-600 dark:text-rose-400"
+````
+
+**High — A2UI · Fixed Schema**
+
+`/mastra/generative-ui/a2ui/fixed-schema` · route `/generative-ui/a2ui/fixed-schema` · under “Implement the React renderers” · in a `typescript` block
+
+16 code lines changed.
+
+````diff
+- <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-neutral-500">
++ <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-neutral-500 dark:text-muted-foreground">
+- <h3 className="text-base font-semibold leading-none tracking-tight text-neutral-900">
++ <h3 className="text-base font-semibold leading-none tracking-tight text-neutral-900 dark:text-foreground">
+- <span className="font-mono text-2xl font-semibold tracking-wider text-neutral-900">
++ <span className="font-mono text-2xl font-semibold tracking-wider text-neutral-900 dark:text-foreground">
+- <Separator className="flex-1 bg-neutral-200" />
++ <Separator className="flex-1 bg-neutral-200 dark:bg-border" />
+````
+
+**High — HITL · Headless Interrupts**
+
+`/mastra/human-in-the-loop/headless` · route `/human-in-the-loop/headless` · under “The primitives” · in a `typescript` block
+
+4 code lines changed.
+
+````diff
+- <div className="grid h-screen grid-cols-[1fr_420px] bg-[#FAFAFC]">
++ <div className="grid h-screen grid-cols-[1fr_420px] bg-[#FAFAFC] dark:bg-background">
+- <div className="border-l border-[#DBDBE5] bg-white">
++ <div className="border-l border-[#DBDBE5] bg-white dark:border-border dark:bg-background">
+````
+
+**High — Sub-Agents**
+
+`/mastra/multi-agent/subagents` · route `/multi-agent/subagents` · under “Rendering a live delegation log” · in a `typescript` block
+
+30 code lines changed.
+
+````diff
+- className="w-full h-full flex flex-col bg-white rounded-2xl shadow-sm border border-[#DBDBE5] overflow-hidden"
++ className="w-full h-full flex flex-col bg-white rounded-2xl shadow-sm border border-[#DBDBE5] overflow-hidden dark:bg-card dark:border-border"
+- <div className="flex items-center justify-between px-6 py-3 border-b border-[#E9E9EF] bg-[#FAFAFC]">
++ <div className="flex items-center justify-between px-6 py-3 border-b border-[#E9E9EF] bg-[#FAFAFC] dark:border-border dark:bg-muted">
+- <span className="text-lg font-semibold text-[#010507]">
++ <span className="text-lg font-semibold text-[#010507] dark:text-foreground">
+- className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-[#BEC2FF] bg-[#BEC2FF1A] text-[#010507] text-[10px] font-semibold uppercase tracking-[0.12em]"
++ className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-[#BEC2FF] bg-[#BEC2FF1A] text-[#010507] text-[10px] font-semibold uppercase tracking-[0.12em] dark:text-foreground"
+````
+
+**Info — A2UI**
+
+`/mastra/generative-ui/a2ui` · route `/generative-ui/a2ui`
+
+Now tracked for the first time.
+
+**Info — Components and surfaces**
+
+`/mastra/generative-ui/components` · route `/generative-ui/components`
+
+Now tracked for the first time.
+
+**Info — Catalogs**
+
+`/mastra/generative-ui/components/catalogs` · route `/generative-ui/components/catalogs`
+
+Now tracked for the first time.
+
+**Info — Adopt from A2UI**
+
+`/mastra/generative-ui/components/from-a2ui` · route `/generative-ui/components/from-a2ui`
+
+Now tracked for the first time.
+
+**Info — Markdown mode**
+
+`/mastra/generative-ui/components/markdown-mode` · route `/generative-ui/components/markdown-mode`
+
+Now tracked for the first time.
+
+**Info — Standard catalog**
+
+`/mastra/generative-ui/components/standard-catalog` · route `/generative-ui/components/standard-catalog`
+
+Now tracked for the first time.
+
+**Info — State and actions**
+
+`/mastra/generative-ui/components/state-and-actions` · route `/generative-ui/components/state-and-actions`
+
+Now tracked for the first time.
+
+**Info — Surfaces**
+
+`/mastra/generative-ui/components/surfaces` · route `/generative-ui/components/surfaces`
+
+Now tracked for the first time.
+
+**Info — Theming**
+
+`/mastra/generative-ui/components/theming` · route `/generative-ui/components/theming`
+
+Now tracked for the first time.
+
+**Info — Transports**
+
+`/mastra/generative-ui/components/transports` · route `/generative-ui/components/transports`
+
+Now tracked for the first time.
+
+**Info — Hashbrown**
+
+`/mastra/generative-ui/hashbrown` · route `/generative-ui/hashbrown`
+
+Now tracked for the first time.
+
+**Info — JSON Render**
+
+`/mastra/generative-ui/json-render` · route `/generative-ui/json-render`
+
+Now tracked for the first time.
+
+**Info — MCP Apps**
+
+`/mastra/generative-ui/mcp-apps` · route `/generative-ui/mcp-apps`
+
+Now tracked for the first time.
+
+**Info — Components as Tools**
+
+`/mastra/generative-ui/tool-based` · route `/generative-ui/tool-based`
+
+Now tracked for the first time.
+
+**Info — Headless Threads**
+
+`/mastra/headless-threads` · route `/headless-threads`
+
+Now tracked for the first time.
+
+**Info — WebMCP**
+
+`/mastra/webmcp` · route `/webmcp`
+
+Now tracked for the first time.
+
+---
+
 ## 2026-11-11
 
 ### 14:10 UTC — 17 pages, highest severity high
@@ -232,6 +394,8 @@ Now tracked for the first time.
 
 ---
 
+---
+
 ## 2026-10-07
 
 ### 04:32 UTC — 7 pages, highest severity none
@@ -277,140 +441,6 @@ Now tracked for the first time.
 `/mastra/multi-agent/subagents` · route `/multi-agent/subagents`
 
 Now tracked for the first time.
-
----
-
----
-
-## 2026-10-05
-
-### 06:14 UTC — 9 pages, highest severity high
-
-**High — Agent App Context**
-
-`/mastra/agent-app-context` · route `/agent-app-context` · under “Implementation”
-
-9 code lines, 17 prose lines changed.
-
-````diff
-+ 
-+ <Callout type="warn" title="Context values arrive as JSON strings">
-+ The AG-UI protocol defines a context value as a string. Therefore
-+ `useAgentContext` calls `JSON.stringify` on any `value` that is not already a
-+ string, and your agent receives the JSON text instead of the object or the
-+ array.
-+ 
-+ Parse the value before you read a field from it. Use `json.loads(item["value"])`
-````
-
-**High — Background Tasks**
-
-`/mastra/background-tasks` · route `/background-tasks` · under “Render the activity card in your frontend” · in a `tsx` block
-
-3 code lines changed.
-
-````diff
-- agent="background-agents"
-+ agent="backgroundAgentsAgent"
-+ resourceId: "user-1",
-````
-
-**High — Copilot Runtime**
-
-`/mastra/copilot-runtime` · route `/copilot-runtime` · under “Copilot Runtime”
-
-16 code lines, 2 headings, 62 prose lines changed. The number of fenced code blocks changed.
-
-````diff
-+ 
-+ ## Runtime languages
-+ 
-+ **TypeScript is the default and most fully featured runtime. It is the only runtime that can run without CopilotKit Intelligence.** Use it for an open-source setup, or connect it to Intelligence when you need its services.
-+ 
-+ Python, Go, Ruby, and C#/.NET runtimes require an Intelligence project and server-side API key. They work with both [cloud-hosted](/mastra/intelligence/managed-intelligence-platform) and [self-hosted](/mastra/intelligence/self-hosting) Intelligence; they do not provide an in-memory or SQLite runner.
-+ 
-+ | Language | Host | Without Intelligence |
-````
-
-**High — State Rendering**
-
-`/mastra/generative-ui/state-rendering` · route `/generative-ui/state-rendering` · under “Set up your agent with working memory” · in a `ts` block
-
-1 code line changed.
-
-````diff
-+ id: "search-agent",
-````
-
-**High — Tool Rendering**
-
-`/mastra/generative-ui/tool-rendering` · route `/generative-ui/tool-rendering` · under “Give your agent a tool to call” · in a `ts` block
-
-1 code line changed.
-
-````diff
-+ id: "weather-agent",
-````
-
-**High — Reading agent state**
-
-`/mastra/shared-state/in-app-agent-read` · route `/shared-state/in-app-agent-read` · under “What is this?” · in a `ts` block
-
-32 code lines, 2 headings, 7 prose lines changed.
-
-````diff
-- agents: MastraAgent.getLocalAgents({ mastra }),
-+ agents: MastraAgent.getLocalAgents({ mastra, resourceId: "user-1" }),
-+ id: "language-agent",
-- optionally provide an initial state.
-+ initialize missing UI-owned state after the connected agent is ready.
-+ import { useEffect } from "react";
-- const { agent } = useAgent({
-+ const { agent, isReady } = useAgent({
-````
-
-**High — Writing agent state**
-
-`/mastra/shared-state/in-app-agent-write` · route `/shared-state/in-app-agent-write` · under “What is this?” · in a `ts` block
-
-16 code lines changed.
-
-````diff
-- agents: MastraAgent.getLocalAgents({ mastra }),
-+ agents: MastraAgent.getLocalAgents({ mastra, resourceId: "user-1" }),
-+ id: "language-agent",
-+ import { useEffect } from "react";
-- const { agent } = useAgent({
-+ const { agent, isReady } = useAgent({
-- // optionally provide a type-safe initial state
-- initialState: { language: "english" }
-````
-
-**High — Predictive State Updates**
-
-`/mastra/shared-state/predictive-state-updates` · route `/shared-state/predictive-state-updates` · under “How it works” · in a `ts` block
-
-5 code lines changed.
-
-````diff
-- agents: MastraAgent.getLocalAgents({ mastra }),
-+ agents: MastraAgent.getLocalAgents({ mastra, resourceId: "user-1" }),
-+ id: "streaming-agent",
-- import { useAgent, UseAgentUpdate } from "@copilotkit/react-core"; // [!code highlight]
-+ import { useAgent, UseAgentUpdate } from "@copilotkit/react-core/v2"; // [!code highlight]
-````
-
-**Low — AG-UI**
-
-`/mastra/ag-ui` · route `/ag-ui` · under “How agents slot into the runtime”
-
-3 prose lines changed.
-
-````diff
-+ To write the custom implementation yourself, and keep its own fields through
-+ the clone in step 2, see [Write your own AG-UI agent](/mastra/backend/custom-ag-ui-agent).
-+ 
-````
 
 ---
 

@@ -185,9 +185,9 @@ function Layout() {
   });
 
   return (
-    <div className="grid h-screen grid-cols-[1fr_420px] bg-[#FAFAFC]">
+    <div className="grid h-screen grid-cols-[1fr_420px] bg-[#FAFAFC] dark:bg-background">
       <AppSurface interruptEl={interruptEl} />
-      <div className="border-l border-[#DBDBE5] bg-white">
+      <div className="border-l border-[#DBDBE5] bg-white dark:border-border dark:bg-background">
         <CopilotChat agentId="interrupt-headless" className="h-full" />
       </div>
     </div>
