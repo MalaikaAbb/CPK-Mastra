@@ -385,6 +385,8 @@ export const NAV: NavGroup[] = [
         status: "reference",
         statusNote:
           "No code on the page; a reference panel linking this harness's HITL routes.",
+      },
+      {
         path: "/webmcp",
         hasDemo: true,
         title: "WebMCP",
